@@ -1,5 +1,8 @@
+#include <cstdlib>
+#include <cstdio>
 #include "match_renju.h"
 #include "move.h"
+#include "player.h"
 
 #define ON_BOARD(x,y) ((x)>=0&&(x)<RENJU_SIZE&&(y)>=0&&(y)<RENJU_SIZE)
 static const int dir[][2] = {
@@ -36,10 +39,23 @@ int MatchRenju::CheckWinner() {
     return 0;
 }
 
-void MatchRenju::Start() {
+int MatchRenju::Start() {
+    char buf[32];
     int flg = 0;
+    Player *p[2];
+    p[0] = GetPlayer(0);
+    p[1] = GetPlayer(1);
+    p[0]->SendMessage("First");
+    p[1]->SendMessage("Second");
     while (1) {
-        
+        p[flg]->RecvMessage(buf, 30);
+        MoveRenju tm;
+        sscanf(buf, "%d %d", &tm.x, &tm.y);
+        tm.flg = flg + 1;
+        MakeMove(&tm);
+        if (CheckWinner()) break;
+        p[1-flg]->SendMessage(buf);
+        flg = 1 - flg;
     }
 }
 

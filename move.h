@@ -7,7 +7,7 @@ public:
     virtual ~Move() {};
 };
 
-class MoveRenju : Move {
+class MoveRenju : public Move {
 public:
     int x, y, flg;
 };

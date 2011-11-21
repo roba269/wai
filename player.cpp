@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <cstring>
 #include "player.h"
 
 const std::string prefix = "/var/ai/";
@@ -45,7 +46,7 @@ void PlayerComputer::SendMessage(const char *msg)
     write(m_outfd, msg, strlen(msg));
 }
 
-void PlayerComputer::RecvMessage(char *&msg, int maxlen)
+void PlayerComputer::RecvMessage(char *msg, int maxlen)
 {
     // TODO: read msg from pipe
     read(m_infd, msg, maxlen);

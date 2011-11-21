@@ -17,6 +17,7 @@ public:
         m_players.push_back(p);
     }
     int GetPlayerCnt() {return m_players.size();}
+    Player *GetPlayer(int idx) {return m_players[idx];}
     virtual int CheckWinner() = 0;
     virtual int MakeMove(Move *move) = 0;
     virtual int Start() = 0;
