@@ -29,8 +29,10 @@ public:
     int LoadAI(std::string ai_name);
     void SendMessage(const char *msg);
     void RecvMessage(char *msg, int maxlen);
+    void Kill();
 private:
     int m_infd, m_outfd;
+    pid_t m_child_pid;
 };
 
 class PlayerHuman : Player {

@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <signal.h>
 #include <cstring>
 #include "player.h"
 
@@ -23,6 +24,7 @@ int PlayerComputer::LoadAI(std::string ai_name)
         close(fd2[1]);
         m_infd = fd2[0];
         m_outfd = fd1[1];
+        m_child_pid = pid;
     } else if (pid == 0) {
         // child
         close(fd1[1]);
@@ -50,5 +52,10 @@ void PlayerComputer::RecvMessage(char *msg, int maxlen)
 {
     // TODO: read msg from pipe
     read(m_infd, msg, maxlen);
+}
+
+void PlayerComputer::Kill() 
+{
+    kill(m_child_pid, SIGKILL);
 }
 
