@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <string>
+#include "common_define.h"
 
 enum PlayerType {
     PLAYER_COMPUTER,
@@ -25,6 +26,7 @@ private:
 
 class PlayerComputer : public Player {
 public:
+    PlayerComputer();
     // find the exe with name ai_name, fork a new process
     // build the pipe
     int LoadAI(std::string ai_name);
@@ -32,8 +34,12 @@ public:
     void RecvMessage(char *msg, int maxlen);
     void Kill();
 private:
+    void InitSyscallSpec();
     int m_infd, m_outfd;
     pid_t m_child_pid;
+    int m_limit[512];
+    int m_stat[512];
+    ExitFlagType m_exit_flag;
 };
 
 class PlayerHuman : public Player {

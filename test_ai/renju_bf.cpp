@@ -18,9 +18,9 @@ void pick_empty(int &x, int &y) {
 }
 
 int main() {
-    fprintf(stderr, "hello, i am %d\n", getpid());
+    // fprintf(stderr, "hello, i am %d\n", getpid());
     scanf("%s", buf);
-    fprintf(stderr, "%d: I recv %s\n", getpid(), buf);
+    // fprintf(stderr, "%d: I recv %s\n", getpid(), buf);
     if (strcmp(buf, "First") == 0) {
         flg = 1;
     } else {
@@ -39,7 +39,7 @@ int main() {
         fflush(stdout);
         bd[x][y] = flg;
         scanf("%d %d", &x, &y);
-        fprintf(stderr, "%d: I recv [%d %d]\n", getpid(), x, y);
+        // fprintf(stderr, "%d: I recv [%d %d]\n", getpid(), x, y);
         bd[x][y] = 3 - flg;
     }
     return 0;
