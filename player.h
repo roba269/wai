@@ -17,12 +17,13 @@ public:
     std::string GetName() {return m_name;}
     virtual void SendMessage(const char *msg) = 0;
     virtual void RecvMessage(char *msg, int maxlen) = 0;
+    virtual void Kill() = 0;
 private:
     PlayerType m_type;
     std::string m_name;
 };
 
-class PlayerComputer : Player {
+class PlayerComputer : public Player {
 public:
     // find the exe with name ai_name, fork a new process
     // build the pipe
@@ -35,7 +36,7 @@ private:
     pid_t m_child_pid;
 };
 
-class PlayerHuman : Player {
+class PlayerHuman : public Player {
 
 };
 

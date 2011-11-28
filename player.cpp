@@ -1,18 +1,24 @@
 #include <string>
+#include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <signal.h>
+#include <errno.h>
 #include <cstring>
 #include "player.h"
 
-const std::string prefix = "/var/ai/";
+// const std::string prefix = "/var/ai/";
+const std::string prefix = "./";
 
 int PlayerComputer::LoadAI(std::string ai_name)
 {
     std::string fullname = prefix + ai_name;
-    if (access(fullname.c_str(), R_OK | X_OK))
+    if (access(fullname.c_str(), R_OK | X_OK)) {
+        printf("Cannot access %s\n", fullname.c_str());
         return -1;
+    }
+    printf("Fullname: %s\n", fullname.c_str());
     // TODO: hanlde SIGPIPE
     pid_t pid;
     int fd1[2], fd2[2];
@@ -38,6 +44,7 @@ int PlayerComputer::LoadAI(std::string ai_name)
             close(fd2[1]);
         }
         execl(fullname.c_str(), fullname.c_str(), NULL);
+        printf("execl failed, errno: %d\n", errno);
     }
     return 0;
 }
@@ -45,13 +52,16 @@ int PlayerComputer::LoadAI(std::string ai_name)
 void PlayerComputer::SendMessage(const char *msg)
 {
     // TODO: write msg to pipe
+    printf("Send %s", msg);
     write(m_outfd, msg, strlen(msg));
 }
 
 void PlayerComputer::RecvMessage(char *msg, int maxlen)
 {
     // TODO: read msg from pipe
-    read(m_infd, msg, maxlen);
+    int n = read(m_infd, msg, maxlen);
+    msg[n] = 0;
+    printf("Recv %s", msg);
 }
 
 void PlayerComputer::Kill() 

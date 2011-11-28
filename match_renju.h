@@ -5,13 +5,14 @@
 
 const int RENJU_SIZE = 15;
 
-class MatchRenju : Match {
+class MatchRenju : public Match {
 public:
     int CheckWinner();
     int MakeMove(Move *move);
     int Start();
 private:
     int m_board[RENJU_SIZE][RENJU_SIZE];
+    int m_chess_cnt;
 };
 
 #endif
