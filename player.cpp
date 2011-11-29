@@ -6,6 +6,7 @@
 #include <sys/ptrace.h>
 #include <sys/syscall.h>
 #include <sys/reg.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
@@ -17,6 +18,8 @@
 
 // const std::string prefix = "/var/ai/";
 const std::string prefix = "./";
+const int MEMORY_LIMIT = 128 * 1024 * 1024; // in bytes
+const int TIME_LIMIT = 10;  // in seconds
 
 PlayerComputer::PlayerComputer() :
     m_infd(0), m_outfd(0), m_sandbox_pid(0), m_exit_flag(EXIT_NONE) { }
@@ -28,6 +31,26 @@ void PlayerComputer::InitSyscallSpec()
     for (int i = 0 ; g_spec[i].number != 0 ; ++i) {
         m_limit[g_spec[i].number] = g_spec[i].limit;
     }
+}
+
+static int set_quota() {
+    struct rlimit lim;
+    // no core dump file
+    if (getrlimit(RLIMIT_CORE, &lim) < 0) return -1;
+    lim.rlim_cur = 0;
+    if (setrlimit(RLIMIT_CORE, &lim) < 0) return -1;
+    // set memory limit
+    if (getrlimit(RLIMIT_AS, &lim) < 0) return -1;
+    lim.rlim_cur = MEMORY_LIMIT;
+    if (setrlimit(RLIMIT_AS, &lim) < 0) return -1;
+    // set time limit
+    struct itimerval timerval;
+    timerval.it_interval.tv_sec = 0;
+    timerval.it_interval.tv_usec = 0;
+    timerval.it_value.tv_sec = TIME_LIMIT;
+    timerval.it_value.tv_usec = 0;
+    if (setitimer(ITIMER_PROF, &timerval, NULL) < 0) return -1;
+    return 0;
 }
 
 int PlayerComputer::LoadAI(std::string ai_name)
@@ -67,6 +90,7 @@ int PlayerComputer::LoadAI(std::string ai_name)
                 close(fd2[1]);
             }
             // setrlimit
+            set_quota();
             ptrace(PTRACE_TRACEME, 0, NULL, NULL);
             execl(fullname.c_str(), fullname.c_str(), NULL);
             fprintf(stderr, "execl failed, errno: %d\n", errno);
