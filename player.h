@@ -36,7 +36,7 @@ public:
 private:
     void InitSyscallSpec();
     int m_infd, m_outfd;
-    pid_t m_child_pid;
+    pid_t m_sandbox_pid;
     int m_limit[512];
     int m_stat[512];
     ExitFlagType m_exit_flag;

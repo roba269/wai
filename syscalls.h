@@ -17,7 +17,7 @@ const static SyscallSpec g_spec[] = {
     {SYS_mmap2, INT_MAX},
     {SYS_munmap, INT_MAX},
     {SYS_set_thread_area, 1},
-    {SYS_fstat64, 1},
+    {SYS_fstat64, INT_MAX},
     {SYS_uname, 1},
     {SYS_execve, 1},
     {0, 0}
