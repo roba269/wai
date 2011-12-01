@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <cstdio>
+#include <signal.h>
 #include "match_renju.h"
 #include "move.h"
 #include "player.h"
@@ -43,7 +44,18 @@ int MatchRenju::CheckWinner() {
     return 0;
 }
 
+static void player_exit(int signo)
+{
+    fprintf(stderr, "one player exit\n");
+}
+
 int MatchRenju::Start() {
+    struct sigaction act;
+    act.sa_handler = player_exit;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+    sigaction(SIGCHLD, &act, NULL);
+
     printf("MatchRenju started!\n");
     char buf[32];
     int flg = 0;

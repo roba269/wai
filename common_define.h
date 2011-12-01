@@ -6,7 +6,8 @@ enum ExitFlagType {
     EXIT_NORMAL,
     EXIT_RF,
     EXIT_TLE,
-    EXIT_MLE
+    EXIT_MLE,
+    EXIT_RE
 };
 
 #endif

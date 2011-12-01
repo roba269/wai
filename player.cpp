@@ -1,5 +1,6 @@
 #include <string>
 #include <cstdio>
+#include <cstdlib>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -15,6 +16,8 @@
 #include "player.h"
 #include "syscalls.h"
 #include "common_define.h"
+
+// FIXME: fprintf should be replaced by write
 
 // const std::string prefix = "/var/ai/";
 const std::string prefix = "./";
@@ -44,12 +47,17 @@ static int set_quota() {
     lim.rlim_cur = MEMORY_LIMIT;
     if (setrlimit(RLIMIT_AS, &lim) < 0) return -1;
     // set time limit
+    /*
     struct itimerval timerval;
     timerval.it_interval.tv_sec = 0;
     timerval.it_interval.tv_usec = 0;
     timerval.it_value.tv_sec = TIME_LIMIT;
     timerval.it_value.tv_usec = 0;
     if (setitimer(ITIMER_PROF, &timerval, NULL) < 0) return -1;
+    */
+    if (getrlimit(RLIMIT_CPU, &lim) < 0) return -1;
+    lim.rlim_cur = 1;
+    if (setrlimit(RLIMIT_CPU, &lim) < 0) return -1;
     return 0;
 }
 
@@ -90,7 +98,9 @@ int PlayerComputer::LoadAI(std::string ai_name)
                 close(fd2[1]);
             }
             // setrlimit
-            set_quota();
+            if (set_quota() < 0) {
+                fprintf(stderr, "set_quota() error\n");
+            }
             ptrace(PTRACE_TRACEME, 0, NULL, NULL);
             execl(fullname.c_str(), fullname.c_str(), NULL);
             fprintf(stderr, "execl failed, errno: %d\n", errno);
@@ -106,6 +116,21 @@ int PlayerComputer::LoadAI(std::string ai_name)
                     m_exit_flag = EXIT_NORMAL;
                     break;
                 }
+                if (WIFSIGNALED(st) || (WIFSTOPPED(st) && WSTOPSIG(st) != 5)) {
+                    if (WIFSTOPPED(st)) {
+                        switch (WSTOPSIG(st)) {
+                            case SIGXCPU:
+                                m_exit_flag = EXIT_TLE;
+                                break;
+                            default:
+                                m_exit_flag = EXIT_RE;
+                        }
+                    }
+                    else if (WIFSIGNALED(st))
+                            fprintf(stderr, "termed by signal: %d\n", WTERMSIG(st));
+                    ptrace(PTRACE_KILL, grand_pid, NULL, NULL);
+                    break;
+                }
                 if (in_call == 0) {
                     int orig_eax = ptrace(PTRACE_PEEKUSER, grand_pid, 
                             4 * ORIG_EAX, NULL);
@@ -117,13 +142,18 @@ int PlayerComputer::LoadAI(std::string ai_name)
                     }
                     ++m_stat[orig_eax];
                     // fprintf(stderr, "m_stat[%d]:%d\n", orig_eax,
-                    //         m_stat[orig_eax]);
+                    //          m_stat[orig_eax]);
                     in_call = 1;
                 } else {
                     in_call = 0;
                 }
+                if (m_exit_flag == EXIT_RF) {
+                    ptrace(PTRACE_KILL, grand_pid, NULL, NULL);
+                    break;
+                }
                 ptrace(PTRACE_SYSCALL, grand_pid, NULL, NULL);
             }
+            exit(0);    // the sandbox process exit
         }
     } else {
         // generation 1: main
