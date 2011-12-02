@@ -24,14 +24,17 @@ const std::string prefix = "./";
 const int MEMORY_LIMIT = 128 * 1024 * 1024; // in bytes
 const int TIME_LIMIT = 10;  // in seconds
 
-PlayerComputer::PlayerComputer() :
-    m_infd(0), m_outfd(0), m_sandbox_pid(0), m_exit_flag(EXIT_NONE) { }
+Player::Player() : m_id(0), m_infd(0), m_outfd(0), m_info_fd(0) {
+    
+}
+
+PlayerComputer::PlayerComputer() : m_exit_flag(EXIT_NONE) { }
 
 void PlayerComputer::InitSyscallSpec()
 {
     memset(m_stat, 0, sizeof(m_stat));
     memset(m_limit, 0, sizeof(m_limit));
-    for (int i = 0 ; g_spec[i].number != 0 ; ++i) {
+    for (int i = 0 ; g_spec[i].number != -1 ; ++i) {
         m_limit[g_spec[i].number] = g_spec[i].limit;
     }
 }
@@ -61,8 +64,9 @@ static int set_quota() {
     return 0;
 }
 
-int PlayerComputer::LoadAI(std::string ai_name)
+int PlayerComputer::LoadAI(std::string ai_name, int id)
 {
+    SetID(id);
     InitSyscallSpec();   
     std::string fullname = prefix + ai_name;
     if (access(fullname.c_str(), R_OK | X_OK)) {
@@ -71,8 +75,8 @@ int PlayerComputer::LoadAI(std::string ai_name)
     }
     printf("Fullname: %s\n", fullname.c_str());
     // TODO: hanlde SIGPIPE
-    int fd1[2], fd2[2];
-    if (pipe(fd1) < 0 || pipe(fd2) < 0) {
+    int fd1[2], fd2[2], info_fd[2];
+    if (pipe(fd1) < 0 || pipe(fd2) < 0 || pipe(info_fd) < 0) {
         fprintf(stderr, "Error on pipe()\n");
         return -1;
     }
@@ -83,12 +87,14 @@ int PlayerComputer::LoadAI(std::string ai_name)
     } else if (child_pid == 0) {
         close(fd1[1]);
         close(fd2[0]);
+        close(info_fd[0]);
         pid_t grand_pid = fork();
         if (grand_pid < 0) {
             fprintf(stderr, "Error on fork()\n");
             return -1;
         } else if (grand_pid == 0) {
             // generation 3: the actual executable
+            close(info_fd[0]);
             if (fd1[0] != STDIN_FILENO) {
                 dup2(fd1[0], STDIN_FILENO);
                 close(fd1[0]);
@@ -132,12 +138,18 @@ int PlayerComputer::LoadAI(std::string ai_name)
                     break;
                 }
                 if (in_call == 0) {
+#ifdef __x86_64__
+                    long long orig_eax = ptrace(PTRACE_PEEKUSER, grand_pid,
+                            8 * ORIG_RAX, NULL);
+#else
                     int orig_eax = ptrace(PTRACE_PEEKUSER, grand_pid, 
                             4 * ORIG_EAX, NULL);
+#endif
                     assert(orig_eax >= 0 && orig_eax < 512);
                     if (--m_limit[orig_eax] < 0) {
                         m_exit_flag = EXIT_RF;
-                        fprintf(stderr, "Sys call %d reach limit\n", orig_eax);
+                        fprintf(stderr, "Sys call %d reach limit\n", 
+                                static_cast<int>(orig_eax));
                         break;
                     }
                     ++m_stat[orig_eax];
@@ -153,20 +165,25 @@ int PlayerComputer::LoadAI(std::string ai_name)
                 }
                 ptrace(PTRACE_SYSCALL, grand_pid, NULL, NULL);
             }
+            char buf[16];
+            sprintf(buf, "%d\n", GetID());
+            write(GetInfoFd(), buf, strlen(buf));
             exit(0);    // the sandbox process exit
         }
     } else {
         // generation 1: main
         close(fd1[0]);
         close(fd2[1]);
-        m_infd = fd2[0];
-        m_outfd = fd1[1];
+        close(info_fd[1]);
+        SetInputFd(fd2[0]);
+        SetOutputFd(fd1[1]);
+        SetInfoFd(info_fd[0]);
         m_sandbox_pid = child_pid;
     }
 
-    return 0;
+    return child_pid;
 }
-
+/*
 void PlayerComputer::SendMessage(const char *msg)
 {
     // TODO: write msg to pipe
@@ -181,7 +198,7 @@ void PlayerComputer::RecvMessage(char *msg, int maxlen)
     msg[n] = 0;
     // printf("Recv %s", msg);
 }
-
+*/
 void PlayerComputer::Kill() 
 {
     kill(m_sandbox_pid, SIGKILL);

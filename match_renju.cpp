@@ -22,6 +22,7 @@ int MatchRenju::MakeMove(Move *move) {
 };
 
 int MatchRenju::CheckWinner() {
+    if (GetWinner() != -1) return GetWinner();
     // TODO: no checking forbidden move 
     if (m_chess_cnt > (RENJU_SIZE - 1) * (RENJU_SIZE - 1)) {
         return 3;   // draw
@@ -35,13 +36,16 @@ int MatchRenju::CheckWinner() {
                 ti = i + dir[d][0];
                 tj = j + dir[d][1];
                 while (ON_BOARD(ti, tj) && m_board[ti][tj] == m_board[i][j]) {
-                    if (++cnt == 5) return m_board[i][j];
+                    if (++cnt == 5) {
+                        SetWinner(m_board[i][j]);
+                        return m_board[i][j];
+                    }
                     ti += dir[d][0];
                     tj += dir[d][1];
                 }
             }
         }
-    return 0;
+    return -1;
 }
 
 static void player_exit(int signo)
@@ -60,28 +64,47 @@ int MatchRenju::Start() {
     char buf[32];
     int flg = 0;
     m_chess_cnt = 0;
+    /*
     Player *p[2];
     p[0] = GetPlayer(0);
     p[1] = GetPlayer(1);
     p[0]->SendMessage("First\n");
     p[1]->SendMessage("Second\n");
+    */
+    SendMsg(0, "First\n");
+    SendMsg(1, "Second\n");
     while (1) {
-        p[flg]->RecvMessage(buf, 30);
+        // p[flg]->RecvMessage(buf, 30);
+        int exit_idx = 0;
+        int res = RecvMsg(flg, buf, 30, exit_idx);
+        if (res < 0) {
+            fprintf(stderr, "RecvMsg from player %d error\n", flg);
+            return -1;
+        } else if (res == 0) {
+            // someone exit
+            fprintf(stderr, "Player %d exit and give up.\n", exit_idx);
+            SetWinner(1 - exit_idx);
+            return 0;
+        }
         printf("Player %d says %s", flg, buf);
         MoveRenju tm;
         sscanf(buf, "%d %d", &tm.x, &tm.y);
         tm.flg = flg + 1;
         MakeMove(&tm);
-        if (CheckWinner()) break;
-        p[1-flg]->SendMessage(buf);
+        if (CheckWinner() != -1) break;
+        // p[1-flg]->SendMessage(buf);
+        SendMsg(1 - flg, buf);
         flg = 1 - flg;
     }
-    p[0]->Kill();
-    p[1]->Kill();
+    // p[0]->Kill();
+    // p[1]->Kill();
+    KillPlayer(0);
+    KillPlayer(1);
     for (int i = 0 ; i < RENJU_SIZE ; ++i) {
         for (int j = 0 ; j < RENJU_SIZE ; ++j)
             printf("%d", m_board[i][j]);
         printf("\n");
     }
+    return 0;
 }
 

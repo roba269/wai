@@ -16,8 +16,8 @@ int main(int argc, char **argv) {
     p1.SetType(PLAYER_COMPUTER);
     p2.SetName("abor");
     p2.SetType(PLAYER_HUMAN);
-    p1.LoadAI(argv[1]);
-    p2.LoadAI(argv[2]);
+    p1.LoadAI(argv[1], 1001);
+    p2.LoadAI(argv[2], 1002);
     g_match.InitMatch("Test Renju Match");
     g_match.AddPlayer(&p1);
     g_match.AddPlayer(&p2);
