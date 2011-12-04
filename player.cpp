@@ -24,9 +24,8 @@ const std::string prefix = "./";
 const int MEMORY_LIMIT = 128 * 1024 * 1024; // in bytes
 const int TIME_LIMIT = 10;  // in seconds
 
-Player::Player() : m_id(-1), m_infd(-1), m_outfd(-1), m_info_fd(-1) {
-    
-}
+Player::Player() : m_id(-1), m_infd(-1), m_outfd(-1), m_info_fd(-1),
+    m_used_time(-1) { }
 
 PlayerComputer::PlayerComputer() : m_exit_flag(EXIT_NONE) { }
 
@@ -117,7 +116,11 @@ int PlayerComputer::LoadAI(std::string ai_name, int id)
             close(fd2[1]);
             int st, in_call = 0;
             while (1) {
-                wait(&st);
+                // wait(&st);
+                struct rusage ru;
+                wait4(grand_pid, &st, 0, &ru);
+                SetUsedTime(ru.ru_utime.tv_sec * 1000 +
+                        ru.ru_utime.tv_usec / 1000);
                 if (WIFEXITED(st)) {
                     m_exit_flag = EXIT_NORMAL;
                     break;
@@ -132,8 +135,10 @@ int PlayerComputer::LoadAI(std::string ai_name, int id)
                                 m_exit_flag = EXIT_RE;
                         }
                     }
-                    else if (WIFSIGNALED(st))
+                    else if (WIFSIGNALED(st)) {
                             fprintf(stderr, "termed by signal: %d\n", WTERMSIG(st));
+                            m_exit_flag = EXIT_RE;
+                    }
                     ptrace(PTRACE_KILL, grand_pid, NULL, NULL);
                     break;
                 }
@@ -165,8 +170,9 @@ int PlayerComputer::LoadAI(std::string ai_name, int id)
                 }
                 ptrace(PTRACE_SYSCALL, grand_pid, NULL, NULL);
             }
+            printf("output by sandbox: id: %d used time: %d\n", GetID(), GetUsedTime());
             char buf[16];
-            sprintf(buf, "%d\n", GetID());
+            sprintf(buf, "%d %d\n", GetID(), GetUsedTime());
             write(GetInfoFd(), buf, strlen(buf));
             exit(0);    // the sandbox process exit
         }

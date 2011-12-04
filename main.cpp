@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
     g_match.AddPlayer(&p2);
     g_match.Start();
     printf("The winner is: %d\n", g_match.CheckWinner());
+    g_match.OutputStat();
     return 0;
 }
 

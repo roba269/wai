@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <string>
+#include "player.h"
 
-class Player;
 class Move;
 
 class Match {
@@ -27,6 +27,13 @@ public:
     int KillPlayer(int player_idx);
     void SetWinner(int k) {m_winner = k;}
     int GetWinner() {return m_winner;}
+    void OutputStat() {
+        for (int i = 0 ; i < m_players.size() ; ++i) {
+            printf("Player %d(%s):\n", i, m_players[i]->GetName().c_str());
+            printf("\tType: %d\n", m_players[i]->GetType());  
+            printf("\tUsed time(ms): %d\n", m_players[i]->GetUsedTime());
+        }
+    }
 private:
     std::string m_name;
     std::vector<Player*> m_players;

@@ -37,14 +37,20 @@ int Match::RecvMsg(int player_idx, char *msg, int maxlen, int &exit_idx)
     for (int i = 0 ; i < m_players.size() ; ++i) {
         if (FD_ISSET(m_players[i]->GetInfoFd(), &read_set)) {
             fprintf(stderr, "multiplexing: player %d exist\n", i);
+            char buf[32];
+            int tmp_id, tmp_time = 0;
+            if (read(m_players[i]->GetInfoFd(), buf, 30) < 0) {
+                perror("match.cpp read:");
+            }
+            fprintf(stderr, "read from info: %s", buf);
+            sscanf(buf, "%d %d", &tmp_id, &tmp_time);
+            m_players[i]->SetUsedTime(tmp_time);
             exit_idx = i;
-            return 0;
+            return -2;
         }
     }
-    fprintf(stderr, "multiplexing: no player exist, before read\n");
     int n = read(m_players[player_idx]->GetInputFd(), msg, maxlen);
     msg[n] = 0;
-    fprintf(stderr, "multiplexing: no player exist, after read %s\n", msg);
     return n;
 }
 

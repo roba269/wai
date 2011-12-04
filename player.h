@@ -17,6 +17,7 @@ public:
     PlayerType GetType() {return m_type;}
     void SetName(std::string name) {m_name = name;}
     std::string GetName() {return m_name;}
+public:
     void SetID(int id) {m_id = id;}
     int GetID() {return m_id;}
     int GetInputFd() {return m_infd;}
@@ -25,6 +26,8 @@ public:
     void SetInputFd(int fd) {m_infd = fd;}
     void SetOutputFd(int fd) {m_outfd = fd;}
     void SetInfoFd(int fd) {m_info_fd = fd;}
+    int GetUsedTime() {return m_used_time;}
+    void SetUsedTime(int t) {m_used_time = t;}
     // virtual void SendMessage(const char *msg) = 0;
     // virtual void RecvMessage(char *msg, int maxlen) = 0;
     virtual void Kill() = 0;
@@ -33,6 +36,7 @@ private:
     std::string m_name;
     int m_id;
     int m_infd, m_outfd, m_info_fd;
+    int m_used_time;
 };
 
 class PlayerComputer : public Player {

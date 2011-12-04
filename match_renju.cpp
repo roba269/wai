@@ -47,19 +47,20 @@ int MatchRenju::CheckWinner() {
         }
     return -1;
 }
-
+/*
 static void player_exit(int signo)
 {
     fprintf(stderr, "one player exit\n");
 }
-
+*/
 int MatchRenju::Start() {
+    /*
     struct sigaction act;
     act.sa_handler = player_exit;
     sigemptyset(&act.sa_mask);
     act.sa_flags = 0;
     sigaction(SIGCHLD, &act, NULL);
-
+    */
     printf("MatchRenju started!\n");
     char buf[32];
     int flg = 0;
@@ -80,16 +81,16 @@ int MatchRenju::Start() {
         int exit_idx = 0;
         int res = RecvMsg(flg, buf, 30, exit_idx);
         fprintf(stderr, "recv msg, res: %d\n", res);
-        if (res < 0) {
+        if (res == -1) {
             fprintf(stderr, "RecvMsg from player %d error\n", flg);
             return -1;
-        } else if (res == 0) {
+        } else if (res == -2) {
             // someone exit
             fprintf(stderr, "Player %d exit and give up.\n", exit_idx);
             SetWinner(1 - exit_idx);
             return 0;
         }
-        printf("Player %d says %s", flg, buf);
+        printf("Player %d says %s\n", flg, buf);
         MoveRenju tm;
         sscanf(buf, "%d %d", &tm.x, &tm.y);
         tm.flg = flg + 1;
