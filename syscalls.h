@@ -34,6 +34,7 @@ const static SyscallSpec g_spec[] = {
     {SYS_fstat64, INT_MAX},
     {SYS_uname, 1},
     {SYS_execve, 1},
+    {SYS_getpid, INT_MAX},
     {-1, 0}
 };
 #endif

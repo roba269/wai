@@ -72,11 +72,14 @@ int MatchRenju::Start() {
     p[1]->SendMessage("Second\n");
     */
     SendMsg(0, "First\n");
+    fprintf(stderr, "send msg 0 first\n");
     SendMsg(1, "Second\n");
+    fprintf(stderr, "send msg 1 second\n");
     while (1) {
         // p[flg]->RecvMessage(buf, 30);
         int exit_idx = 0;
         int res = RecvMsg(flg, buf, 30, exit_idx);
+        fprintf(stderr, "recv msg, res: %d\n", res);
         if (res < 0) {
             fprintf(stderr, "RecvMsg from player %d error\n", flg);
             return -1;

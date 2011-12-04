@@ -16,8 +16,14 @@ int main(int argc, char **argv) {
     p1.SetType(PLAYER_COMPUTER);
     p2.SetName("abor");
     p2.SetType(PLAYER_HUMAN);
-    p1.LoadAI(argv[1], 1001);
-    p2.LoadAI(argv[2], 1002);
+    if (p1.LoadAI(argv[1], 1001) < 0) {
+        printf("Load AI %s error\n", argv[1]);
+        return 1;
+    }
+    if (p2.LoadAI(argv[2], 1002) < 0) {
+        printf("Load AI %s error\n", argv[2]);
+        return 1;
+    }
     g_match.InitMatch("Test Renju Match");
     g_match.AddPlayer(&p1);
     g_match.AddPlayer(&p2);

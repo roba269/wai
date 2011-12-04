@@ -24,7 +24,7 @@ const std::string prefix = "./";
 const int MEMORY_LIMIT = 128 * 1024 * 1024; // in bytes
 const int TIME_LIMIT = 10;  // in seconds
 
-Player::Player() : m_id(0), m_infd(0), m_outfd(0), m_info_fd(0) {
+Player::Player() : m_id(-1), m_infd(-1), m_outfd(-1), m_info_fd(-1) {
     
 }
 
@@ -70,7 +70,7 @@ int PlayerComputer::LoadAI(std::string ai_name, int id)
     InitSyscallSpec();   
     std::string fullname = prefix + ai_name;
     if (access(fullname.c_str(), R_OK | X_OK)) {
-        printf("Cannot access %s\n", fullname.c_str());
+        fprintf(stderr, "Cannot access %s\n", fullname.c_str());
         return -1;
     }
     printf("Fullname: %s\n", fullname.c_str());

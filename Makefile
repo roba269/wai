@@ -9,3 +9,4 @@ all:
 	$(CC) $(OPT) match_renju.o player.o match.o main.o -o wai.exe -O3
 	$(CC) $(OPT) test_ai/renju_bf.cpp -o test_ai/renju_bf.exe -O3
 	$(CC) $(OPT) test_ai/renju_random.cpp -o test_ai/renju_random.exe -O3
+	$(CC) $(OPT) test_ai/tle.cpp -o test_ai/tle.exe -O3
