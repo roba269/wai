@@ -1,6 +1,11 @@
 CC=g++
 OPT=-Wall -static -O3
 
+.PHONY: clean
+
+clean:
+	rm *.o *.exe *.out
+	rm test_ai/*.o test_ai/*.exe
 all:
 	$(CC) $(OPT) -c match_renju.cpp
 	$(CC) $(OPT) -c player.cpp
