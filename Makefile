@@ -10,8 +10,9 @@ all:
 	$(CC) $(OPT) -c match.cpp
 	$(CC) $(OPT) $(INCLUDE) -c scheduler.cpp
 	$(CC) $(OPT) $(INCLUDE) -c db_wrapper.cpp
+	$(CC) $(OPT) $(INCLUDE) -c compiler.cpp
 	$(CC) $(OPT) -c main.cpp
-	$(CC) -Wall match_renju.o player.o match.o scheduler.o db_wrapper.o main.o -lmysqlclient -lpthread -o wai.exe -O3
+	$(CC) -Wall match_renju.o player.o match.o scheduler.o db_wrapper.o compiler.o main.o -lmysqlclient -lpthread -o wai.exe -O3
 	$(CC) $(OPT) test_ai/renju_bf.cpp -o test_ai/renju_bf.exe -O3
 	$(CC) $(OPT) test_ai/renju_random.cpp -o test_ai/renju_random.exe -O3
 	$(CC) -Wall -static test_ai/tle.cpp -o test_ai/tle.exe
