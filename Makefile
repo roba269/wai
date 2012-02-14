@@ -17,6 +17,7 @@ all:
 	$(CC) $(OPT) test_ai/renju_random.cpp -o test_ai/renju_random.exe -O3
 	$(CC) -Wall -static test_ai/tle.cpp -o test_ai/tle.exe
 	$(CC) -Wall -static test_ai/mle.cpp -o test_ai/mle.exe
+	$(CC) -Wall -static test_judge/renju_judge.cpp -o test_judge/renju_judge.exe
 clean:
 	rm *.o *.exe *.out
 	rm test_ai/*.o test_ai/*.exe
