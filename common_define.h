@@ -10,4 +10,9 @@ enum ExitFlagType {
     EXIT_RE
 };
 
+enum MatchType {
+    MATCH_RENJU,
+    MATCH_OTHELLO
+};
+
 #endif
