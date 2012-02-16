@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <unistd.h>
 
 int board[16][16];
 const int R = 15;
@@ -34,25 +35,34 @@ int get_winner() {
 }
 
 int main() {
+    fprintf(stderr, "%d: I am the judge\n", getpid());
     memset(board, 0, sizeof(board));
     printf(">1: first\n");
+    fflush(stdout);
+    fprintf(stderr, "%d: I said >1: first\n", getpid());
     printf(">2: second\n");
+    fflush(stdout);
+    fprintf(stderr, "%d: I said >2: second\n", getpid());
     int cur = 1;
     while (1) {
         printf("<%d\n", cur);
+        fflush(stdout);
         int x, y;
         scanf("%d %d", &x, &y);
         if (!valid(x-1,y-1)) {
             printf("%d\n", 3-cur);
+            fflush(stdout);
             return 0;
         }
         board[x-1][y-1] = cur;
         int w;
         if ((w = get_winner())) {
             printf("%d\n",w);
+            fflush(stdout);
             return 0;
         }
         printf(">%d: %d %d\n", 3-cur, x, y);
+        fflush(stdout);
         cur = 3 - cur;
     }
     return 0;

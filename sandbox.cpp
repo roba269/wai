@@ -19,6 +19,7 @@ int Sandbox::Run() {
         fprintf(stderr, "Cannot access %s\n", m_path.c_str());
         return -1;
     }
+    fprintf(stderr, "%s begin to run\n", m_path.c_str());
     int fd1[2], fd2[2];
     if (pipe(fd1) < 0 || pipe(fd2) < 0) {
         fprintf(stderr, "Error on pipe()\n");
@@ -47,8 +48,8 @@ int Sandbox::Run() {
         // parent
         close(fd1[0]);
         close(fd2[1]);
-        send_fd = fd2[0];
-        recv_fd = fd1[1];
+        recv_fd = fd2[0];
+        send_fd = fd1[1];
     }
     return 0;
 }

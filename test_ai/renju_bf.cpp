@@ -21,7 +21,7 @@ int main() {
     fprintf(stderr, "hello, i am %d\n", getpid());
     scanf("%s", buf);
     fprintf(stderr, "%d: I recv %s\n", getpid(), buf);
-    if (strcmp(buf, "First") == 0) {
+    if (strcmp(buf, "first") == 0) {
         flg = 1;
     } else {
         flg = 2;

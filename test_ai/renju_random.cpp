@@ -20,8 +20,10 @@ void pick_empty(int &x, int &y) {
 }
 
 int main() {
+    fprintf(stderr, "%d: i am random\n", getpid());
     scanf("%s", buf);
-    if (strcmp(buf, "First") == 0) {
+    fprintf(stderr, "%d: i recv %s\n", getpid(), buf);
+    if (strcmp(buf, "first") == 0) {
         flg = 1;
     } else {
         flg = 2;
