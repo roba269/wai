@@ -22,16 +22,32 @@ int get_winner() {
     for (i = 0 ; i < R ; i++)
         for (j = 0 ; j < C ; j++) {
             if (board[i][j] == 0) continue;
-            int ti = i, tj = j, cnt = 1;
             for (int d = 0 ; d < 8 ; ++d) {
-                ti += dir[d][0];
-                tj += dir[d][1];
-                if (IN(ti,tj) && board[ti][tj] == board[i][j]) {
-                    if (++cnt == 5) return board[i][j];
+                int ti = i, tj = j, cnt = 1;
+                while (1) {
+                    ti += dir[d][0];
+                    tj += dir[d][1];
+                    if (IN(ti,tj) && board[ti][tj] == board[i][j]) {
+                        if (++cnt == 5) return board[i][j];
+                    } else break;
                 }
             }
         }
     return 0;
+}
+
+void output_board() {
+    char buf[32];
+    int i, j;
+    for (i = 0 ; i < R ; i++) {
+        for (j = 0 ; j < C ; j++) {
+            if (board[i][j] == 0) buf[j] = '-';
+            else if (board[i][j] == 1) buf[j] = 'O';
+            else buf[j] = 'X';
+        }
+        buf[j] = 0;
+        fprintf(stderr, "%s\n", buf);
+    }
 }
 
 int main() {
@@ -49,12 +65,13 @@ int main() {
         fflush(stdout);
         int x, y;
         scanf("%d %d", &x, &y);
-        if (!valid(x-1,y-1)) {
+        if (!valid(x,y)) {
             printf("%d\n", 3-cur);
             fflush(stdout);
             return 0;
         }
-        board[x-1][y-1] = cur;
+        board[x][y] = cur;
+        output_board();
         int w;
         if ((w = get_winner())) {
             printf("%d\n",w);

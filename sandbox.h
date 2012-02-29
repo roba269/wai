@@ -3,6 +3,8 @@
 
 #include <string>
 
+const int MAX_BUF_LEN = 1024;
+
 class Sandbox {
 public:
     Sandbox(std::string path);
@@ -11,8 +13,11 @@ public:
     virtual int Send(char *buf);
     virtual int Recv(char *buf, int max_len);
 private:
+    int _RecvChar(char *buf);
     std::string m_path;
     int send_fd, recv_fd;
+    char m_buf[MAX_BUF_LEN];
+    int m_idx, m_len;
 };
 
 #endif

@@ -6,7 +6,7 @@
 
 #include "sandbox.h"
 
-Sandbox::Sandbox(std::string path) {
+Sandbox::Sandbox(std::string path) : m_idx(0), m_len(0) {
     m_path = path;
 }
 
@@ -55,12 +55,35 @@ int Sandbox::Run() {
 }
 
 int Sandbox::Send(char *buf) {
+    // fprintf(stderr, "%d: write to fd:%d {%s}\n", getpid(), send_fd, buf);
+    strcat(buf, "\n");
     write(send_fd, buf, strlen(buf));
     return 0;
 }
 
 int Sandbox::Recv(char *buf, int max_len) {
-    read(recv_fd, buf, max_len);
-    return 0;
+    int i;
+    for (i = 0 ; i < max_len ; ++i) {
+        if (_RecvChar(buf) == 0 || *buf == '\n') {
+            *buf = 0;
+            return i;
+        }
+        ++buf;
+    }
+    *buf = 0;
+    return i;
+}
+
+int Sandbox::_RecvChar(char *buf) {
+    if (m_idx == m_len) {
+        m_len = read(recv_fd, m_buf, sizeof(m_buf));
+        m_idx = 0;
+        if (m_len < 0) {
+            assert(false);
+        }
+        if (m_len == 0) return 0;
+    }
+    *buf = m_buf[m_idx++];
+    return 1;
 }
 
