@@ -24,8 +24,12 @@ void SimpleMatch::Start() {
         } else if (buf[0] == '<') {
             int src = buf[1] - '1';
             memset(buf, 0, sizeof(buf));
-            m_player[src]->Recv(buf, BUF_LEN-1);
-            fprintf(stderr, "The judge recv from %d: %s\n", src, buf);
+            if (m_player[src]->Recv(buf, BUF_LEN-1) == 0) {
+                fprintf(stderr, "Player %d exited, type: %d\n",
+                        src, m_player[src]->GetExitType());
+                break;
+            }
+            fprintf(stderr, "The judge recv from %d: {%s}\n", src, buf);
             m_judge->Send(buf);
         } else if (isdigit(buf[0])) {
             sscanf(buf, "%d", &m_winner);

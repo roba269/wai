@@ -12,12 +12,17 @@ public:
     virtual int Run();
     virtual int Send(char *buf);
     virtual int Recv(char *buf, int max_len);
+    ExitFlagType GetExitType();
 private:
     int _RecvChar(char *buf);
+    void _InitSyscallSpec();
     std::string m_path;
     int send_fd, recv_fd;
     char m_buf[MAX_BUF_LEN];
     int m_idx, m_len;
+    ExitFlagType m_exit_flag;
+    int m_limit[512];
+    int m_stat[512];
 };
 
 #endif
