@@ -6,23 +6,30 @@
 
 class DBWrapper {
 public:
-    static int InitInstance();
     static DBWrapper *GetInstance() {
-        assert(s_wrapper);
+        if (s_wrapper == NULL) {
+            s_wrapper = new DBWrapper();
+            s_wrapper->InitInstance();
+        }
         return s_wrapper;
     }
-    static void *DestroyInstance() {
-        mysql_close(s_mysql_handle);
-        delete s_wrapper;
+    ~DBWrapper() {
+        DestroyInstance();
     }
-    static int Query(const char *str);
-    static MYSQL_ROW FetchRow();
-    static int FreeResult();
+    void DestroyInstance() {
+        mysql_close(s_mysql_handle);
+        if (s_wrapper)
+            delete s_wrapper;
+    }
+    int Query(const char *str);
+    MYSQL_ROW FetchRow();
+    int FreeResult();
 
 private:
+    void InitInstance();
     static DBWrapper *s_wrapper;
-    static MYSQL *s_mysql_handle;
-    static MYSQL_RES *s_mysql_res;
+    MYSQL *s_mysql_handle;
+    MYSQL_RES *s_mysql_res;
 };
 
 #endif

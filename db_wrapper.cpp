@@ -4,18 +4,16 @@
 #include "db_wrapper.h"
 
 DBWrapper* DBWrapper::s_wrapper = NULL;
-MYSQL* DBWrapper::s_mysql_handle = NULL;
-MYSQL_RES* DBWrapper::s_mysql_res = NULL; 
+// MYSQL* DBWrapper::s_mysql_handle = NULL;
+// MYSQL_RES* DBWrapper::s_mysql_res = NULL; 
 
-int DBWrapper::InitInstance()
+void DBWrapper::InitInstance()
 {
-    s_wrapper = new DBWrapper();
     s_mysql_handle = mysql_init(NULL);
     if (!mysql_real_connect(s_mysql_handle, "localhost",
             "root", "passwd", "wai", 0, NULL, 0))
     {
         fprintf(stderr, "Mysql Connect Error\n");
-        return -1;
     } 
 }
 
