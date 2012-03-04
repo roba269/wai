@@ -97,6 +97,7 @@ int Sandbox::Run() {
             fprintf(stderr, "execl failed, errno: %d\n", errno);
             return -1;  
         } else {
+            fprintf(stderr, "%d: i am the sandbox of %d\n", getpid(), grandson_pid);
             // son: the sandbox
             close(fd1[0]);
             close(fd2[1]);
@@ -108,21 +109,30 @@ int Sandbox::Run() {
                 //         ru.ru_utime.tv_usec / 1000);
                 if (WIFEXITED(st)) {
                     m_exit_flag = EXIT_NORMAL;
+                    fprintf(stderr, "exit_normal\n");
                     break;
                 }
-                if (WIFSIGNALED(st) || (WIFSTOPPED(st) && WSTOPSIG(st) != 5)) {
+                if (WIFSIGNALED(st) || (WIFSTOPPED(st) && WSTOPSIG(st) != SIGTRAP)) {
                     if (WIFSTOPPED(st)) {
                         switch (WSTOPSIG(st)) {
                             case SIGXCPU:
+                                fprintf(stderr, "SIGXCPU\n");
                                 m_exit_flag = EXIT_TLE;
                                 break;
+                            case SIGPIPE:
+                                // match is over, the match process is terminated
+                                m_exit_flag = EXIT_NORMAL;
+                                break;
                             default:
+                                fprintf(stderr, "exit: WSTOPSIG(st):%d\n", WSTOPSIG(st));
                                 m_exit_flag = EXIT_RE;
                         }
                     }
                     else if (WIFSIGNALED(st)) {
                         fprintf(stderr, "termed by sig: %d\n", WTERMSIG(st));
                         m_exit_flag = EXIT_RE;
+                    } else {
+                        fprintf(stderr, "termed by sig: %d\n", WTERMSIG(st));
                     }
                     ptrace(PTRACE_KILL, grandson_pid, NULL, NULL);
                     break;
@@ -136,12 +146,14 @@ int Sandbox::Run() {
                             4 * ORIG_EAX, NULL);
 #endif
                     assert(orig_eax >= 0 && orig_eax < 512);
+                    /*
                     if (--m_limit[orig_eax] < 0) {
                         m_exit_flag = EXIT_RF;
                         fprintf(stderr, "Sys call %d reach limit\n", 
                                 static_cast<int>(orig_eax));
                         break;
                     }
+                    */
                     ++m_stat[orig_eax];
                     // fprintf(stderr, "m_stat[%d]:%d\n", orig_eax,
                     //          m_stat[orig_eax]);
@@ -158,6 +170,7 @@ int Sandbox::Run() {
             // char buf[16];
             // sprintf(buf, "%d %d\n", GetID(), GetUsedTime());
             // write(GetInfoFd(), buf, strlen(buf));
+            printf("%d: i am exited\n", getpid());
             exit(0);    // the sandbox process exit
         }
     } else {
