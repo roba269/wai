@@ -6,6 +6,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
         url(r'^login/', 'wai.views.login'),
+        url(r'^logout/', 'wai.views.logout'),
+        url(r'^submit/', 'wai.views.submit'),
+        url(r'^match_list/', 'wai.views.show_match_list'),
         url(r'^admin/', include(admin.site.urls)),
         url(r'^$', 'wai.views.home'),
     # Examples:

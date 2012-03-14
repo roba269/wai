@@ -1,0 +1,10 @@
+<h1>Match List</h1>
+<table><tr><th>ID</th><th>Type</th><th>P1</th><th>P2</th><th>Result</th></tr>
+{% for match in match_list %}
+<tr><th>match.id</th>
+<th>match.game_type</th>
+<th></th>
+<th></th>
+<th>match.result</th></tr>
+{% endfor %}
+</table>
