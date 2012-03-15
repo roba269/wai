@@ -1,6 +1,6 @@
 #include <cassert>
 #include <cstdio>
-#include "mysql.h"s
+#include "mysql.h"
 #include "db_wrapper.h"
 
 DBWrapper* DBWrapper::s_wrapper = NULL;
