@@ -3,8 +3,8 @@
 #include "mysql.h"
 #include "db_wrapper.h"
 
-DBWrapper* DBWrapper::s_wrapper = NULL;
-// MYSQL* DBWrapper::s_mysql_handle = NULL;
+// DBWrapper* DBWrapper::s_wrapper = NULL;
+MYSQL* DBWrapper::s_mysql_handle = NULL;
 // MYSQL_RES* DBWrapper::s_mysql_res = NULL; 
 
 void DBWrapper::InitInstance()
@@ -16,7 +16,7 @@ void DBWrapper::InitInstance()
         fprintf(stderr, "Mysql Connect Error\n");
     } 
 }
-
+/*
 int DBWrapper::Query(const char *stmt)
 {
     mysql_query(s_mysql_handle, stmt);
@@ -37,4 +37,4 @@ int DBWrapper::FreeResult()
 {
     mysql_free_result(s_mysql_res);
 }
-
+*/

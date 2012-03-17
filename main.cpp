@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include "scheduler.h"
 
 int main() {
     Compiler::InitInstance("/home/roba/wai/submit/");

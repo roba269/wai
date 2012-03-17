@@ -6,6 +6,7 @@
 
 class DBWrapper {
 public:
+    /*
     static DBWrapper *GetInstance() {
         if (s_wrapper == NULL) {
             s_wrapper = new DBWrapper();
@@ -13,23 +14,34 @@ public:
         }
         return s_wrapper;
     }
+    */
+    DBWrapper() {
+        InitInstance();
+    }
     ~DBWrapper() {
         DestroyInstance();
     }
-    void DestroyInstance() {
+    static void DestroyInstance() {
         mysql_close(s_mysql_handle);
-        if (s_wrapper)
-            delete s_wrapper;
+        s_mysql_handle = NULL;
+        // if (s_wrapper)
+        //     delete s_wrapper;
     }
+    /*
     int Query(const char *str);
     MYSQL_ROW FetchRow();
     int FreeResult();
-
+    */
+    static MYSQL *GetHandle() {
+        // FIXME: mutex?
+        if (s_mysql_handle == NULL) {
+            InitInstance();
+        }
+        return s_mysql_handle;
+    }
 private:
-    void InitInstance();
-    static DBWrapper *s_wrapper;
-    MYSQL *s_mysql_handle;
-    MYSQL_RES *s_mysql_res;
+    static void InitInstance();
+    static MYSQL *s_mysql_handle;
 };
 
 #endif

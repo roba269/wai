@@ -8,7 +8,9 @@
 #include <fcntl.h>
 #include "mysql.h"
 #include "compiler.h"
+#include "common_define.h"
 #include "db_wrapper.h"
+#include "scheduler.h"
 
 char Compiler::m_prefix[128];
 Compiler* Compiler::s_comp;
@@ -51,13 +53,17 @@ int Compiler::do_compile_java(int src_id)
 
 int Compiler::PickSource()
 {
-    DBWrapper *db = DBWrapper::GetInstance();
-    db->Query("SELECT id, lang FROM main_app_submit WHERE status = 0 ORDER BY sub_time LIMIT 1");
+    MYSQL *handle = DBWrapper::GetHandle();
+    mysql_query(handle, "SELECT id, lang, game_type, user_id FROM main_app_submit WHERE status = 0 ORDER BY sub_time LIMIT 1");
+    MYSQL_RES *mysql_res = mysql_store_result(handle);
     MYSQL_ROW row;
-    if (row = db->FetchRow()) {
-        int lang, id;
+    if (row = mysql_fetch_row(mysql_res)) {
+        int lang, id, user_id;
+        char game_type_str[20];
         sscanf(row[0], "%d", &id);
         sscanf(row[1], "%d", &lang);
+        sscanf(row[2], "%s", game_type_str);
+        sscanf(row[3], "%d", &user_id);
         fprintf(stderr, "compile sub_id: %d lang: %d\n", id, lang);
         int status = 0;
         switch (lang) {
@@ -82,8 +88,11 @@ int Compiler::PickSource()
         char cmd[128];
         sprintf(cmd, "UPDATE main_app_submit SET status = %d WHERE id = %d",
                 err, id);
-        db->Query(cmd);
+        mysql_query(handle, cmd);
+        Scheduler *sched = Scheduler::GetInstance();
+        sched->RegNewSub(str2type(game_type_str), user_id, id);
     }
+    mysql_free_result(mysql_res);
     return 0;
 }
 

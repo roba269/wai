@@ -1,6 +1,8 @@
 #ifndef COMMON_DEFINE_H
 #define COMMON_DEFINE_H
 
+#include <cstring>
+
 enum ExitFlagType {
     EXIT_NONE,
     EXIT_NORMAL,
@@ -12,7 +14,13 @@ enum ExitFlagType {
 
 enum MatchType {
     MATCH_RENJU,
-    MATCH_OTHELLO
+    MATCH_OTHELLO,
+    MAX_GAME_TYPE
 };
 
+inline int str2type(const char *str) {
+    if (strcmp(str, "RENJU") == 0) return 0;
+    if (strcmp(str, "OTHELLO") == 0) return 1;
+    return -1;
+}
 #endif
