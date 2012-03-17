@@ -61,6 +61,11 @@ def submit(request):
 # except:
 #            return HttpResponse('Exception!')
 
-def show_match_list(request):
-    match_list = Match.objects.all().order_by('-start_time')
+def show_match_list(request, game_type):
+    match_list = Match.objects.filter(game_type__exact=game_type).order_by('-start_time')
     return render_to_response('match_list.html', {'match_list': match_list})
+
+def show_submit_list(request, game_type, uid):
+    sub_list = Submit.objects.filter(game_type__exact=game_type).filter(user__exact=uid).order_by('-sub_time')
+    return render_to_response('sub_list.html', {'sub_list': sub_list})
+
