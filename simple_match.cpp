@@ -2,12 +2,16 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <time.h>
 #include "simple_match.h"
 #include "sandbox.h"
+#include "db_wrapper.h"
 
 const int BUF_LEN = 1024;
 
 void SimpleMatch::Start() {
+    time_t tim = time(NULL);
+    ctime_r(&tim, m_start_time);
     m_judge->Run();
     for (int i = 0 ; i < m_player.size() ; ++i) {
         m_player[i]->Run();
@@ -42,9 +46,16 @@ void SimpleMatch::Start() {
             assert(false);
         }
     }
+    tim = time(NULL);
+    ctime_r(&tim, m_end_time);
 }
 
 int SimpleMatch::_WriteToDatabase() {
-    return 0;
+    char cmd[BUF_LEN];
+    snprintf(cmd, BUF_LEN, "INSERT INTO main_app_match (game_type, result, start_time, end_time, player_cnt) VALUES (\"%s\", %d, \"%s\", \"%s\", %d)",
+            "RENJU", m_winner, m_start_time, m_end_time, m_player.size());
+    MYSQL *handle = DBWrapper::GetHandle();
+    fprintf(stderr, cmd);
+    return mysql_query(handle, cmd);
 }
 

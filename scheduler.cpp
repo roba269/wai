@@ -13,7 +13,7 @@ Scheduler* Scheduler::s_inst = NULL;
 int Scheduler::_build_player_list(int game_type) {
     MYSQL *handle = DBWrapper::GetHandle();
     char cmd[MAX_CMD_LEN];
-    snprintf(cmd, MAX_CMD_LEN, "SELECT user_id,max(id) FROM main_app_submit WHERE game_type = %d GROUP BY user_id", game_type);
+    snprintf(cmd, MAX_CMD_LEN, "SELECT user_id,max(id) FROM main_app_submit WHERE game_type = %d AND status=1 GROUP BY user_id", game_type);
     mysql_query(handle, cmd);
     MYSQL_RES *mysql_res = mysql_store_result(handle);
     MYSQL_ROW row;
@@ -23,6 +23,7 @@ int Scheduler::_build_player_list(int game_type) {
         sscanf(row[0], "%d", &uid);
         sscanf(row[1], "%d", &sid);
         m_uid2sid[game_type][uid] = sid;
+        fprintf(stderr, "uid:%d sid:%d\n", uid, sid);
     }
     mysql_free_result(mysql_res);
     return 0;

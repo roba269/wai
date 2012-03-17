@@ -30,6 +30,7 @@ private:
     Sandbox *m_judge;
     int m_id;
     int m_winner;
+    char m_start_time[128], m_end_time[128];
 };
 
 #endif
