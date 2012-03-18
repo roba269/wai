@@ -1,10 +1,11 @@
 <h1>Match List</h1>
 <table><tr><th>ID</th><th>Type</th><th>P1</th><th>P2</th><th>Result</th></tr>
 {% for match in match_list %}
-<tr><th>match.id</th>
-<th>match.game_type</th>
-<th></th>
-<th></th>
-<th>match.result</th></tr>
+<tr><th>{{ match.id }}</th>
+<th>{{ match.game_type }}</th>
+{% for submit in match.players.all %}
+<th><a href="/show_source/{{ submit.id }}">{{ submit.id }}</a></th>
+{% endfor %}
+<th><a href="/show_record/{{ match.id }}">{{ match.result }}</a></th></tr>
 {% endfor %}
 </table>

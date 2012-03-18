@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <time.h>
+#include "common_define.h"
 #include "simple_match.h"
 #include "sandbox.h"
 #include "db_wrapper.h"
@@ -15,7 +16,7 @@ void SimpleMatch::Start() {
     for (int i = 0 ; i < m_player.size() ; ++i) {
         m_player[i]->Run();
     }
-    char buf[BUF_LEN];
+    char buf[BUF_LEN], tmp_buf[BUF_LEN];
     while (1) {
         fprintf(stderr, "waiting for the judge speaking\n");
         memset(buf, 0, sizeof(buf));
@@ -33,6 +34,9 @@ void SimpleMatch::Start() {
                 break;
             }
             fprintf(stderr, "The judge recv from %d: {%s}\n", src, buf);
+            if (m_record.length()) m_record += ",";
+            snprintf(tmp_buf, BUF_LEN, "%d:%s", src, buf);
+            m_record += (std::string)tmp_buf;
             m_judge->Send(buf);
         } else if (isdigit(buf[0])) {
             sscanf(buf, "%d", &m_winner);
@@ -61,6 +65,10 @@ int SimpleMatch::_WriteToDatabase() {
         fprintf(stderr, "%s\n", cmd);
         mysql_query(handle, cmd);
     }
+    snprintf(cmd, BUF_LEN, "%s/%d.txt", RECORD_PREFIX, match_id);
+    FILE *fp = fopen(cmd, "w");
+    fprintf(fp, "%s\n", m_record.c_str());
+    fclose(fp);
     return 0;
 }
 

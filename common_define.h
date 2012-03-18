@@ -23,4 +23,8 @@ inline int str2type(const char *str) {
     if (strcmp(str, "OTHELLO") == 0) return 1;
     return -1;
 }
+
+#define RECORD_PREFIX "/home/roba/wai/record"
+#define SRC_PREFIX "/home/roba/wai/submit"
+
 #endif

@@ -1,4 +1,5 @@
 #include <cstdio>
+#include "common_define.h"
 #include "compiler.h"
 #include "scheduler.h"
 #include "simple_match.h"
@@ -6,7 +7,7 @@
 
 int main() {
     char fname[128];
-    Compiler::InitInstance("/home/roba/wai/submit/");
+    Compiler::InitInstance(SRC_PREFIX);
     Scheduler *sched = Scheduler::GetInstance();
     sched->InitScheduler(MATCH_RENJU);
     while (1) {

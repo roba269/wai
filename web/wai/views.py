@@ -69,3 +69,25 @@ def show_submit_list(request, game_type, uid):
     sub_list = Submit.objects.filter(game_type__exact=game_type).filter(user__exact=uid).order_by('-sub_time')
     return render_to_response('sub_list.html', {'sub_list': sub_list})
 
+def show_source(request, sub_id):
+    fp = open('/home/roba/wai/submit/' + sub_id + '.cpp', 'r')
+    ss = fp.read()
+    fp.close()
+    return HttpResponse(ss)
+
+def show_record(request, match_id):
+    fp = open('/home/roba/wai/record/' + match_id + '.txt', 'r')
+    ss = fp.read()
+    fp.close()
+    js_array = ''
+    for tmp in ss.split(','):
+        try:
+            tmp_color = int(tmp.split(':')[0])
+            tmp_x = int(tmp.split(':')[1].split(' ')[0])
+            tmp_y = int(tmp.split(':')[1].split(' ')[1])
+            if len(js_array): js_array += ','
+            js_array += '{x:' + str(tmp_x) + ',y:' + str(tmp_y) + ',color:' + str(tmp_color) + '}'
+        except:
+            break
+    return render_to_response('renju.html', {'record_str': js_array})
+

@@ -33,6 +33,7 @@ private:
     int m_id;
     int m_winner;
     time_t m_start_time, m_end_time;
+    std::string m_record;
 };
 
 #endif

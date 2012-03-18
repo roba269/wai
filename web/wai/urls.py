@@ -10,6 +10,8 @@ urlpatterns = patterns('',
         url(r'^submit/', 'wai.views.submit'),
         url(r'^match_list/(?P<game_type>\w+)/', 'wai.views.show_match_list'),
         url(r'^sub_list/(?P<game_type>\w+)/(?P<uid>\d+)/', 'wai.views.show_submit_list'),
+        url(r'^show_source/(?P<sub_id>\d+)/', 'wai.views.show_source'),
+        url(r'^show_record/(?P<match_id>\d+)/', 'wai.views.show_record'),
         url(r'^admin/', include(admin.site.urls)),
         url(r'^$', 'wai.views.home'),
     # Examples:
