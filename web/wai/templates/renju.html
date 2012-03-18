@@ -26,7 +26,8 @@
     
     var nextButton = new Button("Next", 300, 10, 100, 50);
     var prevButton = new Button("Prev", 300, 100, 100, 50);
-    
+    var cur_step;
+
     const SIZE = 20;
     const LEFT = 10, TOP = 10;
     const ROWS = 15, COLS = 15;
@@ -75,7 +76,7 @@
         }
         // putChess(10, 9, 0);
         // putChess(10, 10, 1);
-        for (i = 0 ; i < steps.length ; ++i) {
+        for (i = 0 ; i < cur_step ; ++i) {
             drawChess(steps[i].x, steps[i].y, steps[i].color);
         }
         drawCursor(Math.round((preX - LEFT) / SIZE),
@@ -85,6 +86,7 @@
     }
 
     window.onload = function() {
+        cur_step = 0;
         paint();
     };
     
@@ -105,8 +107,30 @@
             paint();
         });
     });
+
+    function next_step() {
+        ++cur_step;
+        paint();
+    }
+    function prev_step() {
+        --cur_step;
+        paint();
+    }
+    function full_step() {
+        cur_step = steps.length;
+        paint();
+    }
+    function clear_step() {
+        cur_step = 0;
+        paint();
+    }
+
 </script>
-<canvas id="arena" width="800" height="600">
+<canvas id="arena" width="800" height="400">
 </canvas>
+<a href="#" onclick="return prev_step();">Prev</a>
+<a href="#" onclick="return next_step();">Next</a>
+<a href="#" onclick="return clear_step();">Clear</a>
+<a href="#" onclick="return full_step();">Full</a>
 </body>
 </html>
