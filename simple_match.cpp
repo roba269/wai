@@ -10,8 +10,7 @@
 const int BUF_LEN = 1024;
 
 void SimpleMatch::Start() {
-    time_t tim = time(NULL);
-    ctime_r(&tim, m_start_time);
+    m_start_time = time(NULL);
     m_judge->Run();
     for (int i = 0 ; i < m_player.size() ; ++i) {
         m_player[i]->Run();
@@ -38,24 +37,30 @@ void SimpleMatch::Start() {
         } else if (isdigit(buf[0])) {
             sscanf(buf, "%d", &m_winner);
             fprintf(stderr, "the winner is %d\n", m_winner);
-            if (_WriteToDatabase()) {
-                fprintf(stderr, "write to database error\n");
-            }
             break;
         } else {
             assert(false);
         }
     }
-    tim = time(NULL);
-    ctime_r(&tim, m_end_time);
+    m_end_time = time(NULL);
+    if (_WriteToDatabase()) {
+        fprintf(stderr, "write to database error\n");
+    }
 }
 
 int SimpleMatch::_WriteToDatabase() {
     char cmd[BUF_LEN];
-    snprintf(cmd, BUF_LEN, "INSERT INTO main_app_match (game_type, result, start_time, end_time, player_cnt) VALUES (\"%s\", %d, \"%s\", \"%s\", %d)",
-            "RENJU", m_winner, m_start_time, m_end_time, m_player.size());
+    snprintf(cmd, BUF_LEN, "INSERT INTO main_app_match (game_type, result, start_time, end_time, player_cnt) VALUES (\"%s\", %d, FROM_UNIXTIME(%d), FROM_UNIXTIME(%d), %d)", "RENJU", m_winner, m_start_time, m_end_time, m_player.size());
     MYSQL *handle = DBWrapper::GetHandle();
-    fprintf(stderr, cmd);
-    return mysql_query(handle, cmd);
+    fprintf(stderr, "%s\n", cmd);
+    mysql_query(handle, cmd);
+    int match_id = mysql_insert_id(handle);
+    for (int i = 0 ; i < m_sid.size() ; ++i) {
+        snprintf(cmd, BUF_LEN, "INSERT INTO main_app_match_players "
+            "(submit_id, match_id) VALUES (%d,%d)", m_sid[i], match_id);
+        fprintf(stderr, "%s\n", cmd);
+        mysql_query(handle, cmd);
+    }
+    return 0;
 }
 

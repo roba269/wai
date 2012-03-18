@@ -25,8 +25,8 @@ int main() {
             snprintf(fname, 128, "/home/roba/wai/trunk/test_judge/renju_judge.exe");
             Sandbox judge(fname);
             match->SetJudge(&judge);
-            match->AddPlayer(&p1);
-            match->AddPlayer(&p2);
+            match->AddPlayer(&p1, sub1);
+            match->AddPlayer(&p2, sub2);
             match->Start();
         } else {
             sleep(1);

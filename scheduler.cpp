@@ -54,15 +54,15 @@ int Scheduler::_build_matrix(int game_type) {
     while (row = mysql_fetch_row(mysql_res)) {
         int match_id;
         sscanf(row[0], "%d", &match_id);
-        char cmd[MAX_CMD_LEN];
         std::vector<int> sid_vec;
-        snprintf(cmd, MAX_CMD_LEN, "SELECT submit_id FROM main_app_match WHERE id = %d", match_id);
+        snprintf(cmd, MAX_CMD_LEN, "SELECT submit_id FROM main_app_match_players WHERE match_id = %d", match_id);
+        fprintf(stderr, "%s\n", cmd);
         mysql_query(handle, cmd);
         MYSQL_RES *mysql_res2 = mysql_store_result(handle);
         MYSQL_ROW row2;
         while (row2 = mysql_fetch_row(mysql_res2)) {
             int sid;
-            sscanf(row[0], "%d", &sid);
+            sscanf(row2[0], "%d", &sid);
             sid_vec.push_back(sid);
         }
         mysql_free_result(mysql_res2);

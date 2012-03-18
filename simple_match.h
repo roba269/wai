@@ -14,8 +14,9 @@ public:
         m_name = name;
         m_id = id;
     }
-    void AddPlayer(Sandbox *player) {
+    void AddPlayer(Sandbox *player, int submit_id) {
         m_player.push_back(player);
+        m_sid.push_back(submit_id);
     }
     void SetJudge(Sandbox *judge) {
         m_judge = judge;
@@ -27,10 +28,11 @@ private:
     MatchType m_type;
     std::string m_name;
     std::vector<Sandbox*> m_player;
+    std::vector<int> m_sid;
     Sandbox *m_judge;
     int m_id;
     int m_winner;
-    char m_start_time[128], m_end_time[128];
+    time_t m_start_time, m_end_time;
 };
 
 #endif
