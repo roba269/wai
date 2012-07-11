@@ -1,0 +1,35 @@
+<html><head>
+<!-- <script src="/socket.io/socket.io.js"></script> -->
+<script>
+//   var socket = io.connect('http://localhost:8080');
+//     socket.on('news', function (data) {
+//                 console.log(data);
+//                     socket.emit('my other event', { my: 'data' });
+//                       });
+    function draw() {
+        var canvas = document.getElementById('arena');
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = "rgb(200,0,0)";
+        ctx.fillRect(10, 10, 50, 50);
+        canvas.onmousemove = onMouseMove;
+        canvas.onclick = onClick;
+        // canvas.addEventListener('mousemove', onMouseMove, false);
+    }
+    function onMouseMove(evt) {
+        document.getElementById("x_pos").innerHTML = evt.layerX;
+        document.getElementById("y_pos").innerHTML = evt.layerY;
+    }
+    function onClick(evt) {
+        alert("click\n" + evt.layerX);
+        
+    }
+</script>
+</head>
+<body onload="draw();">
+<div id="x_pos">XPOS</div>
+<div id="y_pos">YPOS</div>
+<canvas id="arena" width="600" height="400">
+    Your browser does not support Canvas.
+</canvas>
+</body>
+</html>
