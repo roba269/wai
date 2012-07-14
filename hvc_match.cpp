@@ -22,7 +22,7 @@ void HVCMatch::Start() {
             int dst = buf[1] - '1';
             if (dst == 0) {
                 // to human: display the computer's move
-                printf("=%s=\n", buf+4);
+                printf("%s\n", buf+4);
                 fflush(stdout); // neccessary?
             } else if (dst == 1) {
                 // computer
@@ -32,12 +32,9 @@ void HVCMatch::Start() {
             int src = buf[1] - '1';
             if (src == 0) {
                 // from human: request move from browser
-                printf("request human input\n");
                 // scanf("%s", tmp_buf);
                 fgets(tmp_buf, BUF_LEN-1, stdin); 
-                printf("human input {%s}\n", tmp_buf);
                 m_judge->Send(tmp_buf);
-                printf("finish Send %s\n", tmp_buf);
             } else if (src == 1) {
                 if (m_computer->Recv(buf, BUF_LEN-1) == 0) {
                     fprintf(stderr, "Computer exited, type: %d\n",
@@ -49,6 +46,7 @@ void HVCMatch::Start() {
         } else if (isdigit(buf[0])) {
             sscanf(buf, "%d", &m_winner);
             printf(":%d\n", m_winner);
+            fflush(stdout);
             break;
         }
     }

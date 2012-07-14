@@ -12,8 +12,8 @@ int flg;
 int bd[16][16];
 
 void pick_empty(int &x, int &y) {
-    for (x = 0 ; x < 16 ; ++x)
-        for (y = 0 ; y < 16 ; ++y)
+    for (x = 0 ; x < 15 ; ++x)
+        for (y = 0 ; y < 15 ; ++y)
             if (bd[x][y] == 0) return ;
 }
 

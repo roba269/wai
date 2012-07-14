@@ -44,11 +44,13 @@ int Compiler::do_compile_cpp(int src_id)
         waitpid(pid, &status, 0);
         return status;
     }
+    assert(false);
+    return 0;
 }
 
 int Compiler::do_compile_java(int src_id)
 {
-
+    return 0;
 }
 
 int Compiler::PickSource()
@@ -57,7 +59,7 @@ int Compiler::PickSource()
     mysql_query(handle, "SELECT id, lang, game_type, user_id FROM main_app_submit WHERE status = 0 ORDER BY sub_time LIMIT 1");
     MYSQL_RES *mysql_res = mysql_store_result(handle);
     MYSQL_ROW row;
-    if (row = mysql_fetch_row(mysql_res)) {
+    if ((row = mysql_fetch_row(mysql_res))) {
         int lang, id, user_id;
         char game_type_str[20];
         sscanf(row[0], "%d", &id);

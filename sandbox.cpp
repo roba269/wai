@@ -170,7 +170,7 @@ int Sandbox::Run() {
             // char buf[16];
             // sprintf(buf, "%d %d\n", GetID(), GetUsedTime());
             // write(GetInfoFd(), buf, strlen(buf));
-            printf("%d: i am exited\n", getpid());
+            fprintf(stderr, "%d: i am exited\n", getpid());
             exit(0);    // the sandbox process exit
         }
     } else {
