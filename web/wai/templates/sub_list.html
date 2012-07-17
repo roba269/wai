@@ -1,9 +1,0 @@
-<h1>Submission List</h1>
-<table><tr><th>ID</th><th>Type</th><th>Submit Time</th><th>Compile Result</th></tr>
-{% for submit in sub_list %}
-<tr><th>{{ submit.id }}</th>
-<th>{{ submit.game_type }}</th>
-<th>{{ submit.sub_time }}</th>
-<th>{{ submit.status }}</th></tr>
-{% endfor %}
-</table>
