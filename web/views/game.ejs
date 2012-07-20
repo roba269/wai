@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="row">
+        <div class="span8" >
+            <h2>Introduction for <%= game_name %></h2>
+            <p><%= game_intro %></p>
+        </div>
+        <div class="span4">
+            <div class="well">
+              <form action="/arena/<%= game_name %>" method="POST">
+                <input type="text" value="Choose an AI id">
+                <button type="submit" class="btn btn-primary">Take a try</button>
+              </form>
+            </div>
+            <hr>
+            <div class="well">
+                <h3>Submit your AI</h3>
+                <form action="/submit/<%= game_name %>" method="POST">
+                  <div class="controls">
+                    <select name="lang">
+                      <option>C++</option>
+                      <option>Java</option>
+                    </select>
+                  </div>
+                  <div class="controls">
+                    <input class="input-file" name="code" type="file">
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                </form>
+            </div>
+            <div class="well" id="leader-board">
+                <h3><%= game_name %> Leader Board</h3>
+                <p>This is leader board.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
