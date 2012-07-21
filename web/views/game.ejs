@@ -14,7 +14,7 @@
             <hr>
             <div class="well">
                 <h3>Submit your AI</h3>
-                <form action="/submit/<%= game_name %>" method="POST">
+                <form action="/submit/<%= game_name %>" method="POST" enctype="multipart/form-data">
                   <div class="controls">
                     <select name="lang">
                       <option>C++</option>

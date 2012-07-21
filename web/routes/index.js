@@ -5,7 +5,11 @@
 
 var crypto = require('crypto');
 var fs = require('fs');
-var User = require('../models/user');
+var db = require('../models/db');
+var submit_ctrl = require('./submit');
+
+exports.submit_list = submit_ctrl.submit_list;
+exports.submit_post = submit_ctrl.submit_post;
 
 exports.index = function(req, res) {
   res.render('index', { title: 'WAI : Home'});
@@ -18,14 +22,18 @@ exports.login = function(req, res) {
 exports.login_post = function(req, res) {
   var md5 = crypto.createHash('md5');
   var passwd = md5.update(req.body['passwd']).digest('base64');
-  User.get(req.body['email'], function(err, user) {
+  db.users.findOne({email: req.body['email']}, function(err, user) {
+    if (err) {
+      req.flash('error', err);
+      return res.redirect('/login');
+    }
     if (!user || user.passwd != passwd) {
       req.flash('error', 'Email dose not exist, or password error.');
       return res.redirect('/login');
     }
     req.session.user = user;
     req.flash('success', 'Login successfully.');
-    res.redirect('/');
+    return res.redirect('/');
   });
 };
 
@@ -45,10 +53,29 @@ exports.reg_post = function(req, res) {
     }
     var md5 = crypto.createHash('md5');
     var passwd = md5.update(req.body['passwd']).digest('base64');
-    var newUser = new User({
+    db.users.findOne({email: req.body['email']}, function(err, user) {
+      if (user) {
+        err = 'Email already exists.';
+      }
+      if (err) {
+        req.flash('error', err);
+        return res.redirect('/reg');
+      }
+      var newUser = {
         'email': req.body['email'],
         'passwd': passwd,
+      };
+      db.users.insert(newUser, {safe: true}, function(err, result) {
+        if (err) {
+          req.flash('error', err);
+          return res.redirect('/reg');
+        }
+        req.session.user = newUser;
+        req.flash('success', 'Sign up successfully.');
+        return res.redirect('/');
+      });
     });
+    /*
     User.get(newUser.email, function(err, user) {
         if (user)
             err = 'Email already exists.'
@@ -66,36 +93,13 @@ exports.reg_post = function(req, res) {
             res.redirect('/');
         });
     });
+    */
 };
 
 exports.game = function(req, res) {
     res.render('game', {title: 'WAI : ' + req.params.game_name,
             game_name: req.params.game_name,
             game_intro: 'This is introduction for ' + req.params.game_name});
-}
-
-exports.submit_post = function(req, res) {
-  fs.readFile(req.files.code.path, function(err, data) {
-    if (err) {
-      req.flash('error', 'Submit failed.');
-      res.redirect('back');
-    }
-    var submit = {
-      user_email: req.session.user,
-      game_name: req.params.game_name,
-      lang: req.body['lang'],
-      code: data,
-      status: 0,
-      compile_output: '',
-    };
-    submit.save(function(err) {
-      if (err) {
-        req.flash('error', 'Submit failed.');
-        res.redirect('back');
-      }
-    });
-    res.redirect('back');
-  });  
 }
 
 exports.game_post = function(req, res) {

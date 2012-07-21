@@ -13,7 +13,7 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.bodyParser());
+  app.use(express.bodyParser({uploadDir:'./uploads'}));
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.use(express.session({ secret: "robaroba" }));
@@ -59,7 +59,11 @@ app.get('/game/:game_name', routes.game);
 app.post('/game/:game_name', routes.game_post);
 app.get('/arena/:game_name', routes.arena);
 app.post('/submit/:game_name', routes.submit_post);
+app.get('/submit_list/:game_name', routes.submit_list);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
+
+require('child_process').fork('compiler.js');
+
