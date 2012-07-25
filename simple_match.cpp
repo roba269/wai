@@ -9,6 +9,7 @@
 #include "db_wrapper.h"
 
 const int BUF_LEN = 1024;
+char trans[BUF_LEN*BUF_LEN];
 
 void SimpleMatch::Start() {
     m_start_time = time(NULL);
@@ -17,6 +18,7 @@ void SimpleMatch::Start() {
         m_player[i]->Run();
     }
     char buf[BUF_LEN], tmp_buf[BUF_LEN];
+    trans[0] = 0;
     while (1) {
         fprintf(stderr, "waiting for the judge speaking\n");
         memset(buf, 0, sizeof(buf));
@@ -38,9 +40,16 @@ void SimpleMatch::Start() {
             snprintf(tmp_buf, BUF_LEN, "%d:%s", src, buf);
             m_record += (std::string)tmp_buf;
             m_judge->Send(buf);
+        } else if (buf[0] == '+') {
+            fprintf(stdout, "%s\n", buf);
+            fflush(stdout);
+            // strcat(trans, buf+1);
         } else if (isdigit(buf[0])) {
-            sscanf(buf, "%d", &m_winner);
+            char reason[BUF_LEN];
+            sscanf(buf, "%d %s", &m_winner, reason);
             fprintf(stderr, "the winner is %d\n", m_winner);
+            fprintf(stdout, "%d %s\n", m_winner, reason);
+            fflush(stdout);
             break;
         } else {
             assert(false);

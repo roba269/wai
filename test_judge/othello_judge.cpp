@@ -66,12 +66,14 @@ bool can_move(int cur) {
     return false;
 }
 
-int get_winner() {
+int get_winner(int *cnt_black, int *cnt_white) {
     int c1 = 0, c2 = 0;
     for (int i = 0 ; i < N ; i++)
         for (int j = 0 ; j < N ; j++)
             if (board[i][j] == 1) ++c1;
             else if (board[i][j] == 2) ++c2;
+    *cnt_black = c1;
+    *cnt_white = c2;
     if (c1 > c2) return 1;
     if (c2 > c1) return 2;
     return 0;
@@ -106,17 +108,23 @@ int main() {
         int x, y;
         scanf("%d %d",&x,&y);
         if (!valid(x, y, cur)) {
-            printf("%d\n", 3-cur);
+            if (cur == 1) 
+              printf("%d BlackMakeInvalidMove.\n", 3-cur);
+            else
+              printf("%d WhiteMakeInvalidMove.\n", 3-cur);
             fflush(stdout);
             return 0;
         }
+        printf("+%d %d %d\n", cur, x, y);
+        fflush(stdout);
         put_chess(x, y, cur);
         output_board();
         printf(">%d: %d %d\n", 3-cur, x, y);
         cur = 3 - cur;
     }
-    int w = get_winner();
-    printf("%d\n", w);
+    int cnt_black, cnt_white;
+    int w = get_winner(&cnt_black, &cnt_white);
+    printf("%d BlackCnt[%d]:WhiteCnt[%d]\n", w, cnt_black, cnt_white);
     fflush(stdout);
     return 0;
 }

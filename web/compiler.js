@@ -2,12 +2,12 @@
 var db = require('./models/db');
 var cp = require('child_process');
 
-SLEEP_IN_MS = 1000;
+var SLEEP_IN_MS = 1000;
 
 function compile(submit) {
   if (submit.lang === 'C++') {
     console.log('id:' + submit._id);
-    cmd = 'g++ -Wall -static -O3 ./uploads/' + submit._id +
+    var cmd = 'g++ -Wall -static -O3 ./uploads/' + submit._id +
       '.cpp -o ./exe/' + submit._id + '.exe';
     cp.exec(cmd, function(err, stdout, stderr) {
         if (err) {

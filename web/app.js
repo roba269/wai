@@ -5,9 +5,10 @@
 
 var express = require('express')
   , routes = require('./routes');
-
 var app = module.exports = express.createServer();
-
+var io = require('socket.io').listen(app);
+var db = require('./models/db');
+var ObjectId = require('mongoose').Types.ObjectId;
 // Configuration
 
 app.configure(function(){
@@ -57,13 +58,31 @@ app.get('/reg', routes.reg);
 app.post('/reg', routes.reg_post);
 app.get('/game/:game_name', routes.game);
 app.post('/game/:game_name', routes.game_post);
-app.get('/arena/:game_name', routes.arena);
+app.get('/arena/replay/:game_name/:match_id', routes.arena_replay);
 app.post('/submit/:game_name', routes.submit_post);
 app.get('/submit_list/:game_name', routes.submit_list);
+app.get('/match_list/:game_name', routes.match_list);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
-require('child_process').fork('compiler.js',[],{env: process.env});
+// require('child_process').fork('compiler.js',[],{env: process.env});
 
+io.sockets.on('connection', function(socket) {
+  socket.on('req_steps', function(data) {
+    db.matches.findOne({'_id': ObjectId(data.match_id)}, function(err, match) {
+      if (err) {
+        console.log('Fetch Steps failed, err:' + err);
+        return;
+      }
+      if (!match) {
+        console.log('Fetch Steps. Match is null.');
+        return;
+      }
+      var resp = {steps : match.trans};
+      console.log('%j', resp);
+      socket.emit('res_steps', resp);
+    });
+  });
+});

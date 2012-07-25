@@ -66,15 +66,20 @@ int main() {
         int x, y;
         scanf("%d %d", &x, &y);
         if (!valid(x,y)) {
-            printf("%d\n", 3-cur);
+            if (cur == 1)
+              printf("%d BlackMakeInvalidMove.\n", 3-cur);
+            else
+              printf("%d WhiteMakeInvalidMove.\n", 3-cur);
             fflush(stdout);
             return 0;
         }
+        printf("+%d %d %d\n", cur, x, y);
+        fflush(stdout);
         board[x][y] = cur;
         output_board();
         int w;
         if ((w = get_winner())) {
-            printf("%d\n",w);
+            printf("%d blahblah\n",w);
             fflush(stdout);
             return 0;
         }

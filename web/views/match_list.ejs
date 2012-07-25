@@ -1,0 +1,22 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Black Uid</th>
+      <th>Black Sid</th>
+      <th>White Uid</th>
+      <th>White Sid</th>
+      <th>Result</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% matches.forEach(function(match, index) { %>
+    <tr>
+      <th><%= match.user_id1 %></th>
+      <th><%= match.submit_id1 %></th>
+      <th><%= match.user_id2 %></th>
+      <th><%= match.submit_id2 %></th>
+      <th><%= match.result %>&nbsp;&nbsp;<a href="/arena/replay/<%= game_name %>/<%= match.match_id %>">View</a></th>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>

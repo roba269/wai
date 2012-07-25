@@ -7,9 +7,13 @@ var crypto = require('crypto');
 var fs = require('fs');
 var db = require('../models/db');
 var submit_ctrl = require('./submit');
+var arena_ctrl = require('./arena');
+var match_ctrl = require('./match');
 
 exports.submit_list = submit_ctrl.submit_list;
 exports.submit_post = submit_ctrl.submit_post;
+exports.arena_replay = arena_ctrl.arena_replay;
+exports.match_list = match_ctrl.match_list;
 
 exports.index = function(req, res) {
   res.render('index', { title: 'WAI : Home'});
