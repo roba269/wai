@@ -26,7 +26,13 @@ exports.reg = user_ctrl.reg;
 exports.reg_post = user_ctrl.reg_post;
 
 exports.index = function(req, res) {
-  res.render('index', { title: 'WAI : Home'});
+  db.games.find({}, function(err, game_list) {
+    if (err) {
+      req.error('error', 'Failed to get game list.');
+      return res.redirect('/');
+    }
+    res.render('index', { title: 'WAI : Home', game_list: game_list});
+  });
 };
 
 exports.game = function(req, res) {

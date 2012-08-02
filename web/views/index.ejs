@@ -9,19 +9,13 @@
             <% } %>
         </div>
         <div class="row">
+            <% game_list.forEach(function(game, index) { %>
+            <% if (index <= 2) { %>
             <div class="span4">
-                <h2>Othello</h2>
-                <p>Othello is an interesting game.</p>
-                <img src="/images/othello.jpg" />
-                <a class="btn" href="/game/othello">Enter</a>
+                <h2><%= game.show_name %></h2>
+                <p><%= game.desc %></p>
+                <img src="/images/<%= game.img %>" />
+                <a class="btn" href="/game/<%= game.name %>">Enter</a>
             </div>
-            <div class="span4">
-                <h2>Renju</h2>
-                <p>Renju is another interesting game.</p>
-                <img src="/images/renju.jpg" />
-                <a class="btn" href="/game/renju">Enter</a>
-            </div>
-            <div class="span4">
-                Other
-            </div>
+            <% }}); %>
         </div>
