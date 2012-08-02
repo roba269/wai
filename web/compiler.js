@@ -19,10 +19,20 @@ function compile(submit) {
               });
         } else {
           console.log('id:' + submit._id + ' successful');
-          db.submits.update({_id: submit._id},
-              {$set: {status: 2}},
+          db.submits.update({'game_name': submit.game_name,
+              'user_email': submit.user_email, 'last': 1},
+            {$set: {'last': 0}},
               function(err) {
-                if (err) console.log('Update failed: ' + err);
+                if (err) {
+                  console.log('Update last=0 failed.');
+                  return;
+                }
+                db.submits.update({_id: submit._id},
+                    {$set: {'status': 2, 'last': 1}},
+                    function(err) {
+                      if (err)
+                        console.log('Update failed: ' + err);
+                    });
               });
         }
       });

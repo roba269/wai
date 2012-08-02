@@ -1,0 +1,34 @@
+<h2>Renju Introduction</h2>
+<p>
+<em>For a complete description of renju, please see <a href="http://en.wikipedia.org/wiki/Renju">http://en.wikipedia.org/wiki/Renju.</a></em>
+<p>
+Renju (five-in-a-row) is played on a 15x15 board, with black and white pieces. Two players The players place pieces alternately, and the black player moves first.
+<p>
+There are three versions of Renju games in WAI: <strong>Renju_Simple</strong>, <strong>Renju_Restriction</strong> and <strong>Renju_RIF</strong>.
+<p>
+<strong>Renju_Simple</strong>'s rule is quite simple: the player who firstly get an unbroken row of five stones horizontally, vertically, or diagonally will win the game. There is no restriction for the move.
+<p>
+However, the simple rule heavily favors the first player. To balance the game, people developed special rules:
+<p>
+<strong>Restrictions rule</strong>(禁手): Black may not create a three-three or four-four. (That is, a move that creates two open-ended threes at once, or two fours at once.) Black may not create an "overline" - six or more stones in a row. White is NOT thus restricted, and can win by any of those moves, OR by forcing Black to make such a move to block White.
+<p>
+<strong>Setup rule</strong>(三手交换，五手两打): one player places two black stones and one white stone on the board. The player who place white stone chooses which side to play. Then white places one stone, then Black places two more stones. White removes one of these last two Black stones, then the game proceeds normally.
+<p>
+In WAI, <strong>Renju_Restriction</strong> means <strong>Restrictions rule</strong> applied. And <strong>Renju_RIF</strong> means both <strong>Restrictions rule</strong> and <strong>Setup rule</strong> applied.
+<h2>I/O Protocol Specification</h2>
+<p>
+Your program should read from <strong>stdin</strong> and write to <strong>stdout</strong>.
+<p>
+<strong>Note: If you use buffered output (for example, printf), please flush the output buffer after every output. See the FAQ for details.</strong>
+<p>
+At the beginning, a string which is either "first" or "second" will be sent to you, indicating that your are the first or second to move.
+<p>
+In each turn (except the first player's first move), you should read two integers a and b from stdin, indicating your opponent's put a piece on (a,b). Then you should output two integers <em>x</em> and <em>y</em> (0 &le; x, y &lt; 15) which are separated by a whitespace, indicating you put a disk on (x,y). 
+<p>
+<strong>If your program output an invalid move, you will lose immediately.</strong>
+<p>
+For Renju_RIF, the setup is a little complicated. 
+
+<em>Rule for setup</em>
+<p>
+See the sample code for reference.

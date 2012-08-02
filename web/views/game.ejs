@@ -1,8 +1,7 @@
 <div class="container">
     <div class="row">
         <div class="span8" >
-            <h2>Introduction for <%= game_name %></h2>
-            <p><%= game_intro %></p>
+            <%- partial('intro_' + game_name) %>
         </div>
         <div class="span4">
             <div class="well">
@@ -12,6 +11,7 @@
               </form>
             </div>
             <hr>
+            <% if (user) { %>
             <div class="well">
                 <h3>Submit your AI</h3>
                 <form action="/submit/<%= game_name %>" method="POST" enctype="multipart/form-data">
@@ -28,10 +28,30 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                   </div>
                 </form>
+                <a class="btn" href="/submit_list/<%= game_name %>/<%= uid %>">View My Submitions</a>
+                <a class="btn" href="/match/<%= game_name %>/<%= uid %>">View My Matches</a>
             </div>
+            <% } %>
             <div class="well" id="leader-board">
                 <h3><%= game_name %> Leader Board</h3>
-                <p>This is leader board.</p>
+                <table class="table table-striped">
+                <thead><tr>
+                  <th>Rank</th>
+                  <th>Nick</th>
+                  <th>Score</th>
+                </tr></thead>
+                <tbody>
+                  <% ranklist.forEach(function(item, index) { %>
+                  <%  if (index <= 4) { %>
+                  <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= item.user.nick %></td>
+                  <td><%= item.score %></td>
+                  </tr>
+                  <% }}); %>
+                </tbody>
+                </table>
+                <a href="/ranklist/<%= game_name %>">View Full Ranklist</a>
             </div>
         </div>
     </div>

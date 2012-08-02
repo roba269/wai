@@ -43,7 +43,7 @@ app.dynamicHelpers({
   },
   user: function(req, res) {
     if (req.session.user != null)
-      return req.session.user.email;
+      return req.session.user.nick;
     return null;
   },
 });
@@ -60,8 +60,11 @@ app.get('/game/:game_name', routes.game);
 app.post('/game/:game_name', routes.game_post);
 app.get('/arena/replay/:game_name/:match_id', routes.arena_replay);
 app.post('/submit/:game_name', routes.submit_post);
-app.get('/submit_list/:game_name', routes.submit_list);
+app.get('/submit_list/:game_name/:user_id', routes.submit_list_by_user);
 app.get('/match_list/:game_name', routes.match_list);
+app.get('/view_code/:submit_id', routes.view_code);
+app.get('/match/:game_name/:user_id', routes.match_list_by_user);
+app.get('/ranklist/:game_name', routes.ranklist);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

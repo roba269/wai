@@ -1,0 +1,26 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Black</th>
+      <th>White</th>
+      <th>Result</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% matches.forEach(function(match, index) { %>
+    <tr>
+      <td><%= match.nick1 %> Ver <%= match.sid1 %> flag: <%= match.flg1 %></td>
+      <td><%= match.nick2 %> Ver <%= match.sid2 %> flag: <%= match.flg2 %></td>
+      <td>
+        <% if (match.status === 1) { %>
+          Running
+        <% } else if (match.status === 2) { %>
+        <%= match.result %>  
+        <% } %>
+        &nbsp;
+        <a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a>
+      </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>

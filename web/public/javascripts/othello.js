@@ -8,7 +8,7 @@ var dir8 = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
 
 const LEFT_MARGIN = 25;
 const TOP_MARGIN = 25;
-const GRID_SIZE = 80;
+const GRID_SIZE = 60;
 const NUM_ROW = 8;
 const NUM_COL = 8;
 

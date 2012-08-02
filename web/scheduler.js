@@ -34,22 +34,17 @@ function start_match(uid1, submit1, uid2, submit2, game) {
   });
   match.on('exit', function(code) {
     // console.log('Judge quit, error code: ' + code + ' result:' + result);
-    db.matches.update({'sid1': submit1._id, 'sid2': submit2._id},
-      {$set: {'game': game, 'uid1': uid1, 'uid2': uid2, 'status': 2, 
-        'result': result, 'reason': reason, 'trans': trans}}, function (err) {
-        if (err) console.log('update matches failed:' + err);
+    db.matches.update(
+      {'uid1': uid1, 'uid2': uid2, 'game': game, 'last': 1},
+      {$set: {'last': 0}}, function(err) {
+        if (err) console.log('update last=0 failed');
+        db.matches.update({'sid1': submit1._id, 'sid2': submit2._id},
+          {$set: {'last': 1, 'status': 2, 'result': result,
+            'reason': reason, 'trans': trans}}, function (err) {
+            if (err) console.log('update matches failed:' + err);
+          });
       });
   });
-  /*
-  cp.exec(cmd, function(err, stdout, stderr) {
-    console.log('stdout from judge:' + stdout);
-    console.log('stderr from judge:' + stderr);
-    db.matches.update({'sid1': submit1._id, 'sid2': submit2._id},
-                      {$set: {'status': 2, 'result': parseInt(stdout)}}, function (err) {
-                        if (err) console.log('update matches failed:' + err);
-                      });
-  });
-  */
 }
 
 function get_latest_submit(user1, user2, game) {
@@ -86,9 +81,17 @@ function get_latest_submit(user1, user2, game) {
               }
               if (!match) {
                 var match_item = {
+                  'game': game,
+                  'uid1': user1._id,
+                  'uid2': user2._id,
+                  'nick1': user1.nick,
+                  'nick2': user2.nick,
                   'sid1': submit1._id,
                   'sid2': submit2._id,
                   'status': 1,
+                  'result': -1,
+                  'last': 0,  // TODO: is it right?
+                  'date': new Date(),
                 }
                 db.matches.save(match_item);
                 start_match(user1._id, submit1, user2._id, submit2, game);
@@ -113,7 +116,8 @@ function schedule_match() {
         }
         console.log('users.length:' + users.length);
         for (var idx = 0 ; idx < users.length ; ++idx) {
-          for (var idx2 = idx + 1 ; idx2 < users.length ; ++idx2) {
+          for (var idx2 = 0 ; idx2 < users.length ; ++idx2) {
+             if (idx === idx2) continue;
              console.log('idx1:' + idx + ' idx2:' + idx2);
              get_latest_submit(users[idx], users[idx2], game.name);
           }

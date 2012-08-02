@@ -3,111 +3,101 @@
  * GET home page.
  */
 
-var crypto = require('crypto');
 var fs = require('fs');
+var ObjectId = require('mongoose').Types.ObjectId;
 var db = require('../models/db');
 var submit_ctrl = require('./submit');
 var arena_ctrl = require('./arena');
 var match_ctrl = require('./match');
+var user_ctrl = require('./user');
+var db_util = require('../db_util');
 
-exports.submit_list = submit_ctrl.submit_list;
+// exports.submit_list = submit_ctrl.submit_list;
+exports.submit_list_by_user = submit_ctrl.submit_list_by_user;
 exports.submit_post = submit_ctrl.submit_post;
 exports.arena_replay = arena_ctrl.arena_replay;
 exports.match_list = match_ctrl.match_list;
+exports.match_list_by_user = match_ctrl.match_list_by_user;
+
+exports.login = user_ctrl.login;
+exports.login_post = user_ctrl.login_post;
+exports.logout = user_ctrl.logout;
+exports.reg = user_ctrl.reg;
+exports.reg_post = user_ctrl.reg_post;
 
 exports.index = function(req, res) {
   res.render('index', { title: 'WAI : Home'});
 };
 
-exports.login = function(req, res) {
-    res.render('login', { title: 'WAI : Login'});
-};
-
-exports.login_post = function(req, res) {
-  var md5 = crypto.createHash('md5');
-  var passwd = md5.update(req.body['passwd']).digest('base64');
-  db.users.findOne({email: req.body['email']}, function(err, user) {
-    if (err) {
-      req.flash('error', err);
-      return res.redirect('/login');
-    }
-    if (!user || user.passwd != passwd) {
-      req.flash('error', 'Email dose not exist, or password error.');
-      return res.redirect('/login');
-    }
-    req.session.user = user;
-    req.flash('success', 'Login successfully.');
-    return res.redirect('/');
-  });
-};
-
-exports.logout = function(req, res) {
-  req.session.user = null;
-  res.redirect('/');
-};
-
-exports.reg = function(req, res) {
-    res.render('reg', { title: 'WAI : Sign Up'});
-};
-
-exports.reg_post = function(req, res) {
-    if (req.body['passwd'] != req.body['passwd2']) {
-        req.flash('error', 'The two passwords does not fit.');
-        return res.redirect('/reg');
-    }
-    var md5 = crypto.createHash('md5');
-    var passwd = md5.update(req.body['passwd']).digest('base64');
-    db.users.findOne({email: req.body['email']}, function(err, user) {
-      if (user) {
-        err = 'Email already exists.';
-      }
-      if (err) {
-        req.flash('error', err);
-        return res.redirect('/reg');
-      }
-      var newUser = {
-        'email': req.body['email'],
-        'passwd': passwd,
-      };
-      db.users.insert(newUser, {safe: true}, function(err, result) {
-        if (err) {
-          req.flash('error', err);
-          return res.redirect('/reg');
-        }
-        req.session.user = newUser;
-        req.flash('success', 'Sign up successfully.');
-        return res.redirect('/');
-      });
-    });
-    /*
-    User.get(newUser.email, function(err, user) {
-        if (user)
-            err = 'Email already exists.'
-        if (err) {
-            req.flash('error', err);
-            return res.redirect('/reg');
-        }
-        newUser.save(function(err) {
-            if (err) {
-                req.flash('error', err);
-                return res.redirect('/reg');
-            }
-            req.session.user = newUser;
-            req.flash('success', 'Sign up successfully.');
-            res.redirect('/');
-        });
-    });
-    */
-};
-
 exports.game = function(req, res) {
-    res.render('game', {title: 'WAI : ' + req.params.game_name,
+  /*
+  if (!req.session.user) {
+    req.flash('error', 'You are not logged in.');
+    return res.redirect('back');
+  }
+  */
+  db.games.findOne({name: req.params.game_name}, function(err, game) {
+    if (err) {
+      console.log('Failed to get game info');
+      return res.redirect('back');
+    }
+    if (!game) {
+      console.log('Failed to get game info');
+      return res.redirect('back');
+    }
+    db_util.get_rank_list(req.params.game_name,
+      function(err, rank_list) {
+        if (err) {
+          req.flash('error', 'Get rank list error.');
+          return res.redirect('back');
+        }
+        var uid;
+        if (req.session.user) uid = req.session.user._id;
+        else uid = null;
+        res.render('game', {title: 'WAI : ' + req.params.game_name,
             game_name: req.params.game_name,
-            game_intro: 'This is introduction for ' + req.params.game_name});
+            game_intro: game.desc,
+            uid: uid,
+            ranklist: rank_list});
+      });
+  });
 }
 
 exports.game_post = function(req, res) {
   // compile the code
   
+}
+
+exports.view_code = function(req, res) {
+  if (!req.session.user) {
+    req.flash('error', 'You are not login.');
+    return res.redirect('back');
+  }
+  db.submits.findOne({_id: ObjectId(req.params.submit_id)},
+    function(err, submit) {
+      if (err) {
+        console.log('Fetch code failed, err:' + err);
+        return;
+      }
+      if (!submit) {
+        console.log('Fetch code failed. No such submit id.');
+        return;
+      }
+      res.render('code', {title: 'WAI : View Code',
+                          code: submit.code});
+    });
+}
+
+exports.ranklist = function(req, res) {
+  db_util.get_rank_list(req.params.game_name,
+    function(err, rank_list) {
+      if (err) {
+        req.flash('error', 'Get rank list error.');
+        return res.redirect('back');
+      }
+      res.render('ranklist', {title: 'WAI : Ranklist',
+          game_name: req.params.game_name,
+          ranklist: rank_list});
+    });
 }
 

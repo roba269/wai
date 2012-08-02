@@ -1,0 +1,17 @@
+    <h2>Rank List for Game <%= game_name %></h2>
+    <table class="table table-striped">
+    <thead><tr>
+      <th>Rank</th>
+      <th>Nick</th>
+      <th>Score</th>
+    </tr></thead>
+    <tbody>
+      <% ranklist.forEach(function(item, index) { %>
+      <tr>
+      <td><%= index %></td>
+      <td><%= item.user.nick %></td>
+      <td><%= item.score %> <a href="/match/<%= game_name %>/<%= item.user._id %>">Details</a></td>
+      </tr>
+      <% }); %>
+    </tbody>
+    </table>

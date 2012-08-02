@@ -1,0 +1,27 @@
+<h2>Othello Introduction</h2>
+<p>
+<em>The following paragraphs are extracted from Wikipedia. For a complete description of othello, please see <a href="http://en.wikipedia.org/wiki/Reversi">http://en.wikipedia.org/wiki/Reversi.</a></em>
+<p>
+Othello (also called <em>Reversi</em>) is a strategy board game for two players, played on an 8x8 board. There are 64 identical pieces called 'disks' (often spelled 'discs'), which are white on one side and black on the other. Othello starts with the center 4 squares of the board occupied with 2 black and 2 white pieces arranged diagonally. The players place their disks alternately, and the black player makes the first move.
+<p>
+The black player must place a piece with the black side up on the board, in such a position that there exists at least one straight (horizontal, vertical, or diagonal) occupied line between the new piece and another black piece, with one or more contiguous white pieces between them. After placing the piece, the black player turns over (flips, captures) all white pieces lying on a straight line between the new piece and any anchoring black pieces. All reversed pieces now show the black side. In other words, a valid move is one where at least one piece is reversed. White player operates under the same rules, with the roles reversed: laying down a white piece, causing a black piece to flip. 
+<p>
+Players take alternate turns. If one player cannot make a valid move, play passes back to the other player. When neither player can move, the game ends. This occurs when the grid has filled up or when neither player can legally place a piece in any of the remaining squares.
+<p>
+The player with the most pieces on the board at the end of the game wins.
+
+<h2>I/O Protocol Specification</h2>
+<p>
+Your program should read from <strong>stdin</strong> and write to <strong>stdout</strong>.
+<p>
+<strong>Note: If you use buffered output (for example, printf), please flush the output buffer after every output. See the FAQ for details.</strong>
+<p>
+At the beginning, a string which is either "first" or "second" will be sent to you, indicating that your are the first or second to move.
+<p>
+In each turn (except the first player's first move), you should read two integers a and b from stdin, indicating your opponent's put a disk on (a,b). Then you should output two integers <em>x</em> and <em>y</em> (0 &le; x, y &lt; 8) which are separated by a whitespace, indicating you put a disk on (x,y). 
+<p>
+<strong>If your program output an invalid move, you will lose immediately.</strong>
+<p>
+Note that if one player cannot make a valid move, his/her turn will be skiped. You should check this case by your own. That is, if you find that after your move, your opponent cannot make a valid move, you should just output another move without reading your opponent's move. On the other hand, if you find that you cannot make a valid move after reading your opponent's move, you should read your opponent's next move again. The judge will terminate your program when the game finishes, you don't need to bother checking whether the game ends.
+<p>
+See the sample code for reference.

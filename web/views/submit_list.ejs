@@ -1,16 +1,17 @@
 <table class="table table-striped">
   <thead>
-    <tr><th>User</th><th>Game</th><th>Submit Date</th><th>Size</th><th>Name</th><th>Status</th></tr>
+    <tr><th>User</th><th>Game</th><th>Version</th><th>Submit Date</th><th>Size</th><th>Name</th><th>Status</th></tr>
   </thead>
   <tbody>
     <% submits.forEach(function(submit, index) { %>
     <tr>
-      <td><%= submit.user_email %></td>
+      <td><%= submit.user_nick %></td>
       <td><%= submit.game_name %></td>
+      <td><%= submit.version %></td>
       <td><%= submit.date %></td>
       <td><%= submit.size %> KB</td>
       <td><%= submit.ori_name %></td>
-      <td><%= submit.status %></td>
+      <td><%= submit.status %><a href="/view_code/<%= submit._id %>">View</td>
     </tr>
     <% }) %>
   </tbody>

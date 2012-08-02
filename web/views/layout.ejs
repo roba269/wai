@@ -20,6 +20,8 @@
                     <li class="active"><a href="/">Home</a></li>
                     <% if (user) { %>
                     <li>Hello, <%= user %></li>
+                    <li><a href="/submit_list/all">My Submitions</a></li>
+                    <li><a href="/match_list/all">My Matches</a></li>
                     <li><a href="/logout">Logout</a></li>
                     <% } else { %>
                     <li><a href="/login">Login</a></li>

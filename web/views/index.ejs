@@ -1,10 +1,12 @@
         <div class="hero-unit">
             <h1>Welcome to War of AI</h1>
             <p>A war of Artificial Intellegence</p>
+            <% if (!user) { %>
             <p>
                 <a class="btn btn-large btn-primary" href="/login">Login</a>
                 <a class="btn btn-large" href="/reg">Sign Up</a>
             </p>
+            <% } %>
         </div>
         <div class="row">
             <div class="span4">

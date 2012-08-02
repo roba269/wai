@@ -11,11 +11,11 @@
   <tbody>
     <% matches.forEach(function(match, index) { %>
     <tr>
-      <th><%= match.user_id1 %></th>
-      <th><%= match.submit_id1 %></th>
-      <th><%= match.user_id2 %></th>
-      <th><%= match.submit_id2 %></th>
-      <th><%= match.result %>&nbsp;&nbsp;<a href="/arena/replay/<%= game_name %>/<%= match.match_id %>">View</a></th>
+      <td><%= match.user_id1 %></td>
+      <td><%= match.submit_id1 %></td>
+      <td><%= match.user_id2 %></td>
+      <td><%= match.submit_id2 %></td>
+      <td><%= match.result %>&nbsp;&nbsp;<a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a></td>
     </tr>
     <% }) %>
   </tbody>
