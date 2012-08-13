@@ -83,6 +83,7 @@ exports.submit_post = function(req, res) {
       compile_output: '',
       ori_name: req.files.code.name,
       version: next_version,
+      allow_view: req.body['allow_view'],
     };
     db.submits.insert(submit, {safe: true}, function(err, result) {
       if (err) {

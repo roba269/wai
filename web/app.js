@@ -56,6 +56,10 @@ app.post('/login', routes.login_post);
 app.get('/logout', routes.logout);
 app.get('/reg', routes.reg);
 app.post('/reg', routes.reg_post);
+app.get('/change_passwd', routes.change_passwd);
+app.post('/change_passwd', routes.change_passwd_post);
+
+app.get('/game_list', routes.game_list);
 app.get('/game/:game_name', routes.game);
 app.post('/game/:game_name', routes.game_post);
 app.get('/arena/replay/:game_name/:match_id', routes.arena_replay);
@@ -65,6 +69,8 @@ app.get('/match_list/:game_name', routes.match_list);
 app.get('/view_code/:submit_id', routes.view_code);
 app.get('/match/:game_name/:user_id', routes.match_list_by_user);
 app.get('/ranklist/:game_name', routes.ranklist);
+
+app.get('/faq', routes.faq);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

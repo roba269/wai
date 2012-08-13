@@ -1,0 +1,19 @@
+
+<div class="span12">
+  <ul class="thumbnails">
+  <% game_list.forEach(function(game, index) { %>
+  <li class="span4">
+    <div class="thumbnail">
+      <a href="/game/<%= game.name %>">
+      <img src="/images/<%= game.img %>" height="300"/>
+      </a>
+      <div class="caption">
+      <h2><%= game.show_name %></h2>
+      <p><a href="/game/<%= game.name %>">Enter >></a>
+      </div>
+    </div>
+  </li>
+  <% }); %>
+  </ul>
+</div>
+</div>

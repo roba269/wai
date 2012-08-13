@@ -63,3 +63,38 @@ exports.reg_post = function(req, res) {
     });
 };
 
+exports.change_passwd = function(req, res) {
+  if (!req.session.user) {
+    req.flash('error', 'You are not login.');
+    return res.redirect('back');
+  }
+  res.render('change_passwd', {title: 'WAI : Change Password'});
+}
+
+exports.change_passwd_post = function(req, res) {
+  if (!req.session.user) {
+    req.flash('error', 'You are not login.');
+    return res.redirect('back');
+  }
+  var md5 = crypto.createHash('md5');
+  var oldpasswd = md5.update(req.body['oldpasswd']).digest('base64');
+  if (oldpasswd !== req.session.user.passwd) {
+    req.flash('error', 'Old password error.');
+    return res.redirect('back');
+  }
+  if (req.body['newpasswd'] !== req.body['repeatpasswd']) {
+    req.flash('error', 'New password and repeated password are different.');
+    return res.redirect('back');
+  }
+  var newpasswd = crypto.createHash('md5')
+    .update(req.body['newpasswd']).digest('base64');
+  db.users.update({email: req.session.user.email},
+    {$set: {passwd: newpasswd}}, {safe: true}, function(err) {
+      if (err) {
+        console.log('update set failed. err:' + err);
+        return;
+      }
+      req.flash('success', 'Change password successfully.');
+      return res.redirect('/');
+    });
+}

@@ -9,13 +9,25 @@
             <% } %>
         </div>
         <div class="row">
+        <div class="span12">
+            <ul class="thumbnails">
             <% game_list.forEach(function(game, index) { %>
             <% if (index <= 2) { %>
-            <div class="span4">
+            <li class="span4">
+              <div class="thumbnail">
+                <a href="/game/<%= game.name %>">
+                <img src="/images/<%= game.img %>" height="300"/>
+                </a>
+                <div class="caption">
                 <h2><%= game.show_name %></h2>
-                <p><%= game.desc %></p>
-                <img src="/images/<%= game.img %>" />
-                <a class="btn" href="/game/<%= game.name %>">Enter</a>
-            </div>
+                <p><a href="/game/<%= game.name %>">Enter >></a></p>
+                </div>
+              </div>
+            </li>
             <% }}); %>
+            </ul>
+        </div>
+        </div>
+        <div class="span2 offset10">
+        <a class="btn btn-primary" href='/game_list'>More Game</a>
         </div>

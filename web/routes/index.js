@@ -24,6 +24,8 @@ exports.login_post = user_ctrl.login_post;
 exports.logout = user_ctrl.logout;
 exports.reg = user_ctrl.reg;
 exports.reg_post = user_ctrl.reg_post;
+exports.change_passwd = user_ctrl.change_passwd;
+exports.change_passwd_post = user_ctrl.change_passwd_post;
 
 exports.index = function(req, res) {
   db.games.find({}, function(err, game_list) {
@@ -75,10 +77,12 @@ exports.game_post = function(req, res) {
 }
 
 exports.view_code = function(req, res) {
+  /*
   if (!req.session.user) {
     req.flash('error', 'You are not login.');
     return res.redirect('back');
   }
+  */
   db.submits.findOne({_id: ObjectId(req.params.submit_id)},
     function(err, submit) {
       if (err) {
@@ -89,8 +93,14 @@ exports.view_code = function(req, res) {
         console.log('Fetch code failed. No such submit id.');
         return;
       }
-      res.render('code', {title: 'WAI : View Code',
+      if (submit.allow_view || 
+        (req.session.user &&submit.user_id.equals(req.session.user._id))) {
+        res.render('code', {title: 'WAI : View Code',
                           code: submit.code});
+      } else {
+        res.render('code', {title: 'WAI : View Code',
+                  code: 'You have no permission to view this code.'});
+      }
     });
 }
 
@@ -107,3 +117,17 @@ exports.ranklist = function(req, res) {
     });
 }
 
+exports.game_list = function(req, res) {
+  db.games.find({}, function(err, game_list) {
+    if (err) {
+      console.log('Failed to get game_list. err:' + err);
+      return;
+    }
+    res.render('game_list', {title: 'WAI : Gamelist',
+      game_list: game_list});
+  });
+}
+
+exports.faq = function(req, res) {
+  res.render('faq', {title: 'WAI : FAQ'});
+}

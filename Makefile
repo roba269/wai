@@ -32,8 +32,13 @@ all:
 	$(CC) -Wall -static test_judge/renju_restricted_judge.cpp -o test_judge/renju_restricted_judge.exe
 	$(CC) -Wall -static test_judge/othello_judge.cpp -o test_judge/othello_judge.exe
 	$(CC) -Wall -static test_judge/xiangqi_judge.cpp -o test_judge/xiangqi_judge.exe
+	$(CC) -Wall -static test_judge/tankcraft_judge.cpp -o test_judge/tankcraft_judge.exe
 	$(CC) $(OPT) test_ai/othello_greedy.cpp -o test_ai/othello_greedy.exe -O3
 	$(CC) $(OPT) test_ai/xiangqi_sample.cpp -o test_ai/xiangqi_sample.exe -O3
+	$(CC) $(OPT) test_ai/tankcraft_sample.cpp -o test_ai/tankcraft_sample.exe -O3
+tank:
+	$(CC) -Wall -static test_judge/tankcraft_judge.cpp -o test_judge/tankcraft_judge.exe
+	$(CC) $(OPT) test_ai/tankcraft_sample.cpp -o test_ai/tankcraft_sample.exe -O3
 clean:
 	rm *.o *.exe *.out
 	rm test_ai/*.o test_ai/*.exe
