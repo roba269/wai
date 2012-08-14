@@ -19,7 +19,7 @@
 #include "syscalls.h"
 
 const int MEMORY_LIMIT = 128 * 1024 * 1024; // in bytes
-const int TIME_LIMIT = 10;  // in seconds
+const int TIME_LIMIT = 15 * 60;  // in seconds
 
 static int set_quota() {
     struct rlimit lim;

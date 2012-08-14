@@ -12,6 +12,9 @@ const GRID_SIZE = 60;
 const NUM_ROW = 8;
 const NUM_COL = 8;
 
+var inter_id;
+var play_status = 0;
+
 function in_board(x, y) {
   return x >= 0 && x < NUM_ROW && y >= 0 && y < NUM_COL;
 }
@@ -201,4 +204,15 @@ function prevStep() {
   draw();
 }
 
+function autoPlay() {
+  if (play_status === 0) {
+    play_status = 1;
+    document.getElementById("autoplay").innerHTML = "Pause";
+    inter_id = setInterval(nextStep, 1000);
+  } else if (play_status === 1) {
+    clearInterval(inter_id);
+    play_status = 0;
+    document.getElementById("autoplay").innerHTML = "Auto Play";
+  }
+}
 

@@ -27,12 +27,26 @@ exports.reg_post = user_ctrl.reg_post;
 exports.change_passwd = user_ctrl.change_passwd;
 exports.change_passwd_post = user_ctrl.change_passwd_post;
 
+
+function random_shuffle ( myArray ) {
+  var i = myArray.length;
+  if ( i == 0 ) return false;
+  while ( --i ) {
+     var j = Math.floor( Math.random() * ( i + 1 ) );
+     var tempi = myArray[i];
+     var tempj = myArray[j];
+     myArray[i] = tempj;
+     myArray[j] = tempi;
+   }
+}
+
 exports.index = function(req, res) {
   db.games.find({}, function(err, game_list) {
     if (err) {
       req.error('error', 'Failed to get game list.');
       return res.redirect('/');
     }
+    random_shuffle(game_list);
     res.render('index', { title: 'WAI : Home', game_list: game_list});
   });
 };
@@ -96,7 +110,7 @@ exports.view_code = function(req, res) {
       if (submit.allow_view || 
         (req.session.user &&submit.user_id.equals(req.session.user._id))) {
         res.render('code', {title: 'WAI : View Code',
-                          code: submit.code});
+                          code: submit.code, err: submit.compile_output});
       } else {
         res.render('code', {title: 'WAI : View Code',
                   code: 'You have no permission to view this code.'});

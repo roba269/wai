@@ -1,3 +1,29 @@
+<h2>FAQ</h2>
+
 <h3>1. What languages can I use?</h3>
 
-<p>A: Unfortunately, the current supported language is C++ only. But we will add more languages in future.</p>
+A: Unfortunately, the current supported language is C++ only. But we will add more languages in future.<p>
+
+<h3>2. Is there time limitation for my program?</h3>
+
+A: Yes. If not specified, the time limit is <strong>15 minutes of CPU time</strong> (not elapsed time) for a match.
+If you exceed this time limit, you will lose.<p>
+
+<h3>3. How can my program play the game?</h3>
+
+A: Your program should interact with outside world through <strong>stdin</strong> and <strong>stdout</strong>.
+Techically, there will be a judge process for each match. Your process's stdin and stdout will be redirected,
+and the judge will write necessary information to your process's stdin, and read your response (moving a chess,
+hitting an enemy, etc) from your process's stdout. <p>
+
+Every game has a specified protocol, which is provided in the game introduction page. You can also refer the user
+<a href="#">Sample</a>'s code.<p>
+
+<strong>Note: Since some library functions use buffered I/O, such as <em>printf</em>, the judge cannot get your
+output immediately if the output is buffered, and the judge will wait forever until the time limit is exceeded.
+To avoid this, remember flushing the buffer after every output. The code will looks like:
+
+<pre><tt>  printf("%d %d\n", x, y); // put a chess at (x,y)
+  fflush(stdout);
+</tt></pre>
+

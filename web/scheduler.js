@@ -92,6 +92,8 @@ function get_latest_submit(user1, user2, game) {
                   'result': -1,
                   'last': 0,  // TODO: is it right?
                   'date': new Date(),
+                  'version1': submit1.version,
+                  'version2': submit2.version,
                 }
                 db.matches.save(match_item);
                 start_match(user1._id, submit1, user2._id, submit2, game);

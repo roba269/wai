@@ -149,29 +149,33 @@ void process_move_cmd() {
   for (int i = 0 ; i < 2 ; ++i)
     for (int j = 0 ; j < 5 ; ++j) {
       if (is_killed(i, j)) continue;
-      if (cmd[i][j].type != FIRE) {
-        int tx = tank[i][j].x + dir[cmd[i][j].type][0];
-        int ty = tank[i][j].y + dir[cmd[i][j].type][1];
-        int stay = 0;
-        for (int prej = 0 ; prej < j ; ++prej) {
-          if (tank[i][prej].x == tx && tank[i][prej].y == ty) {
-            // target taken by friend tank, stay still
-            stay = 1;
-          }
+      int cmd_type;
+      if (cmd[i][j].type == FIRE) cmd_type = STOP;
+      else cmd_type = cmd[i][j].type;
+        
+      int tx = tank[i][j].x + dir[cmd_type][0];
+      int ty = tank[i][j].y + dir[cmd_type][1];
+      int stay = 0;
+      for (int prej = 0 ; prej < j ; ++prej) {
+        if (tank[i][prej].x == tx && tank[i][prej].y == ty) {
+          // target taken by friend tank, stay still
+          stay = 1;
         }
-        if (!stay) {
-          tank[i][j].x = tx;
-          tank[i][j].y = ty;
-          hit_queue[tx][ty].push_back(make_pair(i, j));
-        }
-        if (i == 0) {
-          // check hit at middle
-          for (int tmpj = 0 ; tmpj < 5 ; ++tmpj) {
-            if (tank[1-i][tmpj].x == tx && tank[1-i][tmpj].y == ty &&
-                is_oppo_dir(cmd[i][j].type, cmd[1-i][tmpj].type)) {
-              hit_at_middle.push_back(make_pair(j, tmpj));
-              break;
-            }
+      }
+      if (!stay) {
+        tank[i][j].x = tx;
+        tank[i][j].y = ty;
+        hit_queue[tx][ty].push_back(make_pair(i, j));
+      } else {
+        hit_queue[tank[i][j].x][tank[i][j].y].push_back(make_pair(i,j));
+      }
+      if (i == 0) {
+        // check hit at middle
+        for (int tmpj = 0 ; tmpj < 5 ; ++tmpj) {
+          if (tank[1-i][tmpj].x == tx && tank[1-i][tmpj].y == ty &&
+              is_oppo_dir(cmd[i][j].type, cmd[1-i][tmpj].type)) {
+            hit_at_middle.push_back(make_pair(j, tmpj));
+            break;
           }
         }
       }

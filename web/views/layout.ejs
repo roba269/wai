@@ -14,15 +14,14 @@
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
         <div class="container">
-            <a class="brand" href="/">Wai</a>
+            <a class="brand" href="/">WAI</a>
             <div class="nav-collapse">
                 <ul class="nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/game_list">Games</a></li>
                     <li><a href="/faq">FAQ</a></li>
                     <% if (user) { %>
-                    <li><a href="/submit_list/all">My Submitions</a></li>
-                    <li><a href="/match_list/all">My Matches</a></li>
+                    <li><a href="/submit_list/all/<%= user_id %>">My Submitions</a></li>
                     <% } else { %>
                     <li><a href="/login">Login</a></li>
                     <li><a href="/reg">Sign Up</a></li>

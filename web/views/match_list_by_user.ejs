@@ -1,16 +1,39 @@
+<%
+function pad(v) {
+  if (v < 10) return '0' + v;
+  return '' + v;
+}
+%>
 <table class="table table-striped">
   <thead>
     <tr>
       <th>Black</th>
       <th>White</th>
+      <th>Start Time</th>
       <th>Result</th>
     </tr>
   </thead>
   <tbody>
     <% matches.forEach(function(match, index) { %>
     <tr>
-      <td><%= match.nick1 %> Ver <%= match.sid1 %> flag: <%= match.flg1 %></td>
-      <td><%= match.nick2 %> Ver <%= match.sid2 %> flag: <%= match.flg2 %></td>
+      <td><%= match.nick1 %>
+        <span class="badge">v<%= match.version1 %></span>
+        <% if (match.flg1 !== 1) { %>
+          <span class="label label-warning">Dep</span>
+        <% } %>
+      </td>
+      <td><%= match.nick2 %>
+        <span class="badge">v<%= match.version2 %></span>
+        <% if (match.flg2 !== 1) { %>
+          <span class="label label-warning">Dep</span>
+        <% } %>
+      </td>
+      <td><%= match.date.getFullYear()
+          + "-" + pad(match.date.getMonth())
+          + "-" + pad(match.date.getDate())
+          + " " + pad(match.date.getHours())
+          + ":" + pad(match.date.getMinutes())
+          + ":" + pad(match.date.getSeconds()) %></td>
       <td>
         <% if (match.status === 1) { %>
           Running

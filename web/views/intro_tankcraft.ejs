@@ -1,1 +1,50 @@
 <h2>TankCraft Introduction</h2>
+<p>
+TankCraft is an interesting turn-based strategy game which borrowed from <em>Baidu A-Star Constest 2010</em> and <em>the 10th Team-Style Programming Contest of Tsinghua University</em>.
+<p>
+The rule is here. But please ignore the interaction.
+<p>
+Please note that you choose your tanks' type after reading the map, which is different from the origional game.
+
+<h2>I/O Protocol Specification</h2>
+<p>
+Your program should read from <strong>stdin</strong> and write to <strong>stdout</strong>.
+<p>
+<strong>Note: If you use buffered output (for example, printf), please flush the output buffer after every output. See the <a href="/faq">FAQ</a> for details.</strong>
+<p>
+At the beginning, a string which is either "red" or "blue" will be sent to you, indicating your color. And the red side moves first.
+<p>
+Then, a string which indicating the map will sent to you. It will contain 529 characters (=23*23), while the i-th (0 &le; <em>i</em> &lt; 529) character indicates the cell on (i/23)-th row and (i%23)-th column. The characters may be:
+<p>
+<pre>
+'P': empty space
+'S': stone
+'B': brick
+'b': broken brick
+'G': the resource belongs to neither sides
+'H': the resource belongs to red side
+'L': the resource belongs to blue side
+'0'..'4': the initial position of five red tanks
+'5'..'9': the initial position of five blue tanks
+</pre>
+<p>
+After reading the map, you should output five integers indicates the five tanks' type you choose. (0: striker, 1: pioneer, 2: sniper)
+<p>
+Then the first round begins. You should read the information of this round at first, and then output your moving. The information you read is formated as:
+<pre>
+round_number map red_score blue_score red_kill blue_kill [<em>tank_info</em>]*10 
+</pre>
+<p>
+where <em>map</em> is a 529-charater string as described above. And others are integers. There are 10 tanks's information at the end, while the first 5 tanks are red, and the last 5 tanks are blue. The format of tank_info:
+<p>
+<pre>
+X Y Type HP Revive Noharm
+</pre>
+<p>
+where X and Y indicates the position of the tank. (1 &le; X,Y &le; 21) Negative X and Y indicates that the tank is killed or not visible. <em>Type</em> means the type of this tank (0: striker, 1: pioneer, 2: sniper). <em>HP</em> means the current HP of this tank, and it is 0 if the tank is killed and not revived yet. If the tank is killed, it will revive after <em>Revive</em> rounds. And if the tank is just revived, it will keep undefeatable in next <em>Noharm</em> rounds.
+<p>
+Please note that even if an enemy tank is un-visible, you still know its other information except position. 
+<p>
+After reading the round info, you should output 5 lines. Each line for each tank in order. The line should be "<strong>GOUP</strong>", "<strong>GODOWN</strong>", "<strong>GOLEFT</strong>", "<strong>GORIGHT</strong>", "<strong>STOP</strong>" or "<strong>FIRE</strong> x y". If the command is "FIRE", you should output the target position (x,y). Note that If your tank is killed, you also should output a command for it, but this command will be ignored.
+<p>
+See the sample code for reference.

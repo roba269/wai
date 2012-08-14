@@ -10,6 +10,9 @@ const GRID_SIZE = 50;
 const NUM_ROW = 15;
 const NUM_COL = 15;
 
+var inter_id;
+var play_status = 0;
+
 function getMousePos(canvas, evt) {
     // get canvas position
     var obj = canvas;
@@ -132,5 +135,17 @@ function prevStep() {
   if (--step_idx < 0)
     step_idx = 0;
   draw();
+}
+
+function autoPlay() {
+  if (play_status === 0) {
+    play_status = 1;
+    document.getElementById("autoplay").innerHTML = "Pause";
+    inter_id = setInterval(nextStep, 1000);
+  } else if (play_status === 1) {
+    clearInterval(inter_id);
+    play_status = 0;
+    document.getElementById("autoplay").innerHTML = "Auto Play";
+  }
 }
 

@@ -1,1 +1,20 @@
 <h2>Xiangqi Introduction</h2>
+<p>
+Xiangqi (Chinese: 象棋), also known as Chinese Chess, is one of the most popular chess games in China. Xiangqi's rule is similar with Chess, but also with significant difference. 
+<p>
+For the readers who are not familiar with Xiangqi's rule, read <a href="http://en.wikipedia.org/wiki/Xiangqi">http://en.wikipedia.org/wiki/Xiangqi</a> firstly.
+
+<h2>I/O Protocol Specification</h2>
+<p>
+Your program should read from <strong>stdin</strong> and write to <strong>stdout</strong>.
+<p>
+<strong>Note: If you use buffered output (for example, printf), please flush the output buffer after every output. See the <a href="/faq">FAQ</a> for details.</strong>
+<p>
+At the beginning, a string which is either "first" or "second" will be sent to you, indicating that your are the first or second to move.
+<p>
+In each turn (except the first player's first move), you should read four integers x<sub>1</sub>, y<sub>1</sub>, x<sub>2</sub>, y<sub>2</sub> from stdin, indicating your opponent moves the chess at (x<sub>1</sub>, y<sub>1</sub>) to (x<sub>2</sub>, y<sub>2</sub>). You can assume the moving is always valid. Then you should output four integers <em>x<sub>1</sub></em>, <em>y<sub>1</sub></em>, x<sub>2</sub>, y<sub>2</sub> (0 &le; x<sub>1</sub>, x<sub>2</sub> &lt; 10, 0 &le; y<sub>1</sub>, y<sub>2</sub> &lt; 9) which are separated by whitespaces, indicating your moving.
+<p>
+<strong>If your program output an invalid move, you will lose immediately.</strong>
+<p>
+See the sample code for reference.
+

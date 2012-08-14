@@ -1,3 +1,4 @@
-<pre><block>
-  <%= code %>
-</block></pre>
+<% if (err) { %>
+  <pre><block><%= err %></block></pre>
+<% } %>
+<pre><block><%= code %></block></pre>

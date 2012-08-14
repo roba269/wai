@@ -17,6 +17,8 @@ var char_list = ['S', 'B', 'b', 'P', 'G', 'H', 'L'];
 var pic_name = ['stone', 'brick', 'broken_brick', 'empty', 'mine', 'mine_red', 'mine_blue'];
 var loaded_img = {};
 var tank_img;
+var inter_id;
+var play_status = 0;
 
 function in_board(x, y) {
   return x >= 0 && x < NUM_ROW && y >= 0 && y < NUM_COL;
@@ -319,6 +321,18 @@ function prevStep() {
     return;
   }
   draw();
+}
+
+function autoPlay() {
+  if (play_status === 0) {
+    play_status = 1;
+    document.getElementById("autoplay").innerHTML = "Pause";
+    inter_id = setInterval(nextStep, 1000);
+  } else if (play_status === 1) {
+    clearInterval(inter_id);
+    play_status = 0;
+    document.getElementById("autoplay").innerHTML = "Auto Play";
+  }
 }
 
 function onMouseMove(evt) {

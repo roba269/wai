@@ -1,6 +1,12 @@
+<%
+function pad(v) {
+  if (v < 10) return '0' + v;
+  return '' + v;
+}
+%>
 <table class="table table-striped">
   <thead>
-    <tr><th>User</th><th>Game</th><th>Version</th><th>Submit Date</th><th>Size</th><th>Name</th><th>Status</th></tr>
+    <tr><th>User</th><th>Game</th><th>Version</th><th>Submit Date</th><th>Size</th><th>Status</th></tr>
   </thead>
   <tbody>
     <% submits.forEach(function(submit, index) { %>
@@ -8,10 +14,20 @@
       <td><%= submit.user_nick %></td>
       <td><%= submit.game_name %></td>
       <td><%= submit.version %></td>
-      <td><%= submit.date %></td>
-      <td><%= submit.size %> KB</td>
-      <td><%= submit.ori_name %></td>
-      <td><%= submit.status %><a href="/view_code/<%= submit._id %>">View</td>
+      <td><%= submit.date.getFullYear()
+          + "-" + pad(submit.date.getMonth()+1)
+          + "-" + pad(submit.date.getDate())
+          + " " + pad(submit.date.getHours())
+          + ":" + pad(submit.date.getMinutes())
+          + ":" + pad(submit.date.getSeconds()) %></td>
+      <td><a href="/view_code/<%= submit._id %>"><%= submit.size.toFixed(2) %> KB</a></td>
+      <td><% if (submit.status === 0) { %>
+        Waiting
+      <% } else if (submit.status === 1) { %>
+        <a href="/view_code/<%= submit._id %>">Compile Error</a>
+      <% } else if (submit.status === 2) { %>
+        Compile Success
+      <% } %>
     </tr>
     <% }) %>
   </tbody>

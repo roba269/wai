@@ -13,7 +13,7 @@ function compile(submit) {
         if (err) {
           console.log('id:' + submit._id + ' error: ' + err);
           db.submits.update({_id: submit._id},
-              {$set: {status: 1}},
+              {$set: {status: 1, 'compile_output': stderr}},
               function(err) {
                 if (err) console.log('Update failed: ' + err);
               });

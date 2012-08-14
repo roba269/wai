@@ -16,18 +16,30 @@
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
         <div class="container">
-            <a class="brand" href="/">Wai</a>
+            <a class="brand" href="/">WAI</a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li class="active"><a href="/">Home</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/game_list">Games</a></li>
+                    <li><a href="/faq">FAQ</a></li>
                     <% if (user) { %>
-                    <li>Hello, <%= user %></li>
-                    <li><a href="/logout">Logout</a></li>
+                    <li><a href="/submit_list/all/<%= user_id %>">My Submitions</a></li>
                     <% } else { %>
                     <li><a href="/login">Login</a></li>
                     <li><a href="/reg">Sign Up</a></li>
                     <% } %>
                 </ul>
+                <% if (user) { %>
+                <ul class="nav pull-right">
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= user %><b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="/change_passwd">Change Password</a></li>
+                      <li><a href="/logout">Logout</a></li>
+                    </ul>
+                  </li>
+                </ul>
+                <% } %>
             </div>
         </div>
         </div>
@@ -45,5 +57,7 @@
         <% } %>
         <%- body %>
     </div>
+    <script src="/javascripts/jquery.js"></script>
+    <script src="/javascripts/bootstrap-dropdown.js"></script>
   </body>
 </html>
