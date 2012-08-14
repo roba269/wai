@@ -17,8 +17,8 @@ all:
 	$(CC) $(OPT) -c sandbox.cpp
 	$(CC) $(OPT) -c match_main.cpp
 	$(CC) $(OPT) -c hvc_main.cpp
-	$(CC) $(OPT) -DMONGO_USE_LONG_LONG_INT -Imongo_driver -c waid.cpp
-	gcc -DMONGO_USE_LONG_LONG_INT $(OPT) -Imongo_driver mongo_driver/*.c waid.o -o waid.exe
+	# $(CC) $(OPT) -DMONGO_USE_LONG_LONG_INT -Imongo_driver -c waid.cpp
+	# gcc -DMONGO_USE_LONG_LONG_INT $(OPT) -Imongo_driver mongo_driver/*.c waid.o -o waid.exe
 	# $(CC) -Wall match_renju.o player.o match.o scheduler.o db_wrapper.o compiler.o main.o simple_match.o sandbox.o -lmysqlclient -lpthread -o wai.exe -O3
 	$(CC) -Wall scheduler.o db_wrapper.o compiler.o match_main.o simple_match.o sandbox.o -lmysqlclient -lpthread -o match.exe -O3
 	$(CC) -Wall scheduler.o db_wrapper.o compiler.o hvc_main.o hvc_match.o sandbox.o -lmysqlclient -lpthread -o hvc_match.exe -O3

@@ -241,6 +241,9 @@ function get_rank_list(game_name, callback) {
     for (var idx = 0 ; idx < users.length ; ++idx) {
       score_list.push({user: users[idx], score: 0});
     }
+    if (users.length <= 1) {
+      return callback(null, score_list);
+    }
     // console.log('init score_list: %j', score_list);
     var counter = users.length * (users.length - 1);
     for (var idx = 0 ; idx < users.length ; ++idx) {
