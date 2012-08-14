@@ -54,7 +54,7 @@ function get_latest_result(inp_user_id, game_name, inp_callback) {
           });
       }, function(err, result) {
         if (err) callback(err);
-        console.log('result: %j', result);
+        // console.log('result: %j', result);
         var last_submit = {};
         for (var idx = 0 ; idx < users.length && idx < result.length ; ++idx) {
           last_submit[users[idx]._id] = result[idx];
@@ -241,13 +241,13 @@ function get_rank_list(game_name, callback) {
     for (var idx = 0 ; idx < users.length ; ++idx) {
       score_list.push({user: users[idx], score: 0});
     }
-    console.log('init score_list: %j', score_list);
+    // console.log('init score_list: %j', score_list);
     var counter = users.length * (users.length - 1);
     for (var idx = 0 ; idx < users.length ; ++idx) {
       for (var idx2 = 0 ; idx2 < users.length ; ++idx2) {
         if (idx === idx2) continue;
         (function(idx, idx2) {
-          console.log('idx: %j, idx2: %j', idx, idx2);
+          // console.log('idx: %j, idx2: %j', idx, idx2);
           db.matches.find({'uid1': users[idx]._id,
             'uid2': users[idx2]._id,
             'game': game_name, 'last': 1}).sort({date: -1},
@@ -266,7 +266,7 @@ function get_rank_list(game_name, callback) {
                 } else if (match.result === 1) {
                   score_list[idx].score += 3;
                 } else if (match.result === 2) {
-                  console.log('idx2:%j users.length:%j score_list: %j', idx2, users.length, score_list);
+                  // console.log('idx2:%j users.length:%j score_list: %j', idx2, users.length, score_list);
                   score_list[idx2].score += 3;
                 } else console.log('Unexpected result for match bewteen user %s and %s', users[idx].nick, users[idx2].nick);
               }
@@ -277,7 +277,7 @@ function get_rank_list(game_name, callback) {
                   if (ita.score > itb.score) return -1;
                   return 0;
                 });
-                console.log('socre_list: %j', score_list);
+                // console.log('socre_list: %j', score_list);
                 callback(null, score_list);
               }
             });

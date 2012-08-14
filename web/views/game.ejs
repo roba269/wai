@@ -4,6 +4,7 @@
             <%- partial('intro_' + game_name) %>
         </div>
         <div class="span4">
+            <% if (hvc !== 0) { %>
             <div class="well">
               <form action="/arena/<%= game_name %>" method="POST">
                 <input type="text" value="Choose an AI id">
@@ -11,7 +12,12 @@
               </form>
             </div>
             <hr>
+            <% } %>
             <% if (user) { %>
+            <div class="well">
+                <a class="btn" href="/submit_list/<%= game_name %>/<%= uid %>">My Submitions</a>
+                <a class="btn" href="/match_list/<%= game_name %>/<%= uid %>">My Matches</a>
+            </div>
             <div class="well">
                 <h3>Submit your AI</h3>
                 <form action="/submit/<%= game_name %>" method="POST" enctype="multipart/form-data">
@@ -25,18 +31,15 @@
                     <input class="input-file" name="code" type="file">
                   </div>
                   <label class="checkbox">
-                    <input type="checkbox" name="allow_view">Allow others view this code
+                    <input type="checkbox" name="allow_view">Allow others viewing this code
                   </label>
-                  <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                  </div>
+                  <p align="center">
+                  <button type="submit" class="btn btn-primary">Submit</button></p>
                 </form>
-                <a class="btn" href="/submit_list/<%= game_name %>/<%= uid %>">View My Submitions</a>
-                <a class="btn" href="/match_list/<%= game_name %>/<%= uid %>">View My Matches</a>
             </div>
             <% } %>
             <div class="well" id="leader-board">
-                <h3><%= game_name %> Leader Board</h3>
+                <h3><%= show_name %> Leader Board</h3>
                 <table class="table table-striped">
                 <thead><tr>
                   <th>Rank</th>

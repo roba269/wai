@@ -52,12 +52,6 @@ exports.index = function(req, res) {
 };
 
 exports.game = function(req, res) {
-  /*
-  if (!req.session.user) {
-    req.flash('error', 'You are not logged in.');
-    return res.redirect('back');
-  }
-  */
   db.games.findOne({name: req.params.game_name}, function(err, game) {
     if (err) {
       console.log('Failed to get game info');
@@ -79,6 +73,8 @@ exports.game = function(req, res) {
         res.render('game', {title: 'WAI : ' + req.params.game_name,
             game_name: req.params.game_name,
             game_intro: game.desc,
+            hvc: game.hvc,
+            show_name: game.show_name,
             uid: uid,
             ranklist: rank_list});
       });
@@ -108,12 +104,12 @@ exports.view_code = function(req, res) {
         return;
       }
       if (submit.allow_view || 
-        (req.session.user &&submit.user_id.equals(req.session.user._id))) {
+        (req.session.user && submit.user_id.equals(req.session.user._id))) {
         res.render('code', {title: 'WAI : View Code',
                           code: submit.code, err: submit.compile_output});
       } else {
         res.render('code', {title: 'WAI : View Code',
-                  code: 'You have no permission to view this code.'});
+                  err: '', code: 'You have no permission to view this code.'});
       }
     });
 }

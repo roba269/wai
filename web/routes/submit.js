@@ -31,10 +31,12 @@ exports.submit_list = function(req, res) {
 };
 
 exports.submit_list_by_user = function(req, res) {
+  /*
   if (!req.session.user) {
     req.flash('error', 'You are not login.');
     return res.redirect('back');
   }
+  */
   var game_name = req.params.game_name;
   var user_id = ObjectId(req.params.user_id);
   var query;

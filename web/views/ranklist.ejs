@@ -4,13 +4,17 @@
       <th>Rank</th>
       <th>Nick</th>
       <th>Score</th>
+      <th></th>
+      <th></th>
     </tr></thead>
     <tbody>
       <% ranklist.forEach(function(item, index) { %>
       <tr>
       <td><%= index %></td>
       <td><%= item.user.nick %></td>
-      <td><%= item.score %> <a href="/match_list/<%= game_name %>/<%= item.user._id %>">Details</a></td>
+      <td><%= item.score %></td>
+      <td><a href="/submit_list/<%= game_name %>/<%= item.user._id %>">Submition Histroy</a></td>
+      <td><a href="/match_list/<%= game_name %>/<%= item.user._id %>">Match Details</a></td>
       </tr>
       <% }); %>
     </tbody>
