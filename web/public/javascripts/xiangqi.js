@@ -12,6 +12,10 @@ const GRID_SIZE = 40;
 const NUM_ROW = 10;
 const NUM_COL = 9;
 
+var loaded_img = [];
+var inter_id;
+var play_status = 0;
+
 ChessType = {
   B_SHUAI : 1,
   B_SHI : 2,
@@ -130,22 +134,58 @@ function drawBoard() {
     ctx.fillStyle = "rgb(0,0,0)";
     var i;
     ctx.beginPath();
-    for (i = 0 ; i <= NUM_COL ; ++i) {
+    for (i = 0 ; i < NUM_COL ; ++i) {
         ctx.moveTo(i * GRID_SIZE + LEFT_MARGIN, TOP_MARGIN);
         ctx.lineTo(i * GRID_SIZE + LEFT_MARGIN,
-              (NUM_ROW) * GRID_SIZE + TOP_MARGIN);
+              4 * GRID_SIZE + TOP_MARGIN);
+        if (i === 0 || i === NUM_COL - 1) {
+          ctx.moveTo(i * GRID_SIZE + LEFT_MARGIN,
+              4 * GRID_SIZE + TOP_MARGIN);
+          ctx.lineTo(i * GRID_SIZE + LEFT_MARGIN,
+              5 * GRID_SIZE + TOP_MARGIN);
+        }
+        ctx.moveTo(i * GRID_SIZE + LEFT_MARGIN,
+              5 * GRID_SIZE + TOP_MARGIN);
+        ctx.lineTo(i * GRID_SIZE + LEFT_MARGIN,
+              9 * GRID_SIZE + TOP_MARGIN);
     }
-    for (i = 0 ; i <= NUM_ROW ; ++i) {
+    for (i = 0 ; i < NUM_ROW ; ++i) {
         ctx.moveTo(LEFT_MARGIN, i * GRID_SIZE + TOP_MARGIN);
-        ctx.lineTo(LEFT_MARGIN + (NUM_COL) * GRID_SIZE,
+        ctx.lineTo(LEFT_MARGIN + (NUM_COL-1) * GRID_SIZE,
                     i * GRID_SIZE + TOP_MARGIN);
     }
+    ctx.moveTo(LEFT_MARGIN + 3 * GRID_SIZE, TOP_MARGIN);
+    ctx.lineTo(LEFT_MARGIN + 5 * GRID_SIZE,
+      TOP_MARGIN + 2 * GRID_SIZE);
+    ctx.moveTo(LEFT_MARGIN + 5 * GRID_SIZE, TOP_MARGIN);
+    ctx.lineTo(LEFT_MARGIN + 3 * GRID_SIZE,
+      TOP_MARGIN + 2 * GRID_SIZE);
+    ctx.moveTo(LEFT_MARGIN + 3 * GRID_SIZE,
+      TOP_MARGIN + 7 * GRID_SIZE);
+    ctx.lineTo(LEFT_MARGIN + 5 * GRID_SIZE,
+      TOP_MARGIN + 9 * GRID_SIZE);
+    ctx.moveTo(LEFT_MARGIN + 5 * GRID_SIZE,
+      TOP_MARGIN + 7 * GRID_SIZE);
+    ctx.lineTo(LEFT_MARGIN + 3 * GRID_SIZE,
+      TOP_MARGIN + 9 * GRID_SIZE);
     ctx.stroke();
 }
 
 function load(match_id) {
   canvas = document.getElementById('arena');
-  draw();
+  var counter = 7 * 2;
+  for (var flg = 0 ; flg < 2 ; ++flg)
+    for (var j = 1 ; j <= 7 ; ++j) {
+      var idx = flg * 10 + j;
+      loaded_img[idx] = new Image();
+      loaded_img[idx].src = "/images/xiangqi/xiangqi" + idx + ".png";
+      loaded_img[idx].onload = function() {
+        if (--counter === 0) {
+          draw();
+        }
+      }
+    }
+  // draw();
   socket.once('res_steps', function(data) {
     for (var i = 0 ; i < data.steps.length ; ++i) {
       var tmp = data.steps[i].split(' ');
@@ -171,18 +211,22 @@ function draw() {
 
 function drawChess(x, y, type) {
     var ctx = canvas.getContext('2d');
-    if (type < 10) ctx.fillStyle = "rgb(0,0,0)";
-    else ctx.fillStyle = "rgb(255,0,0)";
-    ctx.beginPath();
-    ctx.arc(LEFT_MARGIN + y * GRID_SIZE + GRID_SIZE / 2,
-            TOP_MARGIN + x * GRID_SIZE + GRID_SIZE / 2,
-            GRID_SIZE/2-2, 0, Math.PI*2, true);
-    ctx.fill();
-    // ctx.textBaseline = 'middle';
-    ctx.fillStyle = "rgb(255,255,255)";
-    ctx.fillText(chess_text[type],
-        LEFT_MARGIN + y * GRID_SIZE + GRID_SIZE / 2,
-        TOP_MARGIN + x * GRID_SIZE + GRID_SIZE / 2);
+    ctx.drawImage(loaded_img[type],
+        LEFT_MARGIN + y * GRID_SIZE - GRID_SIZE / 2,
+        TOP_MARGIN + x * GRID_SIZE - GRID_SIZE / 2,
+        GRID_SIZE, GRID_SIZE);
+    // if (type < 10) ctx.fillStyle = "rgb(0,0,0)";
+    // else ctx.fillStyle = "rgb(255,0,0)";
+    // ctx.beginPath();
+    // ctx.arc(LEFT_MARGIN + y * GRID_SIZE + GRID_SIZE / 2,
+    //         TOP_MARGIN + x * GRID_SIZE + GRID_SIZE / 2,
+    //         GRID_SIZE/2-2, 0, Math.PI*2, true);
+    // ctx.fill();
+    // // ctx.textBaseline = 'middle';
+    // ctx.fillStyle = "rgb(255,255,255)";
+    // ctx.fillText(chess_text[type],
+    //     LEFT_MARGIN + y * GRID_SIZE + GRID_SIZE / 2,
+    //     TOP_MARGIN + x * GRID_SIZE + GRID_SIZE / 2);
 }
 
 function onMouseMove(evt) {
@@ -243,4 +287,15 @@ function prevStep() {
   draw();
 }
 
+function autoPlay() {
+  if (play_status === 0) {
+    play_status = 1;
+    document.getElementById("autoplay").innerHTML = "Pause";
+    inter_id = setInterval(nextStep, 1000);
+  } else if (play_status === 1) {
+    clearInterval(inter_id);
+    play_status = 0;
+    document.getElementById("autoplay").innerHTML = "Auto Play";
+  }
+}
 
