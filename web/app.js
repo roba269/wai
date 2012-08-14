@@ -3,6 +3,10 @@
  * Module dependencies.
  */
 
+var fs = require('fs');
+var accessLog = fs.createWriteStream('access.log', {flags: 'a'});
+var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
+
 var express = require('express')
   , routes = require('./routes');
 var app = module.exports = express.createServer();
@@ -12,6 +16,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 // Configuration
 
 app.configure(function(){
+  app.use(express.logger({stream: accessLog}));
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(express.bodyParser({uploadDir:'./uploads'}));
@@ -28,6 +33,11 @@ app.configure('development', function(){
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+  app.error(function(err, req, res, next) {
+    var s = '[' + new Date() + ']' + req.url + '\n';
+    errorLog.write(s + err.stack + '\n');
+    next();
+  });
 });
 
 app.dynamicHelpers({

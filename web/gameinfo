@@ -1,0 +1,5 @@
+{ "_id" : { "$oid" : "500d28e2e5b9e622db71ece9" }, "desc" : "Othello (also called <em>Reversi</em>) is a strategy board game for two players, played on an 8x8 board.", "hvc" : 0, "img" : "othello.jpg", "name" : "othello", "show_name" : "Othello (Reversi)" }
+{ "_id" : { "$oid" : "500d28ede5b9e622db71ecea" }, "desc" : "blah blah intro to renju", "hvc" : 0, "img" : "renju.jpg", "name" : "renju_simple", "show_name" : "Renju (Simple Rule)" }
+{ "_id" : { "$oid" : "500d2902e5b9e622db71eceb" }, "desc" : "blah blah intro to chinese_chess", "hvc" : 0, "img" : "xiangqi.jpg", "name" : "xiangqi", "show_name" : "Xiangqi (Chinese Chess)" }
+{ "_id" : { "$oid" : "501a3759e32aa5b52b2715fb" }, "hvc" : 0, "img" : "renju.jpg", "name" : "renju_restricted", "show_name" : "Renju (with Restriction)" }
+{ "_id" : { "$oid" : "5020cdc2ec3e3eba2efe1190" }, "hvc" : 0, "img" : "tankcraft.jpg", "name" : "tankcraft", "show_name" : "TankCraft" }
