@@ -35,10 +35,12 @@ function pad(v) {
           + ":" + pad(match.date.getMinutes())
           + ":" + pad(match.date.getSeconds()) %></td>
       <td>
-        <% if (match.status === 1) { %>
+        <% if (match.status === 0) { %>
+          Pending
+        <% } else if (match.status === 1) { %>
           Running
         <% } else if (match.status === 2) { %>
-        <%= match.result %>  
+          <%= match.result_str %>
         <% } %>
         &nbsp;
         <a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a>

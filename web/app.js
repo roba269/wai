@@ -91,7 +91,9 @@ app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
-// require('child_process').fork('compiler.js',[],{env: process.env});
+var child_process = require('child_process');
+child_process.fork('compiler.js',[],{env: process.env});
+child_process.fork('scheduler.js',[],{env: process.env});
 
 io.sockets.on('connection', function(socket) {
   socket.on('req_steps', function(data) {
@@ -105,7 +107,7 @@ io.sockets.on('connection', function(socket) {
         return;
       }
       var resp = {steps : match.trans};
-      console.log('%j', resp);
+      // console.log('%j', resp);
       socket.emit('res_steps', resp);
     });
   });

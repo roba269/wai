@@ -2,6 +2,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>
+#include <string>
 using namespace std;
 
 const int R = 10;
@@ -309,6 +310,12 @@ int can_move(int cur) {
   return 0;
 }
 
+inline string get_result_str(int side) {
+  if (side == 0) return "Draw";
+  if (side == 1) return "Player_1_win";
+  return "Player_2_win";
+}
+
 int main() {
   char buf[128];
   init_board();
@@ -319,7 +326,8 @@ int main() {
   int cur = 1;
   while (1) {
     if (!can_move(cur)) {
-      printf("%d OpponentCannotMove.\n", 3-cur);
+      printf("%d %s The_opponent_cannot_move.\n", 3-cur,
+        get_result_str(3-cur).c_str());
       fflush(stdout);
       break;
     }
@@ -328,7 +336,8 @@ int main() {
     int x1, y1, x2, y2;
     scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
     if (!valid(cur, x1, y1, x2, y2, buf)) {
-      printf("%d OpponentInvalidMove:%s.\n", 3-cur, buf);
+      printf("%d %s The_opponent_makes_invalid_move:%s.\n",
+        3-cur, get_result_str(3-cur).c_str(), buf);
       fflush(stdout);
       break;
     }
@@ -338,7 +347,8 @@ int main() {
     printf(">%d: %d %d %d %d\n", 3-cur, x1, y1, x2, y2);
     int w;
     if ((w = get_winner())) {
-      printf("%d Win\n", w);
+      printf("%d %s %s\n", w, get_result_str(w).c_str(),
+        get_result_str(w).c_str());
       fflush(stdout);
       break;
     }

@@ -24,7 +24,6 @@
                   <div class="controls">
                     <select name="lang">
                       <option>C++</option>
-                      <option>Java</option>
                     </select>
                   </div>
                   <div class="controls">
@@ -37,6 +36,10 @@
                   <button type="submit" class="btn btn-primary">Submit</button></p>
                 </form>
             </div>
+            <% } else {%>
+              <div class="alert alert-warning">
+                <a href="/login">Login</a> to submit your AI.
+              </div>
             <% } %>
             <div class="well" id="leader-board">
                 <h3><%= show_name %> Leader Board</h3>

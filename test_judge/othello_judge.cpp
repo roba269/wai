@@ -2,6 +2,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
+#include <string>
+using namespace std;
 
 const int N = 8;
 const int dir[][2] = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},
@@ -89,6 +91,12 @@ void output_board() {
     }
 }
 
+inline string get_result_str(int side) {
+  if (side == 0) return "Draw";
+  if (side == 1) return "Player_1_win";
+  return "Player_2_win";
+}
+
 int main() {
     memset(board, 0, sizeof(board));
     board[3][3] = board[4][4] = 1;
@@ -109,9 +117,11 @@ int main() {
         scanf("%d %d",&x,&y);
         if (!valid(x, y, cur)) {
             if (cur == 1) 
-              printf("%d BlackMakeInvalidMove.\n", 3-cur);
+              printf("%d %s Black_make_invalid_move.\n", 3-cur,
+                get_result_str(3-cur).c_str());
             else
-              printf("%d WhiteMakeInvalidMove.\n", 3-cur);
+              printf("%d %s White_make_invalid_move.\n", 3-cur,
+                get_result_str(3-cur).c_str());
             fflush(stdout);
             return 0;
         }
@@ -124,7 +134,8 @@ int main() {
     }
     int cnt_black, cnt_white;
     int w = get_winner(&cnt_black, &cnt_white);
-    printf("%d BlackCnt[%d]:WhiteCnt[%d]\n", w, cnt_black, cnt_white);
+    printf("%d %s BlackCnt[%d]:WhiteCnt[%d]\n", w,
+      get_result_str(w).c_str(), cnt_black, cnt_white);
     fflush(stdout);
     return 0;
 }

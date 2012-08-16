@@ -6,16 +6,17 @@ var SLEEP_IN_MS = 1000;
 
 function start_match(uid1, submit1, uid2, submit2, game) {
   var cmd = util.format('../match.exe ../test_judge/%s_judge.exe ./exe/%s.exe ./exe/%s.exe', game, submit1._id, submit2._id);
-  console.log('cmd:' + cmd);
+  // console.log('cmd:' + cmd);
   var match = cp.spawn('../match.exe', [
     util.format('../test_judge/%s_judge.exe', game),
     util.format('./exe/%s.exe', submit1._id),
     util.format('./exe/%s.exe', submit2._id)]);
   var trans = [];
   var result;
+  var result_str;
   var reason;
   match.stdout.on('data', function(data) {
-    console.log('stdout from judge:' + data);
+    // console.log('stdout from judge:' + data);
     var str_list = data.toString().split('\n');
     for (var i = 0 ; i < str_list.length ; ++i) {
       data_str = str_list[i];
@@ -27,7 +28,8 @@ function start_match(uid1, submit1, uid2, submit2, game) {
       } else {
         var tmp = data_str.split(' ');
         result = parseInt(tmp[0]);
-        if (tmp.length > 1) reason = tmp[1];
+        result_str = tmp[1];
+        if (tmp.length > 2) reason = tmp[2];
         // console.log('result:' + result + " reason:" + reason);
       }
     }
@@ -39,7 +41,7 @@ function start_match(uid1, submit1, uid2, submit2, game) {
       {$set: {'last': 0}}, function(err) {
         if (err) console.log('update last=0 failed');
         db.matches.update({'sid1': submit1._id, 'sid2': submit2._id},
-          {$set: {'last': 1, 'status': 2, 'result': result,
+          {$set: {'last': 1, 'status': 2, 'result': result, 'result_str': result_str,
             'reason': reason, 'trans': trans}}, function (err) {
             if (err) console.log('update matches failed:' + err);
           });
@@ -48,15 +50,15 @@ function start_match(uid1, submit1, uid2, submit2, game) {
 }
 
 function get_latest_submit(user1, user2, game) {
-  console.log('user1: %j', user1);
-  console.log('user2: %j', user2);
+  // console.log('user1: %j', user1);
+  // console.log('user2: %j', user2);
   db.submits.find({'user_email': user1.email, 'game_name': game, 'status': 2}).sort({date: -1}, function(err, submit_list1) {
       if (err) {
         console.log('get_latest_submit1 error:' + err);
         return;
       }
       if (submit_list1.length === 0) {
-        console.log('No submit for user %s game %s', user1.email, game);
+        // console.log('No submit for user %s game %s', user1.email, game);
         return;
       }
       var submit1 = submit_list1[0];
@@ -66,12 +68,12 @@ function get_latest_submit(user1, user2, game) {
             return;
           } 
           if (submit_list2.length === 0) {
-            console.log('No submit for user %s game %s',
-              user2.email, game);
+            // console.log('No submit for user %s game %s',
+            //   user2.email, game);
             return;
           }
           var submit2 = submit_list2[0];
-          console.log('submit1: ' + submit1._id + ' submit2: ' + submit2._id);
+          // console.log('submit1: ' + submit1._id + ' submit2: ' + submit2._id);
           db.matches.findOne(
             {'sid1': submit1._id, 'sid2': submit2._id}, 
             function(err, match) {
@@ -116,19 +118,19 @@ function schedule_match() {
           console.log('db.users.find failed, err:' + err);
           return;
         }
-        console.log('users.length:' + users.length);
+        // console.log('users.length:' + users.length);
         for (var idx = 0 ; idx < users.length ; ++idx) {
           for (var idx2 = 0 ; idx2 < users.length ; ++idx2) {
              if (idx === idx2) continue;
-             console.log('idx1:' + idx + ' idx2:' + idx2);
+             // console.log('idx1:' + idx + ' idx2:' + idx2);
              get_latest_submit(users[idx], users[idx2], game.name);
           }
         }
-        console.log('done');
+        // console.log('done');
       });
     });
   });
 }
 
-// setTimeout(schedule_match, SLEEP_IN_MS);
-schedule_match();
+console.log('Scheduler is running.');
+setInterval(schedule_match, SLEEP_IN_MS);

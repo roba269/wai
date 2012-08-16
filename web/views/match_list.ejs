@@ -15,7 +15,15 @@
       <td><%= match.submit_id1 %></td>
       <td><%= match.user_id2 %></td>
       <td><%= match.submit_id2 %></td>
-      <td><%= match.result %>&nbsp;&nbsp;<a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a></td>
+      <td><% if (match.result === 0) { %>
+        Pending
+      <% } else if (match.result === 1) { %>
+        Running
+      <% } else if (match.result === 2) { %>
+        <%= match.result_str %>
+        &nbsp; &nbsp; <a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a>
+      <% } %> 
+      </td>
     </tr>
     <% }) %>
   </tbody>

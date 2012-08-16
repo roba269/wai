@@ -45,10 +45,10 @@ void SimpleMatch::Start() {
             fflush(stdout);
             // strcat(trans, buf+1);
         } else if (isdigit(buf[0])) {
-            char reason[BUF_LEN];
-            sscanf(buf, "%d %s", &m_winner, reason);
+            char res_str[BUF_LEN], reason[BUF_LEN];
+            sscanf(buf, "%d %s %s", &m_winner, res_str, reason);
             fprintf(stderr, "the winner is %d\n", m_winner);
-            fprintf(stdout, "%d %s\n", m_winner, reason);
+            fprintf(stdout, "%d %s %s\n", m_winner, res_str, reason);
             fflush(stdout);
             break;
         } else {

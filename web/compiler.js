@@ -6,9 +6,9 @@ var SLEEP_IN_MS = 1000;
 
 function compile(submit) {
   if (submit.lang === 'C++') {
-    console.log('id:' + submit._id);
-    var cmd = 'g++ -Wall -static -O3 ./uploads/' + submit._id +
-      '.cpp -o ./exe/' + submit._id + '.exe';
+    // console.log('id:' + submit._id);
+    var cmd = 'g++ -Wall -static -ftemplate-depth-17 -O3 ./uploads/'
+      + submit._id + '.cpp -o ./exe/' + submit._id + '.exe';
     cp.exec(cmd, function(err, stdout, stderr) {
         if (err) {
           console.log('id:' + submit._id + ' error: ' + err);
@@ -18,7 +18,7 @@ function compile(submit) {
                 if (err) console.log('Update failed: ' + err);
               });
         } else {
-          console.log('id:' + submit._id + ' successful');
+          // console.log('id:' + submit._id + ' successful');
           db.submits.update({'game_name': submit.game_name,
               'user_email': submit.user_email, 'last': 1},
             {$set: {'last': 0}},
@@ -44,7 +44,7 @@ function compile(submit) {
 function pick_submit() {
   db.submits.findOne({status: 0}, function(err, submit) {
     if (err || !submit) {
-      console.log("Not found uncompiled code.");
+      // console.log("Not found uncompiled code.");
       return;
     }
     compile(submit);

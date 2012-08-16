@@ -463,6 +463,12 @@ void gen_info_for_client() {
   fflush(stdout);
 }
 
+inline string get_result_str(int side) {
+  if (side == 0) return "Draw";
+  if (side == 1) return "Player_1_win";
+  return "Player_2_win";
+}
+
 int main() {
   init();
   char tmp_path[128], full_path[128];
@@ -487,7 +493,7 @@ int main() {
     for (int j = 0 ; j < 5 ; j++) {
       scanf("%d", &tank[i][j].type);
       if (tank[i][j].type < 0 || tank[i][j].type > 2) {
-        printf("%d WrongTankType\n", (1-i)+1);
+        printf("%d %s The_opponent_makes_wrong_tank_type.\n", (1-i+1), get_result_str(1-i+1).c_str());
         fflush(stdout);
         return 0;
       }
@@ -572,15 +578,15 @@ int main() {
   sprintf(out_buf, "RedScore[%d]:BludScore[%d],RedKill[%d]:BlueKill[%d]", score[0], score[1], kill[0], kill[1]);
   if (score[0] == score[1]) {
     if (kill[0] == kill[1])
-      printf("0 %s\n", out_buf);
+      printf("0 %s %s\n", get_result_str(0).c_str(), out_buf);
     else if (kill[0] > kill[1])
-      printf("1 %s\n", out_buf);
+      printf("1 %s %s\n", get_result_str(1).c_str(), out_buf);
     else 
-      printf("2 %s\n", out_buf);
+      printf("2 %s %s\n", get_result_str(2).c_str(), out_buf);
   } else if (score[0] > score[1]) {
-    printf("1 %s\n", out_buf);
+    printf("1 %s %s\n", get_result_str(1).c_str(), out_buf);
   } else
-    printf("2 %s\n", out_buf);
+    printf("2 %s %s\n", get_result_str(2).c_str(), out_buf);
   fflush(stdout);
   return 0;
 }

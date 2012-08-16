@@ -2,6 +2,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
+#include <string>
+using namespace std;
 
 int board[16][16];
 const int R = 15;
@@ -190,6 +192,12 @@ int check_restriction(int x, int y, char *str) {
   return 0;
 }
 
+inline string get_result_str(int side) {
+  if (side == 0) return "Draw";
+  if (side == 1) return "Player_1_win";
+  return "Player_2_win";
+}
+
 int main() {
     fprintf(stderr, "%d: I am the judge\n", getpid());
     memset(board, 0, sizeof(board));
@@ -207,9 +215,11 @@ int main() {
         scanf("%d %d", &x, &y);
         if (!valid(x,y)) {
             if (cur == 1)
-              printf("%d BlackMakeInvalidMove.\n", 3-cur);
+              printf("%d %s Black_make_invalid_move.\n", 3-cur,
+                get_result_str(3-cur).c_str());
             else
-              printf("%d WhiteMakeInvalidMove.\n", 3-cur);
+              printf("%d %s White_make_invalid_move.\n", 3-cur,
+                get_result_str(3-cur).c_str());
             fflush(stdout);
             return 0;
         }
@@ -219,13 +229,15 @@ int main() {
         output_board();
         int w;
         if ((w = get_winner())) {
-            printf("%d blahblah\n",w);
+            printf("%d %s %s\n", w, get_result_str(w).c_str(),
+              get_result_str(w).c_str());
             fflush(stdout);
             return 0;
         }
         char tmp_buf[64];
         if (cur == 1 && check_restriction(x, y, tmp_buf)) {
-          printf("%d BlackRestrictedMove:%s.\n", 3-cur, tmp_buf);
+          printf("%d %s Black_restricted_move:%s.\n", 3-cur,
+            get_result_str(3-cur).c_str(), tmp_buf);
           fflush(stdout);
           return 0;
         }
