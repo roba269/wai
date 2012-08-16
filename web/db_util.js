@@ -93,6 +93,7 @@ function get_latest_result(inp_user_id, game_name, inp_callback) {
                   'status': match_list[idx].status,
                   'result': match_list[idx].result,
                   'result_str': match_list[idx].result_str.replace('_', ' '),
+                  'reason': match_list[idx].reason.replace('_', ' '),
                   'version1': match_list[idx].version1,
                   'version2': match_list[idx].version2,
                   'date': match_list[idx].date,

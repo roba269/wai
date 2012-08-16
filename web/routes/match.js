@@ -18,7 +18,7 @@ exports.match_list = function(req, res) {
     var match_list = [];
     matches.forEach(function (match) {
       var flg = 0;
-      console.log('match.uid1:' + match.uid1 + ' match.uid2:' + match.uid2 + ' user_sesson:' + req.session.user._id);
+      // console.log('match.uid1:' + match.uid1 + ' match.uid2:' + match.uid2 + ' user_sesson:' + req.session.user._id);
       if (match.uid1 == req.session.user._id) {
         flg = 1;
       } else if (match.uid2 == req.session.user._id) {

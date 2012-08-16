@@ -4,6 +4,13 @@ function pad(v) {
   return '' + v;
 }
 %>
+<script>
+$(document).ready(function () {
+  if ($("[rel=tooltip]").length) {
+    $("[rel=tooltip]").tooltip();
+  }
+});
+</script>
 <table class="table table-striped">
   <thead>
     <tr>
@@ -40,10 +47,10 @@ function pad(v) {
         <% } else if (match.status === 1) { %>
           Running
         <% } else if (match.status === 2) { %>
-          <%= match.result_str %>
+          <div rel="tooltip" title="<%= match.reason %>"><%= match.result_str %>
+          &nbsp;
+          <a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a></div>
         <% } %>
-        &nbsp;
-        <a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a>
       </td>
     </tr>
     <% }) %>

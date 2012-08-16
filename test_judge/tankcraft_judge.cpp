@@ -575,7 +575,7 @@ int main() {
       break;
   }
   char out_buf[128];
-  sprintf(out_buf, "RedScore[%d]:BludScore[%d],RedKill[%d]:BlueKill[%d]", score[0], score[1], kill[0], kill[1]);
+  sprintf(out_buf, "RedScore[%d]_:_BludScore[%d],_RedKill[%d]_:_BlueKill[%d]", score[0], score[1], kill[0], kill[1]);
   if (score[0] == score[1]) {
     if (kill[0] == kill[1])
       printf("0 %s %s\n", get_result_str(0).c_str(), out_buf);
