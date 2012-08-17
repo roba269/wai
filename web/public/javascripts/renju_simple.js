@@ -4,9 +4,9 @@ var canvas;
 var step_idx = 0;
 var socket = io.connect('http://localhost:3000');
 
-const LEFT_MARGIN = 25;
-const TOP_MARGIN = 25;
-const GRID_SIZE = 50;
+const LEFT_MARGIN = 15;
+const TOP_MARGIN = 15;
+const GRID_SIZE = 30;
 const NUM_ROW = 15;
 const NUM_COL = 15;
 
