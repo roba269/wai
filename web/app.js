@@ -81,20 +81,22 @@ app.get('/arena/replay/:game_name/:match_id', routes.arena_replay);
 app.get('/arena/hvc/:game_name/:submit_id', routes.arena_hvc);
 app.post('/submit/:game_name', routes.submit_post);
 app.get('/submit_list/:game_name/:user_id', routes.submit_list_adv);
-// app.get('/match_list/:game_name', routes.match_list);
 app.get('/view_code/:submit_id', routes.view_code);
 app.get('/match_list/:game_name/:user_id', routes.match_list_by_user);
 app.get('/ranklist/:game_name', routes.ranklist);
 
 app.get('/faq', routes.faq);
 
-app.listen(3000, function(){
-  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-});
+if (!module.parent) {
+  app.listen(3000, function(){
+    console.log("Express server listening on port %d in %s mode",
+      app.address().port, app.settings.env);
+  });
+}
 
 var child_process = require('child_process');
-// child_process.fork('compiler.js',[],{env: process.env});
-// child_process.fork('scheduler.js',[],{env: process.env});
+child_process.fork('compiler.js',[],{env: process.env});
+child_process.fork('scheduler.js',[],{env: process.env});
 
 io.sockets.on('connection', function(socket) {
   var hvc_match;

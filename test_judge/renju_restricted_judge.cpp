@@ -54,7 +54,7 @@ void output_board() {
 
 int check_five(int x, int y, int d, int bx = -1, int by = -1) {
   if (board[x][y]) {
-    fprintf(stderr, "error when check four\n");
+    fprintf(stderr, "error when check five\n");
     return 0;
   }
   int cnt = 1, b_flg = 0;
@@ -111,11 +111,15 @@ int check_four(int x, int y, int d) {
 }
 
 int check_open_four(int x, int y, int d) {
+  if (board[x][y] != 0) {
+    fprintf(stderr, "check_open_four failed.");
+    return 0;
+  }
   int flg = 1;
   for (int tx = 0 ; tx < R ; ++tx)
     for (int ty = 0 ; ty < C ; ++ty) {
       if (x == tx && y == ty) continue;
-      if (board[tx][ty] == 0) continue;
+      if (board[tx][ty] != 0) continue;
       board[tx][ty] = 2;
       if (!check_four(x, y, d)) {
         board[tx][ty] = 0;
@@ -140,8 +144,7 @@ int check_open_three(int x, int y, int d) {
     int dis = 1;
     while (IN(tx,ty) && dis <= 4) {
       if (board[tx][ty] == 2) break;
-      if (board[tx][ty] == 1) continue;
-      if (check_open_four(tx, ty, d)) {
+      if (board[tx][ty] == 0 && check_open_four(tx, ty, d)) {
         board[x][y] = 0;
         return 1;
       }
@@ -172,7 +175,7 @@ int check_restriction(int x, int y, char *str) {
         ++cnt[d][flg];
       }
     }
-    if (cnt[d][0] + cnt[d][1] > 5) {
+    if (cnt[d][0] + cnt[d][1] >= 5) {
       strcpy(str, "six-in-a-row");
       return 1;
     }
@@ -225,6 +228,13 @@ int main() {
         }
         printf("+%d %d %d\n", cur, x, y);
         fflush(stdout);
+        char tmp_buf[64];
+        if (cur == 1 && check_restriction(x, y, tmp_buf)) {
+          printf("%d %s Black_restricted_move:%s.\n", 3-cur,
+            get_result_str(3-cur).c_str(), tmp_buf);
+          fflush(stdout);
+          return 0;
+        }
         board[x][y] = cur;
         output_board();
         int w;
@@ -233,13 +243,6 @@ int main() {
               get_result_str(w).c_str());
             fflush(stdout);
             return 0;
-        }
-        char tmp_buf[64];
-        if (cur == 1 && check_restriction(x, y, tmp_buf)) {
-          printf("%d %s Black_restricted_move:%s.\n", 3-cur,
-            get_result_str(3-cur).c_str(), tmp_buf);
-          fflush(stdout);
-          return 0;
         }
         printf(">%d: %d %d\n", 3-cur, x, y);
         fflush(stdout);
