@@ -26,7 +26,8 @@ function pad(v) {
       <% } else if (submit.status === 1) { %>
         <a href="/view_code/<%= submit._id %>">Compile Error</a>
       <% } else if (submit.status === 2) { %>
-        Compile Success
+        Compile Success &nbsp; &nbsp;
+        <a href="/arena/hvc/<%= submit.game_name %>/<%= submit._id %>">HvC</a>
       <% } %>
     </tr>
     <% }) %>

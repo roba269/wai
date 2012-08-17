@@ -14,6 +14,7 @@ const NUM_COL = 8;
 
 var inter_id;
 var play_status = 0;
+var g_is_hvc;
 
 function in_board(x, y) {
   return x >= 0 && x < NUM_ROW && y >= 0 && y < NUM_COL;
@@ -60,7 +61,6 @@ Board.prototype.makeMove = function(move) {
 }
 
 Board.prototype.outputForDebug = function() {
-  console.log('begin output chessboard');
   for (var i = 0 ; i < NUM_ROW ; ++i) {
     var str = '';
     for (var j = 0 ; j < NUM_COL ; ++j)
@@ -111,19 +111,26 @@ function drawBoard() {
     ctx.stroke();
 }
 
-function load(match_id) {
+function load(id, is_hvc) {
+  g_is_hvc = is_hvc;
   canvas = document.getElementById('arena');
   draw();
-  socket.once('res_steps', function(data) {
-    for (var i = 0 ; i < data.steps.length ; ++i) {
-      var tmp = data.steps[i].split(' ');
-      var item = {'color': parseInt(tmp[0]),
-        'x': parseInt(tmp[1]), 'y': parseInt(tmp[2])};
-      steps.push(item);
-    }
-    // steps = data.steps;
-  });
-  socket.emit('req_steps', {match_id: match_id});
+  if (is_hvc === 0) {
+    socket.once('res_steps', function(data) {
+      for (var i = 0 ; i < data.steps.length ; ++i) {
+        var tmp = data.steps[i].split(' ');
+        var item = {'color': parseInt(tmp[0]),
+          'x': parseInt(tmp[1]), 'y': parseInt(tmp[2])};
+        steps.push(item);
+      }
+      // steps = data.steps;
+    });
+    socket.emit('req_steps', {match_id: id});
+  } else {
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mousedown', onMouseDown);
+    socket.emit('req_hvc', {submit_id: id});
+  }
 }
 
 function draw() {
@@ -140,36 +147,50 @@ function drawChess(x, y, color) {
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.beginPath();
-    ctx.arc(LEFT_MARGIN + x * GRID_SIZE + GRID_SIZE / 2,
-            TOP_MARGIN + y * GRID_SIZE + GRID_SIZE / 2,
+    ctx.arc(LEFT_MARGIN + y * GRID_SIZE + GRID_SIZE / 2,
+            TOP_MARGIN + x * GRID_SIZE + GRID_SIZE / 2,
             GRID_SIZE/2-2, 0, Math.PI*2, true);
     if (color === 1) ctx.fill();
     else ctx.stroke();
 }
+
 function onMouseMove(evt) {
+/*
     tmp = getMousePos(canvas, evt);
     document.getElementById("x_pos").innerHTML = tmp.x;
     document.getElementById("y_pos").innerHTML = tmp.y;
+*/
 }
+
 function onMouseDown(evt) {
+    if (g_is_hvc === 0) {
+      return;
+    }
     if (is_over) return;
     tmp = getMousePos(canvas, evt);
     chess_pos = {x: 0, y: 0};
-    chess_pos.x = Math.floor((tmp.x - LEFT_MARGIN) / GRID_SIZE + 0.5);
-    chess_pos.y = Math.floor((tmp.y - TOP_MARGIN) / GRID_SIZE + 0.5);
-    if (chess_pos.x < 0 || chess_pos.x >= NUM_COL ||
-            chess_pos.y < 0 || chess_pos.y >= NUM_ROW) {
+    chess_pos.y = Math.floor((tmp.x - LEFT_MARGIN) / GRID_SIZE);
+    chess_pos.x = Math.floor((tmp.y - TOP_MARGIN) / GRID_SIZE);
+    if (chess_pos.x < 0 || chess_pos.x >= NUM_ROW ||
+            chess_pos.y < 0 || chess_pos.y >= NUM_COL) {
         return;
     }
-    drawChess(chess_pos.x, chess_pos.y, 0);
-    steps.push(chess_pos);
+    // drawChess(chess_pos.x, chess_pos.y, 1);
+    var tmp_move = {x: chess_pos.x, y: chess_pos.y, color: 1};
+    show_board[step_idx].makeMove(tmp_move);
+    draw();
+    steps.push(tmp_move);
     socket.emit('put_chess', {x: chess_pos.x, y: chess_pos.y});
     socket.once('put_response', function(data) {
         if (data.is_over) {
             is_over = true;
-            alert("over winner = " + data.winner);
+            alert("over " + data.res_str + " " + data.reason);
         } else {
-            drawChess(data.x, data.y, 1);
+            // drawChess(data.x, data.y, 2);
+          var tmp_move = {x: data.x, y: data.y, color: 2};
+          show_board[step_idx].makeMove(tmp_move);
+          draw();
+          steps.push(tmp_move);
         }
     });
 }

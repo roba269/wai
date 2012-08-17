@@ -1,3 +1,14 @@
-<canvas>
-
+<div class="span12 row">
+<% if (hvc === 0) { %>
+<p><a class="btn" onClick="nextStep();">Next Step</a> &nbsp; &nbsp;
+<a class="btn" onClick="prevStep();">Prev Step</a> &nbsp; &nbsp;
+<a class="btn" id="autoplay" onClick="autoPlay();">Auto Play</a></p>
+<% } %>
+<div class="span12 row" id="info">
+</div>
+<div class="span8">
+<canvas id="arena" width="550" height="550">
+    Your browser does not support Canvas.
 </canvas>
+</div>
+</div>

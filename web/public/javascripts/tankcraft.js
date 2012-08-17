@@ -140,6 +140,8 @@ function drawBoard() {
 
 function load(match_id) {
   canvas = document.getElementById('arena');
+  canvas.height = 600;
+  canvas.width = 600;
   canvas.addEventListener('mousemove', onMouseMove);
   var counter = char_list.length + 2 * 3 * 5;
   var flg = 0;
@@ -278,6 +280,12 @@ function draw() {
   }
 
   ctx.fillStyle = "rgb(0,255,0)";
+  document.getElementById("info").innerHTML = 
+      "<h3>Red Score: " + show_board[idx].red_score +
+      " Blue Score: " + show_board[idx].blue_score +
+      " Red Kill: " + show_board[idx].red_kill +
+      " Blue Kill: " + show_board[idx].blue_kill + "</h3>";
+/*
   document.getElementById("red_score").innerHTML =
       " Red Score: " + show_board[idx].red_score;
   document.getElementById("blue_score").innerHTML =
@@ -286,6 +294,7 @@ function draw() {
       " Red Kill: " + show_board[idx].red_kill;
   document.getElementById("blue_kill").innerHTML =
       "Blue Kill: " + show_board[idx].blue_kill;
+*/
   /*
   ctx.fillText("Red Score: " + this.red_score, 570, 10);
   ctx.fillText("Blue Score: " + this.blue_score, 570, 30);

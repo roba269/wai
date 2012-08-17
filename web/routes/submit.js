@@ -30,13 +30,29 @@ exports.submit_list = function(req, res) {
   });
 };
 
-exports.submit_list_by_user = function(req, res) {
-  /*
-  if (!req.session.user) {
-    req.flash('error', 'You are not login.');
-    return res.redirect('back');
+exports.submit_list_adv = function(req, res) {
+  var game_name = req.params.game_name;
+  var user_id;
+  var query = {};
+  if (game_name !== 'all') {
+    query['game_name'] = game_name;
   }
-  */
+  if (req.params.user_id !== 'all') {
+    user_id = ObjectId(req.params.user_id);
+    query['user_id'] = user_id;
+  }
+  db.submits.find(query)
+    .sort({'date': -1}, function(err, submits) {
+    if (err) {
+      req.flash('error', 'Failed to get submition list.');
+      return res.redirect('back');
+    }
+    res.render('submit_list', { title: 'WAI : Submitions',
+      submits: submits});
+  });
+};
+/*
+exports.submit_list_by_user = function(req, res) {
   var game_name = req.params.game_name;
   var user_id = ObjectId(req.params.user_id);
   var query;
@@ -55,7 +71,7 @@ exports.submit_list_by_user = function(req, res) {
       submits: submits});
   });
 };
-
+*/
 exports.submit_post = function(req, res) {
   fs.readFile(req.files.code.path, function(err, data) {
     if (err) {

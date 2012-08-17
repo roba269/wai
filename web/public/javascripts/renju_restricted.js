@@ -1,0 +1,1 @@
+renju_simple.js

@@ -78,8 +78,9 @@ app.get('/game_list', routes.game_list);
 app.get('/game/:game_name', routes.game);
 app.post('/game/:game_name', routes.game_post);
 app.get('/arena/replay/:game_name/:match_id', routes.arena_replay);
+app.get('/arena/hvc/:game_name/:submit_id', routes.arena_hvc);
 app.post('/submit/:game_name', routes.submit_post);
-app.get('/submit_list/:game_name/:user_id', routes.submit_list_by_user);
+app.get('/submit_list/:game_name/:user_id', routes.submit_list_adv);
 // app.get('/match_list/:game_name', routes.match_list);
 app.get('/view_code/:submit_id', routes.view_code);
 app.get('/match_list/:game_name/:user_id', routes.match_list_by_user);
@@ -92,10 +93,14 @@ app.listen(3000, function(){
 });
 
 var child_process = require('child_process');
-child_process.fork('compiler.js',[],{env: process.env});
-child_process.fork('scheduler.js',[],{env: process.env});
+// child_process.fork('compiler.js',[],{env: process.env});
+// child_process.fork('scheduler.js',[],{env: process.env});
 
 io.sockets.on('connection', function(socket) {
+        // var hvc_match = child_process.spawn('../hvc_match.exe',
+        //   ['../test_judge/' + submit.game_name + '.exe',
+        //     './exe/' + submit._id + '.exe']);
+  var hvc_match;
   socket.on('req_steps', function(data) {
     db.matches.findOne({'_id': ObjectId(data.match_id)}, function(err, match) {
       if (err) {
@@ -110,5 +115,44 @@ io.sockets.on('connection', function(socket) {
       // console.log('%j', resp);
       socket.emit('res_steps', resp);
     });
+  });
+  socket.on('req_hvc', function(data) {
+    console.log('receive req_hvc');
+    db.submits.findOne({'_id': ObjectId(data.submit_id)},
+      function(err, submit) {
+        if (err || !submit) {
+          console.log('Hvc request failed.');
+          return;
+        }
+        // start hvc process
+        hvc_match = child_process.spawn('../hvc_match.exe',
+           ['../test_judge/' + submit.game_name + '_judge.exe',
+             './exe/' + submit._id + '.exe']);
+        console.log('spawn hvc match: pid: ' + hvc_match.pid);
+      });
+  });
+  socket.on('put_chess', function(data) {
+    if (!hvc_match) return;
+    console.log('pid: ' + hvc_match.pid + ' recv put chess: x:' + data.x + " y:" + data.y);
+    hvc_match.stdin.write(data.x + " " + data.y + "\n");
+    hvc_match.stdout.once('data', function(data) {
+      console.log("computer data: {" + data + "}");
+      var tmp = data.toString().split(' ');
+      if (tmp[0] === ':') {
+        resp = {'is_over': true, 
+          'winner': parseInt(tmp[1]),
+          'res_str': tmp[2],
+          'reason': tmp[3]};
+      } else {
+          resp = {'is_over': false,
+              'x': parseInt(tmp[0]),
+              'y': parseInt(tmp[1])};
+      }
+      socket.emit('put_response', resp);
+    });
+  });
+  socket.on('disconnect', function() {
+    console.log('user disconnected');
+    if (hvc_match) hvc_match.kill('SIGHUP');
   });
 });

@@ -44,11 +44,12 @@ void HVCMatch::Start() {
                 m_judge->Send(buf);
             } else assert(false);
         } else if (isdigit(buf[0])) {
-            sscanf(buf, "%d", &m_winner);
-            printf(":%d\n", m_winner);
+            char res_str[BUF_LEN], reason[BUF_LEN];
+            sscanf(buf, "%d %s %s", &m_winner, res_str, reason);
+            printf(": %d %s %s\n", m_winner, res_str, reason);
             fflush(stdout);
             break;
-        }
+        } // ignore '+'
     }
     m_end_time = time(NULL);
 };

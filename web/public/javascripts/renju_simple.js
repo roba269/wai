@@ -12,6 +12,7 @@ const NUM_COL = 15;
 
 var inter_id;
 var play_status = 0;
+var g_is_hvc;
 
 function getMousePos(canvas, evt) {
     // get canvas position
@@ -53,21 +54,28 @@ function drawBoard() {
     ctx.stroke();
 }
 
-function load(match_id) {
+function load(id, is_hvc) {
+  g_is_hvc = is_hvc;
   canvas = document.getElementById('arena');
-  // canvas.addEventListener('mousemove', onMouseMove);
-  // canvas.addEventListener('mousedown', onMouseDown);
+  canvas.height = 800;
+  canvas.width = 800;
   draw();
-  socket.once('res_steps', function(data) {
-    for (var i = 0 ; i < data.steps.length ; ++i) {
-      var tmp = data.steps[i].split(' ');
-      var item = {'color': parseInt(tmp[0]),
-        'x': parseInt(tmp[1]), 'y': parseInt(tmp[2])};
-      steps.push(item);
-    }
-    // steps = data.steps;
-  });
-  socket.emit('req_steps', {match_id: match_id});
+  if (is_hvc === 0) {
+    socket.once('res_steps', function(data) {
+      for (var i = 0 ; i < data.steps.length ; ++i) {
+        var tmp = data.steps[i].split(' ');
+        var item = {'color': parseInt(tmp[0]),
+          'x': parseInt(tmp[1]), 'y': parseInt(tmp[2])};
+        steps.push(item);
+      }
+      // steps = data.steps;
+    });
+    socket.emit('req_steps', {match_id: id});
+  } else {
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mousedown', onMouseDown);
+    socket.emit('req_hvc', {submit_id: id});
+  }
 }
 
 function draw() {
@@ -83,25 +91,28 @@ function drawChess(x, y, color) {
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.beginPath();
-    ctx.arc(LEFT_MARGIN + x * GRID_SIZE,
-            TOP_MARGIN + y * GRID_SIZE,
+    ctx.arc(LEFT_MARGIN + y * GRID_SIZE,
+            TOP_MARGIN + x * GRID_SIZE,
             GRID_SIZE/2, 0, Math.PI*2, true);
     if (color === 0) ctx.fill();
     else ctx.stroke();
 }
 function onMouseMove(evt) {
+/*
     tmp = getMousePos(canvas, evt);
     document.getElementById("x_pos").innerHTML = tmp.x;
     document.getElementById("y_pos").innerHTML = tmp.y;
+*/
 }
 function onMouseDown(evt) {
+    if (g_is_hvc === 0) return;
     if (is_over) return;
     tmp = getMousePos(canvas, evt);
     chess_pos = {x: 0, y: 0};
-    chess_pos.x = Math.floor((tmp.x - LEFT_MARGIN) / GRID_SIZE + 0.5);
-    chess_pos.y = Math.floor((tmp.y - TOP_MARGIN) / GRID_SIZE + 0.5);
-    if (chess_pos.x < 0 || chess_pos.x >= NUM_COL ||
-            chess_pos.y < 0 || chess_pos.y >= NUM_ROW) {
+    chess_pos.y = Math.floor((tmp.x - LEFT_MARGIN) / GRID_SIZE + 0.5);
+    chess_pos.x = Math.floor((tmp.y - TOP_MARGIN) / GRID_SIZE + 0.5);
+    if (chess_pos.x < 0 || chess_pos.x >= NUM_ROW ||
+            chess_pos.y < 0 || chess_pos.y >= NUM_COL) {
         return;
     }
     drawChess(chess_pos.x, chess_pos.y, 0);
@@ -110,7 +121,7 @@ function onMouseDown(evt) {
     socket.once('put_response', function(data) {
         if (data.is_over) {
             is_over = true;
-            alert("over winner = " + data.winner);
+            alert("over " + data.res_str + " " + data.reason);
         } else {
             drawChess(data.x, data.y, 1);
         }

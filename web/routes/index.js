@@ -13,9 +13,10 @@ var user_ctrl = require('./user');
 var db_util = require('../db_util');
 
 // exports.submit_list = submit_ctrl.submit_list;
-exports.submit_list_by_user = submit_ctrl.submit_list_by_user;
+exports.submit_list_adv = submit_ctrl.submit_list_adv;
 exports.submit_post = submit_ctrl.submit_post;
 exports.arena_replay = arena_ctrl.arena_replay;
+exports.arena_hvc = arena_ctrl.arena_hvc;
 exports.match_list = match_ctrl.match_list;
 exports.match_list_by_user = match_ctrl.match_list_by_user;
 
@@ -70,13 +71,20 @@ exports.game = function(req, res) {
         var uid;
         if (req.session.user) uid = req.session.user._id;
         else uid = null;
-        res.render('game', {title: 'WAI : ' + req.params.game_name,
-            game_name: req.params.game_name,
-            game_intro: game.desc,
-            hvc: game.hvc,
-            show_name: game.show_name,
-            uid: uid,
-            ranklist: rank_list});
+        db.users.findOne({email: "sample@w-ai.org"},
+          function(err, sample_user) {
+            var sample_uid;
+            if (err || !sample_user) sample_uid = 0;
+            else sample_uid = sample_user._id;
+            res.render('game', {title: 'WAI : ' + req.params.game_name,
+                game_name: req.params.game_name,
+                game_intro: game.desc,
+                hvc: game.hvc,
+                show_name: game.show_name,
+                uid: uid,
+                ranklist: rank_list,
+                sample_uid: sample_uid});
+          });
       });
   });
 }

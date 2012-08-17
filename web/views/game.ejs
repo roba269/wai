@@ -4,15 +4,6 @@
             <%- partial('intro_' + game_name) %>
         </div>
         <div class="span4">
-            <% if (hvc !== 0) { %>
-            <div class="well">
-              <form action="/arena/<%= game_name %>" method="POST">
-                <input type="text" value="Choose an AI id">
-                <button type="submit" class="btn btn-primary">Take a try</button>
-              </form>
-            </div>
-            <hr>
-            <% } %>
             <% if (user) { %>
             <div class="well">
                 <a class="btn" href="/submit_list/<%= game_name %>/<%= uid %>">My Submitions</a>
@@ -62,6 +53,15 @@
                 </table>
                 <a href="/ranklist/<%= game_name %>">View Full Ranklist</a>
             </div>
+            <% if (hvc !== 0) { %>
+            <div class="well">
+              <h3>Human vs. Computer</h3>
+              <p>This game support Human vs. Computer (HvC) feature.</p>
+              <p>Are you clever than computer AI? Try the HvC now!</p>
+              <p><a class="btn" href="#">Pick random AI</a>&nbsp;
+                <a class="btn" href="/submit_list/<%= game_name %>/all">List All AIs</a></p>
+            </div>
+            <% } %>
         </div>
     </div>
 </div>
