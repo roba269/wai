@@ -116,6 +116,8 @@ int main() {
               // ignore (x,y), skip
               printf("+%d -1 -1\n", cur);
               fflush(stdout);
+              printf(">%d: -1 -1\n", 3-cur);
+              fflush(stdout);
               cur = 3 - cur;
             }
             else break;
@@ -138,6 +140,7 @@ int main() {
         put_chess(x, y, cur);
         output_board();
         printf(">%d: %d %d\n", 3-cur, x, y);
+        fflush(stdout);
         cur = 3 - cur;
     }
     int cnt_black, cnt_white;

@@ -108,8 +108,10 @@ int main() {
         }
         int x, y;
         scanf("%d %d", &x, &y);
-        if (valid(x, y, 3-flg) <= 0) break;
-        put_chess(x, y, 3-flg);
+        if (x != -1) {
+          if (valid(x, y, 3-flg) <= 0) break;
+          put_chess(x, y, 3-flg);
+        }
     }
     return 0;
 }

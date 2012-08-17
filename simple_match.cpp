@@ -62,6 +62,7 @@ void SimpleMatch::Start() {
 }
 
 int SimpleMatch::_WriteToDatabase() {
+/*
     char cmd[BUF_LEN];
     snprintf(cmd, BUF_LEN, "INSERT INTO main_app_match (game_type, result, start_time, end_time, player_cnt) VALUES (\"%s\", %d, FROM_UNIXTIME(%d), FROM_UNIXTIME(%d), %d)", "RENJU", m_winner, m_start_time, m_end_time, m_player.size());
     MYSQL *handle = DBWrapper::GetHandle();
@@ -78,6 +79,7 @@ int SimpleMatch::_WriteToDatabase() {
     FILE *fp = fopen(cmd, "w");
     fprintf(fp, "%s\n", m_record.c_str());
     fclose(fp);
+*/
     return 0;
 }
 
