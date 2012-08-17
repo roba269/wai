@@ -4,8 +4,8 @@
  */
 
 var fs = require('fs');
-var accessLog = fs.createWriteStream('access.log', {flags: 'a'});
-var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
+var accessLog = fs.createWriteStream('/var/log/wai/access.log', {flags: 'a'});
+var errorLog = fs.createWriteStream('/var/log/wai/error.log', {flags: 'a'});
 
 var express = require('express')
   , routes = require('./routes');
