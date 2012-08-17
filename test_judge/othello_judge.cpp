@@ -107,13 +107,21 @@ int main() {
     fflush(stdout);
     int cur = 1;
     while (1) {
+        int x, y;
         if (!can_move(cur)) {
-            if (can_move(3-cur)) cur = 3 - cur;
+            if (can_move(3-cur)) {
+              printf("<%d\n", cur);
+              fflush(stdout);
+              scanf("%d %d", &x, &y);
+              // ignore (x,y), skip
+              printf("+%d -1 -1\n", cur);
+              fflush(stdout);
+              cur = 3 - cur;
+            }
             else break;
         }
         printf("<%d\n", cur);
         fflush(stdout);
-        int x, y;
         scanf("%d %d",&x,&y);
         if (!valid(x, y, cur)) {
             if (cur == 1) 

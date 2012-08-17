@@ -17,5 +17,6 @@ int main(int argc, char **argv) {
     hm.SetJudge(&judge);
     hm.SetComputer(&comp, 0);
     hm.Start();
+    while (1);
     return 0;
 }

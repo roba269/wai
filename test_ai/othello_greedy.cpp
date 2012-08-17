@@ -98,10 +98,14 @@ int main() {
                     }
                 }
             }
-        if (best <= 0) break;
-        printf("%d %d\n", bestx, besty);
-        fflush(stdout);
-        put_chess(bestx, besty, flg);
+        if (best <= 0) {
+          printf("-1 -1\n");  // can't move, output any (x, y)
+          fflush(stdout);
+        } else {
+          printf("%d %d\n", bestx, besty);
+          fflush(stdout);
+          put_chess(bestx, besty, flg);
+        }
         int x, y;
         scanf("%d %d", &x, &y);
         if (valid(x, y, 3-flg) <= 0) break;

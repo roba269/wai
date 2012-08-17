@@ -137,22 +137,32 @@ io.sockets.on('connection', function(socket) {
     hvc_match.stdin.write(data.x + " " + data.y + "\n");
     hvc_match.stdout.once('data', function(data) {
       console.log("computer data: {" + data + "}");
-      var tmp = data.toString().split(' ');
-      if (tmp[0] === ':') {
-        resp = {'is_over': true, 
-          'winner': parseInt(tmp[1]),
-          'res_str': tmp[2],
-          'reason': tmp[3]};
-      } else {
+      var str_list = data.toString().split('\n');
+      for (var str_list_idx = 0 ; 
+          str_list_idx < str_list.length ; ++str_list_idx) {
+        if (str_list[str_list_idx].length === 0) continue;
+        var tmp = str_list[str_list_idx].split(' ');
+        if (tmp.length === 0) continue;
+        if (tmp[0] === ':') {
+          resp = {'is_over': true, 
+            'winner': parseInt(tmp[1]),
+            'res_str': tmp[2].replace(/_/g, ' '),
+            'reason': tmp[3].replace(/_/g,' ')};
+          socket.emit('game_over', resp);
+        } else {
           resp = {'is_over': false,
               'x': parseInt(tmp[0]),
               'y': parseInt(tmp[1])};
+          socket.emit('put_response', resp);
+        }
       }
-      socket.emit('put_response', resp);
     });
   });
   socket.on('disconnect', function() {
     console.log('user disconnected');
-    if (hvc_match) hvc_match.kill('SIGHUP');
+    if (hvc_match) {
+      console.log('try to kill pid:' + hvc_match.pid);
+      hvc_match.kill('SIGKILL');
+    }
   });
 });

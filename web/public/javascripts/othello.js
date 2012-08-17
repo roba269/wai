@@ -121,15 +121,23 @@ function load(id, is_hvc) {
         var tmp = data.steps[i].split(' ');
         var item = {'color': parseInt(tmp[0]),
           'x': parseInt(tmp[1]), 'y': parseInt(tmp[2])};
-        steps.push(item);
+        if (x !== -1)
+          steps.push(item);
       }
       // steps = data.steps;
     });
     socket.emit('req_steps', {match_id: id});
   } else {
+    document.getElementById("info").innerHTML =
+      "If you cannot move in your turn, just click anywhere of the chessboard to continue.";
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mousedown', onMouseDown);
     socket.emit('req_hvc', {submit_id: id});
+    socket.once('game_over', function(data) {
+      is_over = true;
+      alert("Game over." + data.res_str.replace('_', ' ')
+        + " " + data.reason.replace('_', ' '));
+    });
   }
 }
 
@@ -187,6 +195,10 @@ function onMouseDown(evt) {
             alert("over " + data.res_str + " " + data.reason);
         } else {
             // drawChess(data.x, data.y, 2);
+          if (data.x === -1) {
+            alert("Computer cannot move. You continue.");
+            return;
+          }
           var tmp_move = {x: data.x, y: data.y, color: 2};
           show_board[step_idx].makeMove(tmp_move);
           draw();

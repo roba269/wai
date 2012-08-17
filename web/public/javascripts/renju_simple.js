@@ -75,6 +75,10 @@ function load(id, is_hvc) {
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mousedown', onMouseDown);
     socket.emit('req_hvc', {submit_id: id});
+    socket.once('game_over', function(data) {
+      is_over = true;
+      alert("Game over. " + data.res_str + " " + data.reason);
+    });
   }
 }
 
