@@ -97,10 +97,8 @@ var child_process = require('child_process');
 // child_process.fork('scheduler.js',[],{env: process.env});
 
 io.sockets.on('connection', function(socket) {
-        // var hvc_match = child_process.spawn('../hvc_match.exe',
-        //   ['../test_judge/' + submit.game_name + '.exe',
-        //     './exe/' + submit._id + '.exe']);
   var hvc_match;
+  var game_name;
   socket.on('req_steps', function(data) {
     db.matches.findOne({'_id': ObjectId(data.match_id)}, function(err, match) {
       if (err) {
@@ -124,6 +122,7 @@ io.sockets.on('connection', function(socket) {
           console.log('Hvc request failed.');
           return;
         }
+        game_name = submit.game_name;
         // start hvc process
         hvc_match = child_process.spawn('../hvc_match.exe',
            ['../test_judge/' + submit.game_name + '_judge.exe',
@@ -133,8 +132,15 @@ io.sockets.on('connection', function(socket) {
   });
   socket.on('put_chess', function(data) {
     if (!hvc_match) return;
-    console.log('pid: ' + hvc_match.pid + ' recv put chess: x:' + data.x + " y:" + data.y);
-    hvc_match.stdin.write(data.x + " " + data.y + "\n");
+    // TODO: this is ugly, how to do it better?
+    if (game_name === 'xiangqi') {
+      console.log('pid: ' + hvc_match.pid + ' recv put chess: x1:' + data.x1 + " y1:" + data.y1 + " x2:" + data.x2 + " y2:" + data.y2);
+      hvc_match.stdin.write(data.x1 + " " + data.y1 + " "
+        + data.x2 + " " + data.y2 + "\n");
+    } else {
+      console.log('pid: ' + hvc_match.pid + ' recv put chess: x:' + data.x + " y:" + data.y);
+      hvc_match.stdin.write(data.x + " " + data.y + "\n");
+    }
     hvc_match.stdout.once('data', function(data) {
       console.log("computer data: {" + data + "}");
       var str_list = data.toString().split('\n');
@@ -150,9 +156,17 @@ io.sockets.on('connection', function(socket) {
             'reason': tmp[3].replace(/_/g,' ')};
           socket.emit('game_over', resp);
         } else {
-          resp = {'is_over': false,
+          if (game_name === 'xiangqi') {
+            resp = {'is_over': false,
+              'x1': parseInt(tmp[0]),
+              'y1': parseInt(tmp[1]),
+              'x2': parseInt(tmp[2]),
+              'y2': parseInt(tmp[3])};
+          } else {
+            resp = {'is_over': false,
               'x': parseInt(tmp[0]),
               'y': parseInt(tmp[1])};
+          }
           socket.emit('put_response', resp);
         }
       }

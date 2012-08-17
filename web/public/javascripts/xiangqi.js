@@ -15,6 +15,8 @@ const NUM_COL = 9;
 var loaded_img = [];
 var inter_id;
 var play_status = 0;
+var move_status = 0;
+var to_move_x = -1, to_move_y = -1;
 
 ChessType = {
   B_SHUAI : 1,
@@ -132,6 +134,7 @@ function drawBoard() {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, 900, 900);
     ctx.fillStyle = "rgb(0,0,0)";
+    ctx.strokeStyle = "rgb(0,0,0)";
     var i;
     ctx.beginPath();
     for (i = 0 ; i < NUM_COL ; ++i) {
@@ -171,7 +174,8 @@ function drawBoard() {
     ctx.stroke();
 }
 
-function load(match_id) {
+function load(id, is_hvc) {
+  g_is_hvc = is_hvc;
   canvas = document.getElementById('arena');
   var counter = 7 * 2;
   for (var flg = 0 ; flg < 2 ; ++flg)
@@ -185,18 +189,28 @@ function load(match_id) {
         }
       }
     }
-  // draw();
-  socket.once('res_steps', function(data) {
-    for (var i = 0 ; i < data.steps.length ; ++i) {
-      var tmp = data.steps[i].split(' ');
-      var item = {'color': parseInt(tmp[0]),
-        'x1': parseInt(tmp[1]), 'y1': parseInt(tmp[2]),
-        'x2': parseInt(tmp[3]), 'y2': parseInt(tmp[4])};
-      steps.push(item);
-    }
-    // steps = data.steps;
-  });
-  socket.emit('req_steps', {match_id: match_id});
+  if (is_hvc === 0) {
+    socket.once('res_steps', function(data) {
+      for (var i = 0 ; i < data.steps.length ; ++i) {
+        var tmp = data.steps[i].split(' ');
+        var item = {'color': parseInt(tmp[0]),
+          'x1': parseInt(tmp[1]), 'y1': parseInt(tmp[2]),
+          'x2': parseInt(tmp[3]), 'y2': parseInt(tmp[4])};
+        steps.push(item);
+      }
+      // steps = data.steps;
+    });
+    socket.emit('req_steps', {match_id: id});
+  } else {
+    document.getElementById("info").innerHTML = "To move a chess, click it, and then click its target position."
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mousedown', onMouseDown);
+    socket.emit('req_hvc', {submit_id: id});
+    socket.once('game_over', function(data) {
+      is_over = true;
+      alert("Game over. " + data.res_str + " " + data.reason);
+    });
+  }
 }
 
 function draw() {
@@ -207,6 +221,17 @@ function draw() {
         if (show_board[idx].bd[i][j] !== 0)
           drawChess(i, j, show_board[idx].bd[i][j]);
       }
+    if (move_status === 1) {
+      drawRect(to_move_x, to_move_y, 'rgb(0,0,200)');
+    }
+}
+
+function drawRect(x, y, col) {
+  var ctx = canvas.getContext('2d');
+  ctx.strokeStyle = 'rgb(0,0,200)';
+  ctx.strokeRect(LEFT_MARGIN + y * GRID_SIZE - GRID_SIZE / 2,
+    TOP_MARGIN + x * GRID_SIZE - GRID_SIZE / 2,
+    GRID_SIZE, GRID_SIZE);
 }
 
 function drawChess(x, y, type) {
@@ -230,29 +255,51 @@ function drawChess(x, y, type) {
 }
 
 function onMouseMove(evt) {
+/*
     tmp = getMousePos(canvas, evt);
     document.getElementById("x_pos").innerHTML = tmp.x;
     document.getElementById("y_pos").innerHTML = tmp.y;
+*/
 }
 function onMouseDown(evt) {
+    if (g_is_hvc === 0) return;
     if (is_over) return;
-    tmp = getMousePos(canvas, evt);
-    chess_pos = {x: 0, y: 0};
-    chess_pos.x = Math.floor((tmp.x - LEFT_MARGIN) / GRID_SIZE + 0.5);
-    chess_pos.y = Math.floor((tmp.y - TOP_MARGIN) / GRID_SIZE + 0.5);
-    if (chess_pos.x < 0 || chess_pos.x >= NUM_COL ||
-            chess_pos.y < 0 || chess_pos.y >= NUM_ROW) {
+    if (evt.button == 2 || evt.button == 3) {
+      move_status = 0;
+      return;
+    }
+    var tmp = getMousePos(canvas, evt);
+    var tmp_x = Math.floor((tmp.y - LEFT_MARGIN) / GRID_SIZE + 0.5);
+    var tmp_y = Math.floor((tmp.x - TOP_MARGIN) / GRID_SIZE + 0.5);
+    if (tmp_x < 0 || tmp_x >= NUM_ROW || tmp_y < 0 || tmp_y >= NUM_COL) {
         return;
     }
-    drawChess(chess_pos.x, chess_pos.y, 0);
-    steps.push(chess_pos);
-    socket.emit('put_chess', {x: chess_pos.x, y: chess_pos.y});
+    if (move_status === 0) {
+      to_move_x = tmp_x;
+      to_move_y = tmp_y;
+      move_status = 1;
+      draw();
+      return;
+    }
+    move_status = 0;
+    if (to_move_x === tmp_x && to_move_y == tmp_y) {
+      draw();
+      return;
+    }
+    var tmp_move = {x1: to_move_x, y1: to_move_y, x2: tmp_x, y2: tmp_y};
+    show_board[step_idx].makeMove(tmp_move);
+    draw();
+    steps.push(tmp_move);
+    socket.emit('put_chess', tmp_move);
     socket.once('put_response', function(data) {
         if (data.is_over) {
             is_over = true;
             alert("over winner = " + data.winner);
         } else {
-            drawChess(data.x, data.y, 1);
+            // drawChess(data.x, data.y, 1);
+            show_board[step_idx].makeMove(data);
+            draw();
+            steps.push(data);
         }
     });
 }
