@@ -121,7 +121,7 @@ function load(id, is_hvc) {
         var tmp = data.steps[i].split(' ');
         var item = {'color': parseInt(tmp[0]),
           'x': parseInt(tmp[1]), 'y': parseInt(tmp[2])};
-        if (x !== -1)
+        if (item.x !== -1)
           steps.push(item);
       }
       // steps = data.steps;
