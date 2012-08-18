@@ -2,6 +2,7 @@ var db = require('../models/db');
 var db_util = require('../db_util');
 var fs = require('fs');
 var ObjectId = require('mongoose').Types.ObjectId;
+var waiconst = require('../waiconst');
 
 exports.submit_list = function(req, res) {
   if (!req.session.user) {
@@ -114,9 +115,8 @@ exports.submit_post = function(req, res) {
       } else {
         ext = '.txt';
       }
-      /* FIXME: the path is bad */
-      fs.rename('./' + req.files.code.path,
-          './uploads/' + result[0]._id + ext,
+      fs.rename(req.files.code.path,
+          waiconst.USER_SRC_PATH + result[0]._id + ext,
           function(err) {
             if (err) console.log('rename failed: ' + err);
           });

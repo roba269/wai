@@ -1,14 +1,17 @@
 
 var db = require('./models/db');
 var cp = require('child_process');
+var waiconst = require('./waiconst');
 
 var SLEEP_IN_MS = 1000;
 
 function compile(submit) {
   if (submit.lang === 'C++') {
     // console.log('id:' + submit._id);
-    var cmd = 'g++ -Wall -static -ftemplate-depth-17 -O3 ./uploads/'
-      + submit._id + '.cpp -o ./exe/' + submit._id + '.exe';
+    var cmd = 'g++ -Wall -static -ftemplate-depth-17 -O3 '
+      + waiconst.USER_SRC_PATH + submit._id + '.cpp -o'
+      + waiconst.USER_EXE_PATH + submit._id + '.exe';
+    // var cmd = 'g++ -Wall -static -ftemplate-depth-17 -O3 ' + __dirname + '/uploads/' + submit._id + '.cpp -o ' + __dirname + '/exe/' + submit._id + '.exe';
     cp.exec(cmd, function(err, stdout, stderr) {
         if (err) {
           console.log('id:' + submit._id + ' error: ' + err);

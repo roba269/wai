@@ -38,6 +38,18 @@ all:
 	$(CC) $(OPT) test_ai/tankcraft_sample.cpp -o test_ai/tankcraft_sample.exe -O3
 	$(CC) $(OPT) test_ai/xiangqi_sample.cpp -o test_ai/xiangqi_sample.exe -O3
 	$(CC) $(OPT) test_ai/othello_greedy.cpp -o test_ai/othello_greedy.exe -O3
+match:
+	$(CC) $(OPT) $(INCLUDE) -c scheduler.cpp
+	$(CC) $(OPT) $(INCLUDE) -c db_wrapper.cpp
+	$(CC) $(OPT) $(INCLUDE) -c compiler.cpp
+	$(CC) $(OPT) -c main.cpp
+	$(CC) $(OPT) $(INCLUDE) -c simple_match.cpp
+	$(CC) $(OPT) $(INCLUDE) -c hvc_match.cpp
+	$(CC) $(OPT) -c sandbox.cpp
+	$(CC) $(OPT) -c match_main.cpp
+	$(CC) $(OPT) -c hvc_main.cpp
+	$(CC) -Wall scheduler.o db_wrapper.o compiler.o match_main.o simple_match.o sandbox.o -lmysqlclient -lpthread -o match.exe -O3
+	$(CC) -Wall scheduler.o db_wrapper.o compiler.o hvc_main.o hvc_match.o sandbox.o -lmysqlclient -lpthread -o hvc_match.exe -O3
 renju:
 	$(CC) -Wall -static test_judge/renju_simple_judge.cpp -o test_judge/renju_simple_judge.exe
 	$(CC) -Wall -static test_judge/renju_restricted_judge.cpp -o test_judge/renju_restricted_judge.exe

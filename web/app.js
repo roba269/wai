@@ -4,8 +4,9 @@
  */
 
 var fs = require('fs');
-var accessLog = fs.createWriteStream('/var/log/wai/access.log', {flags: 'a'});
-var errorLog = fs.createWriteStream('/var/log/wai/error.log', {flags: 'a'});
+var waiconst = require('./waiconst');
+var accessLog = fs.createWriteStream(waiconst.LOG_PATH + 'access.log', {flags: 'a'});
+var errorLog = fs.createWriteStream(waiconst.LOG_PATH + 'error.log', {flags: 'a'});
 
 var express = require('express')
   , routes = require('./routes');
@@ -19,7 +20,7 @@ app.configure(function(){
   app.use(express.logger({stream: accessLog}));
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.bodyParser({uploadDir:'./uploads'}));
+  app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.use(express.session({ secret: "robaroba" }));
@@ -95,8 +96,8 @@ if (!module.parent) {
 }
 
 var child_process = require('child_process');
-child_process.fork('compiler.js',[],{env: process.env});
-child_process.fork('scheduler.js',[],{env: process.env});
+child_process.fork(__dirname + '/compiler.js',[],{env: process.env});
+child_process.fork(__dirname + '/scheduler.js',[],{env: process.env});
 
 io.sockets.on('connection', function(socket) {
   var hvc_match;
@@ -126,9 +127,13 @@ io.sockets.on('connection', function(socket) {
         }
         game_name = submit.game_name;
         // start hvc process
-        hvc_match = child_process.spawn('../hvc_match.exe',
-           ['../test_judge/' + submit.game_name + '_judge.exe',
-             './exe/' + submit._id + '.exe']);
+        hvc_match = child_process.spawn(
+          waiconst.MATCH_PATH + 'hvc_match.exe',
+           [waiconst.JUDGE_PATH + submit.game_name + '_judge.exe',
+            waiconst.USER_EXE_PATH + submit._id + '.exe']);
+        // hvc_match = child_process.spawn('../hvc_match.exe',
+        //    ['../test_judge/' + submit.game_name + '_judge.exe',
+        //      './exe/' + submit._id + '.exe']);
         console.log('spawn hvc match: pid: ' + hvc_match.pid);
       });
   });

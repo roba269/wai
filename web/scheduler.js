@@ -1,16 +1,19 @@
 var db = require('./models/db');
 var cp = require('child_process');
 var util = require('util');
+var waiconst = require('./waiconst');
 
 var SLEEP_IN_MS = 1000;
 
 function start_match(uid1, submit1, uid2, submit2, game) {
-  var cmd = util.format('../match.exe ../test_judge/%s_judge.exe ./exe/%s.exe ./exe/%s.exe', game, submit1._id, submit2._id);
-  // console.log('cmd:' + cmd);
-  var match = cp.spawn('../match.exe', [
-    util.format('../test_judge/%s_judge.exe', game),
-    util.format('./exe/%s.exe', submit1._id),
-    util.format('./exe/%s.exe', submit2._id)]);
+  var match = cp.spawn(waiconst.MATCH_PATH + 'match.exe', [
+    util.format(waiconst.JUDGE_PATH + '%s_judge.exe', game),
+    util.format(waiconst.USER_EXE_PATH + '%s.exe', submit1._id),
+    util.format(waiconst.USER_EXE_PATH + '%s.exe', submit2._id)]);
+  // var match = cp.spawn(__dirname + '../match.exe', [
+  //   util.format(__dirname + '../test_judge/%s_judge.exe', game),
+  //   util.format(__dirname + './exe/%s.exe', submit1._id),
+  //   util.format(__dirname + './exe/%s.exe', submit2._id)]);
   var trans = [];
   var result;
   var result_str;
