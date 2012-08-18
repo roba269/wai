@@ -147,5 +147,12 @@ exports.game_list = function(req, res) {
 }
 
 exports.faq = function(req, res) {
-  res.render('faq', {title: 'WAI : FAQ'});
+  db.users.findOne({email: 'sample@w-ai.org'},
+    function(err, sample) {
+      var sample_uid;
+      if (err || !sample) sample_uid = 0;
+      else sample_uid = sample._id;
+      res.render('faq', {title: 'WAI : FAQ',
+        sample_uid: sample_uid});
+    });
 }

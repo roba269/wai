@@ -17,11 +17,11 @@ and the judge will write necessary information to your process's stdin, and read
 hitting an enemy, etc) from your process's stdout. <p>
 
 Every game has a specified protocol, which is provided in the game introduction page. You can also refer the user
-<a href="#">Sample</a>'s code.<p>
+<a href="/submit_list/all/<%= sample_uid %>">Sample's code</a>.<p>
 
 <strong>Note: Since some library functions use buffered I/O, such as <em>printf</em>, the judge cannot get your
 output immediately if the output is buffered, and the judge will wait forever until the time limit is exceeded.
-To avoid this, remember flushing the buffer after every output. The code will looks like:
+To avoid this, remember flushing the buffer after every output. The code will looks like:</strong>
 
 <pre><tt>  printf("%d %d\n", x, y); // put a chess at (x,y)
   fflush(stdout);
