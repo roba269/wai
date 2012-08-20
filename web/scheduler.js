@@ -3,9 +3,12 @@ var cp = require('child_process');
 var util = require('util');
 var waiconst = require('./waiconst');
 
-var SLEEP_IN_MS = 1000;
+var SLEEP_IN_MS = 300000; // 5 minutes
 
 function start_match(uid1, submit1, uid2, submit2, game) {
+  console.log('game_name:' + game + ' uid1:' + uid1
+      + ' submit1:' + submit1._id + ' uid2:' + uid2
+      + ' submit2:' + submit2._id);
   var match = cp.spawn(waiconst.MATCH_PATH + 'match.exe', [
     util.format(waiconst.JUDGE_PATH + '%s_judge.exe', game),
     util.format(waiconst.USER_EXE_PATH + '%s.exe', submit1._id),
