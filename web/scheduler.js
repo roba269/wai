@@ -102,6 +102,10 @@ function get_latest_submit(user1, user2, game) {
                 }
                 db.matches.save(match_item);
                 start_match(user1._id, submit1, user2._id, submit2, game);
+              } else if (match.status === 0) {
+                match.status = 1;
+                db.matches.save(match);
+                start_match(user1._id, submit1, user2._id, submit2, game);
               }
             }
           );
