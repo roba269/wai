@@ -17,7 +17,7 @@ private:
     int _RecvChar(char *buf);
     void _InitSyscallSpec();
     std::string m_path;
-    int send_fd, recv_fd;
+    int send_fd, recv_fd, recv_info_fd;
     char m_buf[MAX_BUF_LEN];
     int m_idx, m_len;
     ExitFlagType m_exit_flag;

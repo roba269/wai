@@ -2,7 +2,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <time.h>
+#include <signal.h>
 #include "common_define.h"
 #include "simple_match.h"
 #include "sandbox.h"
@@ -11,7 +13,32 @@
 const int BUF_LEN = 1024;
 char trans[BUF_LEN*BUF_LEN];
 
+static std::string exit_flag_2_str(int exit_type) {
+    switch (exit_type) {
+    case EXIT_NORMAL:
+        return "The_opponent_exited_normally.";
+    case EXIT_RF:
+        return "The_opponent_called_restricted_function.";
+    case EXIT_TLE:
+        return "The_opponent_exceeded_time_limit.";
+    case EXIT_MLE:
+        return "The_opponent_exceeded_memory_limit.";
+    case EXIT_RE:
+        return "The_opponent_got_Runtime_Error.";
+    default:
+        return "The_opponent_exited_by_unknown_reason.";
+    }
+}
+
+static std::string winner_to_str(int winner) {
+    if (winner == 0)
+        return "Player_1_win.";
+    else
+        return "Player_2_win.";
+}
+
 void SimpleMatch::Start() {
+    signal(SIGPIPE, SIG_IGN);
     m_start_time = time(NULL);
     m_judge->Run();
     for (int i = 0 ; i < m_player.size() ; ++i) {
@@ -29,10 +56,17 @@ void SimpleMatch::Start() {
             m_player[dst]->Send(buf+4);
         } else if (buf[0] == '<') {
             int src = buf[1] - '1';
+            fprintf(stderr, "The judge try to read from player %d\n", src);
             memset(buf, 0, sizeof(buf));
             if (m_player[src]->Recv(buf, BUF_LEN-1) == 0) {
-                fprintf(stderr, "Player %d exited, type: %d\n",
-                        src, m_player[src]->GetExitType());
+                int exit_type = m_player[src]->GetExitType();
+                fprintf(stderr, "Player %d exited, type: %d\n", src, exit_type);
+                m_winner = 1 - src;
+                fprintf(stderr, "the winner is %d\n", m_winner);
+                fprintf(stdout, "%d %s %s\n", m_winner,
+                    winner_to_str(m_winner).c_str(),
+                    exit_flag_2_str(exit_type).c_str());
+                fflush(stdout);
                 break;
             }
             fprintf(stderr, "The judge recv from %d: {%s}\n", src, buf);
@@ -55,6 +89,7 @@ void SimpleMatch::Start() {
             assert(false);
         }
     }
+    fprintf(stderr, "match main process exit.");
     m_end_time = time(NULL);
     if (_WriteToDatabase()) {
         fprintf(stderr, "write to database error\n");

@@ -19,7 +19,7 @@
 #include "syscalls.h"
 
 const int MEMORY_LIMIT = 128 * 1024 * 1024; // in bytes
-const int TIME_LIMIT = 15 * 60;  // in seconds
+const int TIME_LIMIT = 60;  // in seconds
 
 static int set_quota() {
     struct rlimit lim;
@@ -60,8 +60,8 @@ int Sandbox::Run() {
         return -1;
     }
     fprintf(stderr, "%s begin to run\n", m_path.c_str());
-    int fd1[2], fd2[2];
-    if (pipe(fd1) < 0 || pipe(fd2) < 0) {
+    int fd1[2], fd2[2], info_fd[2];
+    if (pipe(fd1) < 0 || pipe(fd2) < 0 || pipe(info_fd) < 0) {
         fprintf(stderr, "Error on pipe()\n");
         return -1;
     }
@@ -72,14 +72,14 @@ int Sandbox::Run() {
     } else if (child_pid == 0) {
         close(fd1[1]);
         close(fd2[0]);
-        // close(info_fd[0]);
+        close(info_fd[0]);
         pid_t grandson_pid = fork();
         if (grandson_pid < 0) {
             fprintf(stderr, "error on fork()\n");
             return -1;
         } else if (grandson_pid == 0) {
             // grandson: the actual executable
-            // close(info_fd[0]);
+            close(info_fd[1]);
             if (fd1[0] != STDIN_FILENO) {
                 dup2(fd1[0], STDIN_FILENO);
                 close(fd1[0]);
@@ -116,15 +116,15 @@ int Sandbox::Run() {
                     if (WIFSTOPPED(st)) {
                         switch (WSTOPSIG(st)) {
                             case SIGXCPU:
-                                fprintf(stderr, "SIGXCPU\n");
                                 m_exit_flag = EXIT_TLE;
+                                fprintf(stderr, "pid:%d m_exit_flag:%d\n", getpid(), EXIT_TLE);
                                 break;
                             case SIGPIPE:
                                 // match is over, the match process is terminated
                                 m_exit_flag = EXIT_NORMAL;
                                 break;
                             default:
-                                fprintf(stderr, "exit: WSTOPSIG(st):%d\n", WSTOPSIG(st));
+                                fprintf(stderr, "pid:%d exit: WSTOPSIG(st):%d\n", getpid(), WSTOPSIG(st));
                                 m_exit_flag = EXIT_RE;
                         }
                     }
@@ -167,26 +167,33 @@ int Sandbox::Run() {
                 }
                 ptrace(PTRACE_SYSCALL, grandson_pid, NULL, NULL);
             }
-            // char buf[16];
+            char buf[16];
             // sprintf(buf, "%d %d\n", GetID(), GetUsedTime());
             // write(GetInfoFd(), buf, strlen(buf));
+            fprintf(stderr, "%d: the proc in sandbox exit type: %d\n", getpid(), m_exit_flag);
             fprintf(stderr, "%d: i am exited\n", getpid());
+            sprintf(buf, "%d\n", m_exit_flag);
+            write(info_fd[1], buf, strlen(buf));
             exit(0);    // the sandbox process exit
         }
     } else {
         // parent
         close(fd1[0]);
         close(fd2[1]);
+        close(info_fd[1]);
         recv_fd = fd2[0];
         send_fd = fd1[1];
+        recv_info_fd = info_fd[0];
     }
     return 0;
 }
 
 int Sandbox::Send(char *buf) {
-    // fprintf(stderr, "%d: write to fd:%d {%s}\n", getpid(), send_fd, buf);
     strcat(buf, "\n");
-    write(send_fd, buf, strlen(buf));
+    // The pipe may be broken because play proc exited.
+    if (write(send_fd, buf, strlen(buf)) == -1) {
+        fprintf(stderr, "write failed, errno: %d\n", errno);
+    }
     return 0;
 }
 
@@ -204,6 +211,13 @@ int Sandbox::Recv(char *buf, int max_len) {
 }
 
 ExitFlagType Sandbox::GetExitType() {
+    // GetExitType should read from the sandbox process
+    char buf[16];
+    int tmp;
+    read(recv_info_fd, buf, sizeof(buf));
+    sscanf(buf, "%d", &tmp);
+    m_exit_flag = (ExitFlagType)tmp;
+    fprintf(stderr, "%d: GetExitType be called, return: %d\n", getpid(), m_exit_flag);
     return m_exit_flag;
 }
 

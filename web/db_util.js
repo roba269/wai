@@ -29,6 +29,11 @@ function user_id_to_user(user_id, callback) {
     });
 }
 
+function get_real_str(str) {
+  if (!str) return ""
+  return str.replace(/_/g, " ");
+}
+
 // Get the match result between specified user_id
 // and every other users' latest version
 // Note that because the new version may be submitted
@@ -92,8 +97,8 @@ function get_latest_result(inp_user_id, game_name, inp_callback) {
                   'flg2': flg2,
                   'status': match_list[idx].status,
                   'result': match_list[idx].result,
-                  'result_str': match_list[idx].result_str.replace('_', ' '),
-                  'reason': match_list[idx].reason.replace('_', ' '),
+                  'result_str': get_real_str(match_list[idx].result_str),
+                  'reason': get_real_str(match_list[idx].reason),
                   'version1': match_list[idx].version1,
                   'version2': match_list[idx].version2,
                   'date': match_list[idx].date,
