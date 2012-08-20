@@ -32,6 +32,8 @@ static std::string exit_flag_2_str(int exit_type) {
 
 static std::string winner_to_str(int winner) {
     if (winner == 0)
+        return "Draw.";
+    else if (winner == 1)
         return "Player_1_win.";
     else
         return "Player_2_win.";
@@ -61,7 +63,7 @@ void SimpleMatch::Start() {
             if (m_player[src]->Recv(buf, BUF_LEN-1) == 0) {
                 int exit_type = m_player[src]->GetExitType();
                 fprintf(stderr, "Player %d exited, type: %d\n", src, exit_type);
-                m_winner = 1 - src;
+                m_winner = src + 1;
                 fprintf(stderr, "the winner is %d\n", m_winner);
                 fprintf(stdout, "%d %s %s\n", m_winner,
                     winner_to_str(m_winner).c_str(),
