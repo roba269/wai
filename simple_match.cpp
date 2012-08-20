@@ -63,7 +63,7 @@ void SimpleMatch::Start() {
             if (m_player[src]->Recv(buf, BUF_LEN-1) == 0) {
                 int exit_type = m_player[src]->GetExitType();
                 fprintf(stderr, "Player %d exited, type: %d\n", src, exit_type);
-                m_winner = src + 1;
+                m_winner = (1 - src) + 1;
                 fprintf(stderr, "the winner is %d\n", m_winner);
                 fprintf(stdout, "%d %s %s\n", m_winner,
                     winner_to_str(m_winner).c_str(),
