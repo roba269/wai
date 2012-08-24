@@ -102,6 +102,7 @@ child_process.fork(__dirname + '/scheduler.js',[],{env: process.env});
 io.sockets.on('connection', function(socket) {
   var hvc_match;
   var game_name;
+  var hvc_match_info = {'ip': socket.handshake.address};
   socket.on('req_steps', function(data) {
     db.matches.findOne({'_id': ObjectId(data.match_id)}, function(err, match) {
       if (err) {
@@ -131,10 +132,14 @@ io.sockets.on('connection', function(socket) {
           waiconst.MATCH_PATH + 'hvc_match.exe',
            [waiconst.JUDGE_PATH + submit.game_name + '_judge.exe',
             waiconst.USER_EXE_PATH + submit._id + '.exe']);
-        // hvc_match = child_process.spawn('../hvc_match.exe',
-        //    ['../test_judge/' + submit.game_name + '_judge.exe',
-        //      './exe/' + submit._id + '.exe']);
         console.log('spawn hvc match: pid: ' + hvc_match.pid);
+        // hvc_match_info is just for archive, we needn't show
+        // it to users, so the format is in a little mass.
+        hvc_match_info.game_name = submit.game_name;
+        hvc_match_info.submit_id = submit._id;
+        hvc_match_info.status = 1;
+        hvc_match_info.trans = [];
+        hvc_match_info.start_time = new Date();
       });
   });
   socket.on('put_chess', function(data) {
@@ -142,11 +147,13 @@ io.sockets.on('connection', function(socket) {
     // TODO: this is ugly, how to do it better?
     if (game_name === 'xiangqi') {
       console.log('pid: ' + hvc_match.pid + ' recv put chess: x1:' + data.x1 + " y1:" + data.y1 + " x2:" + data.x2 + " y2:" + data.y2);
-      hvc_match.stdin.write(data.x1 + " " + data.y1 + " "
-        + data.x2 + " " + data.y2 + "\n");
+      var str = data.x1 + " " + data.y1 + " " + data.x2 + " " + data.y2;
+      hvc_match.stdin.write(str + "\n");
+      hvc_match_info.trans.push(str);
     } else {
       console.log('pid: ' + hvc_match.pid + ' recv put chess: x:' + data.x + " y:" + data.y);
       hvc_match.stdin.write(data.x + " " + data.y + "\n");
+      hvc_match_info.trans.push(data.x + " " + data.y);
     }
     hvc_match.stdout.once('data', function(data) {
       console.log("computer data: {" + data + "}");
@@ -154,6 +161,7 @@ io.sockets.on('connection', function(socket) {
       for (var str_list_idx = 0 ; 
           str_list_idx < str_list.length ; ++str_list_idx) {
         if (str_list[str_list_idx].length === 0) continue;
+        hvc_match_info.trans.push(str_list[str_list_idx]);
         var tmp = str_list[str_list_idx].split(' ');
         if (tmp.length === 0) continue;
         if (tmp[0] === ':') {
@@ -162,6 +170,8 @@ io.sockets.on('connection', function(socket) {
             'res_str': tmp[2].replace(/_/g, ' '),
             'reason': tmp[3].replace(/_/g,' ')};
           socket.emit('game_over', resp);
+          hvc_match_info.status = 2;
+          db.hvc_matches.save(hvc_match_info);
         } else {
           if (game_name === 'xiangqi') {
             resp = {'is_over': false,
@@ -180,6 +190,9 @@ io.sockets.on('connection', function(socket) {
     });
   });
   socket.on('disconnect', function() {
+    if (hvc_match_info.status !== 2) {
+      db.hvc_matches.save(hvc_match_info);
+    }
     console.log('user disconnected');
     if (hvc_match) {
       console.log('try to kill pid:' + hvc_match.pid);
