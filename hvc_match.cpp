@@ -9,6 +9,32 @@
 
 const int BUF_LEN = 1024;
 
+static std::string exit_flag_2_str(int exit_type) {
+    switch (exit_type) {
+    case EXIT_NORMAL:
+        return "The_opponent_exited_normally.";
+    case EXIT_RF:
+        return "The_opponent_called_restricted_function.";
+    case EXIT_TLE:
+        return "The_opponent_exceeded_time_limit.";
+    case EXIT_MLE:
+        return "The_opponent_exceeded_memory_limit.";
+    case EXIT_RE:
+        return "The_opponent_got_Runtime_Error.";
+    default:
+        return "The_opponent_exited_by_unknown_reason.";
+    }
+}
+
+static std::string winner_to_str(int winner) {
+    if (winner == 0)
+        return "Draw.";
+    else if (winner == 1)
+        return "Player_1_win.";
+    else
+        return "Player_2_win.";
+}
+
 void HVCMatch::Start() {
     m_start_time = time(NULL);
     m_judge->Run();
@@ -37,8 +63,14 @@ void HVCMatch::Start() {
                 m_judge->Send(tmp_buf);
             } else if (src == 1) {
                 if (m_computer->Recv(buf, BUF_LEN-1) == 0) {
-                    fprintf(stderr, "Computer exited, type: %d\n",
-                            m_computer->GetExitType());
+                    int exit_type = m_computer->GetExitType();
+                    fprintf(stderr, "Computer exited, type: %d\n", exit_type);
+                    m_winner = (1 - src) + 1;
+                    fprintf(stderr, "the winner is %d\n", m_winner);
+                    printf(": %d %s %s\n", m_winner,
+                      winner_to_str(m_winner).c_str(),
+                      exit_flag_2_str(exit_type).c_str());
+                    fflush(stdout);
                     break;
                 }
                 m_judge->Send(buf);
