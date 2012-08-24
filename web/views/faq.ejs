@@ -6,7 +6,7 @@ A: Unfortunately, the current supported language is C++ only. But we will add mo
 
 <h3>2. Is there time limitation for my program?</h3>
 
-A: Yes. If not specified, the time limit is <strong>15 minutes of CPU time</strong> (not elapsed time) for a match.
+A: Yes. If not specified, the time limit is <strong>1 minute of CPU time</strong> (not elapsed time) for a match.
 If you exceed this time limit, you will lose.<p>
 
 <h3>3. How can my program play the game?</h3>
@@ -26,4 +26,21 @@ To avoid this, remember flushing the buffer after every output. The code will lo
 <pre><tt>  printf("%d %d\n", x, y); // put a chess at (x,y)
   fflush(stdout);
 </tt></pre>
+
+<h3>4. Is there any limitations?</h3>
+
+A: Your program can use at most <strong>32 MB memory</strong>, or else you will get "Memory Limit Exceeded" or
+"Runtime Error".<p>
+
+And you shouldn't make the system calls which are considered dangerous, for example, disk file IO. 
+If you make dangerous system calls, you will get "Restricted Functions".<p>
+
+By the way, if you got "Restricted Functions" but you are sure that there is no restricted system call in your
+program, please contact us. It is probably a bug.<p>
+
+<h3>5. How is the scoring?</h3>
+
+A: In a specific game, your program will fight with every other's latest version twice (once as the first player,
+and the other time as the second player). The winner of a match will get 3 points. If there is draw, both sides
+will get 1 point. The AIs will be ranked by the total points. We are considering more sophisticated ranking method.
 

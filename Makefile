@@ -28,6 +28,7 @@ all:
 	$(CC) -Wall -static test_ai/tle.cpp -o test_ai/tle.exe
 	$(CC) -Wall -static test_ai/mle.cpp -o test_ai/mle.exe
 	$(CC) -Wall -static test_ai/re.cpp -o test_ai/re.exe
+	$(CC) -Wall -static test_ai/rf.cpp -o test_ai/rf.exe
 	$(CC) -Wall -static test_judge/renju_simple_judge.cpp -o test_judge/renju_simple_judge.exe
 	$(CC) -Wall -static test_judge/renju_restricted_judge.cpp -o test_judge/renju_restricted_judge.exe
 	$(CC) -Wall -static test_judge/xiangqi_judge.cpp -o test_judge/xiangqi_judge.exe

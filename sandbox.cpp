@@ -18,7 +18,7 @@
 #include "sandbox.h"
 #include "syscalls.h"
 
-const int MEMORY_LIMIT = 128 * 1024 * 1024; // in bytes
+const int MEMORY_LIMIT = 32 * 1024 * 1024; // in bytes
 const int TIME_LIMIT = 60;  // in seconds
 
 static int set_quota() {
@@ -48,6 +48,7 @@ static int set_quota() {
 
 Sandbox::Sandbox(std::string path) : m_idx(0), m_len(0) {
     m_path = path;
+    _InitSyscallSpec();
 }
 
 Sandbox::~Sandbox() {
@@ -146,17 +147,12 @@ int Sandbox::Run() {
                             4 * ORIG_EAX, NULL);
 #endif
                     assert(orig_eax >= 0 && orig_eax < 512);
-                    /*
                     if (--m_limit[orig_eax] < 0) {
                         m_exit_flag = EXIT_RF;
-                        fprintf(stderr, "Sys call %d reach limit\n", 
-                                static_cast<int>(orig_eax));
-                        break;
+                        fprintf(stderr, "pid:%d Sys call %d reach limit\n", 
+                                getpid(), static_cast<int>(orig_eax));
                     }
-                    */
                     ++m_stat[orig_eax];
-                    // fprintf(stderr, "m_stat[%d]:%d\n", orig_eax,
-                    //          m_stat[orig_eax]);
                     in_call = 1;
                 } else {
                     in_call = 0;
