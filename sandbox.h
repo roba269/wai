@@ -9,7 +9,7 @@ class Sandbox {
 public:
     Sandbox(std::string path);
     virtual ~Sandbox();
-    virtual int Run();
+    virtual int Run(bool is_rf = true);
     virtual int Send(char *buf);
     virtual int Recv(char *buf, int max_len);
     ExitFlagType GetExitType();

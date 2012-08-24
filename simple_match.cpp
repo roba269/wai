@@ -42,7 +42,7 @@ static std::string winner_to_str(int winner) {
 void SimpleMatch::Start() {
     signal(SIGPIPE, SIG_IGN);
     m_start_time = time(NULL);
-    m_judge->Run();
+    m_judge->Run(false);  /* No syscall restriction for judge */
     for (int i = 0 ; i < m_player.size() ; ++i) {
         m_player[i]->Run();
     }

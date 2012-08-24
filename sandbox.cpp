@@ -55,7 +55,7 @@ Sandbox::~Sandbox() {
 
 }
 
-int Sandbox::Run() {
+int Sandbox::Run(bool is_rf) {
     if (access(m_path.c_str(), R_OK | X_OK)) {
         fprintf(stderr, "Cannot access %s\n", m_path.c_str());
         return -1;
@@ -147,7 +147,7 @@ int Sandbox::Run() {
                             4 * ORIG_EAX, NULL);
 #endif
                     assert(orig_eax >= 0 && orig_eax < 512);
-                    if (--m_limit[orig_eax] < 0) {
+                    if (is_rf && --m_limit[orig_eax] < 0) {
                         m_exit_flag = EXIT_RF;
                         fprintf(stderr, "pid:%d Sys call %d reach limit\n", 
                                 getpid(), static_cast<int>(orig_eax));

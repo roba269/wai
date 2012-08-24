@@ -37,7 +37,7 @@ static std::string winner_to_str(int winner) {
 
 void HVCMatch::Start() {
     m_start_time = time(NULL);
-    m_judge->Run();
+    m_judge->Run(false);
     m_computer->Run();
     char buf[BUF_LEN], tmp_buf[BUF_LEN];
     while (1) {
