@@ -2,6 +2,7 @@ var db = require('./models/db');
 var cp = require('child_process');
 var util = require('util');
 var waiconst = require('./waiconst');
+var db_util = require('./db_util');
 
 var SLEEP_IN_MS = 300000; // 5 minutes
 
@@ -50,6 +51,11 @@ function start_match(uid1, submit1, uid2, submit2, game) {
           {$set: {'last': 1, 'status': 2, 'result': result, 'result_str': result_str,
             'reason': reason, 'trans': trans}}, function (err) {
             if (err) console.log('update matches failed:' + err);
+            else {
+              db_util.update_leader(game, function(err) {
+                if (err) console.log('update_leader failed.');
+              });
+            }
           });
       });
   });
@@ -136,7 +142,6 @@ function schedule_match() {
              get_latest_submit(users[idx], users[idx2], game.name);
           }
         }
-        // console.log('done');
       });
     });
   });

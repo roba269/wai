@@ -4,6 +4,7 @@ var async = require('async');
 exports.get_latest_result = get_latest_result;
 exports.get_latest_submit = get_latest_submit;
 exports.get_rank_list = get_rank_list;
+exports.update_leader = update_leader;
 
 function submit_id_to_user_email(submit_id, callback) {
   db.sumits.findOne({_id: ObjectId(submit_id)},
@@ -320,5 +321,27 @@ function get_latest_usable_submit(email, game_name, callback) {
       if (!sumbit) return callback(null, null);
       callback(null, submit);
     });
+}
+
+function update_leader(game_name, callback) {
+  get_rank_list(game_name, function(err, rank_list) {
+    if (err) return callback(err);
+    if (rank_list.length === 0) {
+      return callback(null);
+    } else {
+      db.games.findOne({name: game_name}, function(err, game) {
+        if (err || !game) {
+          console.log('Find game failed. err:' + err);
+          return callback(err);
+        }
+        if (game.leader !== rank_list[0].user) {
+          game.leader = rank_list[0].user;
+          game.update_date = new Date();
+          db.games.save(game);
+        }
+        callback(null);
+      });
+    }
+  });
 }
 
