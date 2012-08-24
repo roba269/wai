@@ -11,9 +11,9 @@ public:
     virtual ~Sandbox();
     virtual int Run(bool is_rf = true);
     virtual int Send(char *buf);
-    virtual int Recv(char *buf, int max_len);
-    ExitFlagType GetExitType();
+    virtual int Recv(char *buf, int max_len, ExitFlagType &flag);
 private:
+    ExitFlagType _GetExitType();
     int _RecvChar(char *buf);
     void _InitSyscallSpec();
     std::string m_path;

@@ -13,7 +13,7 @@
 const int BUF_LEN = 1024;
 char trans[BUF_LEN*BUF_LEN];
 
-static std::string exit_flag_2_str(int exit_type) {
+static std::string exit_flag_2_str(ExitFlagType exit_type) {
     switch (exit_type) {
     case EXIT_NORMAL:
         return "The_opponent_exited_normally.";
@@ -43,7 +43,7 @@ void SimpleMatch::Start() {
     signal(SIGPIPE, SIG_IGN);
     m_start_time = time(NULL);
     m_judge->Run(false);  /* No syscall restriction for judge */
-    for (int i = 0 ; i < m_player.size() ; ++i) {
+    for (unsigned int i = 0 ; i < m_player.size() ; ++i) {
         m_player[i]->Run();
     }
     char buf[BUF_LEN], tmp_buf[BUF_LEN];
@@ -51,7 +51,11 @@ void SimpleMatch::Start() {
     while (1) {
         fprintf(stderr, "waiting for the judge speaking\n");
         memset(buf, 0, sizeof(buf));
-        m_judge->Recv(buf, BUF_LEN-1);
+        ExitFlagType tmp;
+        if (m_judge->Recv(buf, BUF_LEN-1, tmp) == 0) {
+            fprintf(stderr, "The judge crashed.");
+            break;
+        }
         fprintf(stderr, "The judge said: {%s}\n", buf);
         if (buf[0] == '>') {
             int dst = buf[1] - '1';
@@ -60,9 +64,9 @@ void SimpleMatch::Start() {
             int src = buf[1] - '1';
             fprintf(stderr, "The judge try to read from player %d\n", src);
             memset(buf, 0, sizeof(buf));
-            if (m_player[src]->Recv(buf, BUF_LEN-1) == 0) {
-                int exit_type = m_player[src]->GetExitType();
-                fprintf(stderr, "Player %d exited, type: %d\n", src, exit_type);
+            ExitFlagType exit_type;
+            if (m_player[src]->Recv(buf, BUF_LEN-1, exit_type) == 0) {
+                fprintf(stderr, "Player %d exited, type: %d\n", src, (int)exit_type);
                 m_winner = (1 - src) + 1;
                 fprintf(stderr, "the winner is %d\n", m_winner);
                 fprintf(stdout, "%d %s %s\n", m_winner,

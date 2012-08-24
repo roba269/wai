@@ -11,6 +11,7 @@
 #include <sys/syscall.h>
 #include <sys/reg.h>
 #include <sys/time.h>
+#include <sys/select.h>
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
@@ -193,20 +194,50 @@ int Sandbox::Send(char *buf) {
     return 0;
 }
 
-int Sandbox::Recv(char *buf, int max_len) {
-    int i;
-    for (i = 0 ; i < max_len ; ++i) {
-        if (_RecvChar(buf) == 0 || *buf == '\n') {
-            *buf = 0;
-            return i;
-        }
-        ++buf;
+int Sandbox::Recv(char *buf, int max_len, ExitFlagType &exit_flag) {
+    fd_set readset;
+    FD_ZERO(&readset);
+    FD_SET(recv_info_fd, &readset);
+    FD_SET(recv_fd, &readset);
+    timeval tv;
+    // Timeval is set large enough to make sure the elapsed
+    // time is long enough comparing with the CPU time limit.
+    // If timed out, we can consider that the user process is
+    // blocked without consuming CPU time. It may be because
+    // of forgetting to flush stdout, for example.
+    // Note that this case can't be detected by `ptrace` of
+    // sandbox, so we need `select`.
+    tv.tv_sec = TIME_LIMIT * 2; tv.tv_usec = 1000;
+    int cnt = select(std::max(recv_info_fd, recv_fd) + 1,
+        &readset, NULL, NULL, &tv);
+    if (cnt == -1) {
+        fprintf(stderr, "Select failed.");
+        return 0;
     }
-    *buf = 0;
-    return i;
+    if (cnt == 0) {
+        // time out
+        exit_flag = EXIT_TLE;
+        return 0;
+    } else if (FD_ISSET(recv_info_fd, &readset)) {
+        exit_flag = _GetExitType();
+        return 0;
+    } else if (FD_ISSET(recv_fd, &readset)) {
+        int i;
+        for (i = 0 ; i < max_len ; ++i) {
+            if (_RecvChar(buf) == 0 || *buf == '\n') {
+                *buf = 0;
+                return i;
+            }
+            ++buf;
+        }
+        *buf = 0;
+        return i;
+    }
+    // impossible to come here
+    return 0;
 }
 
-ExitFlagType Sandbox::GetExitType() {
+ExitFlagType Sandbox::_GetExitType() {
     // GetExitType should read from the sandbox process
     char buf[16];
     int tmp;

@@ -9,7 +9,7 @@
 
 const int BUF_LEN = 1024;
 
-static std::string exit_flag_2_str(int exit_type) {
+static std::string exit_flag_2_str(ExitFlagType exit_type) {
     switch (exit_type) {
     case EXIT_NORMAL:
         return "The_opponent_exited_normally.";
@@ -42,7 +42,11 @@ void HVCMatch::Start() {
     char buf[BUF_LEN], tmp_buf[BUF_LEN];
     while (1) {
         memset(buf, 0, sizeof(buf));
-        m_judge->Recv(buf, BUF_LEN-1);
+        ExitFlagType tmp;
+        if (m_judge->Recv(buf, BUF_LEN-1, tmp) == 0) {
+            fprintf(stderr, "The judge crashed.");
+            break;
+        }
         fprintf(stderr, "The judge said {%s}", buf);
         if (buf[0] == '>') {
             int dst = buf[1] - '1';
@@ -62,9 +66,9 @@ void HVCMatch::Start() {
                 fgets(tmp_buf, BUF_LEN-1, stdin); 
                 m_judge->Send(tmp_buf);
             } else if (src == 1) {
-                if (m_computer->Recv(buf, BUF_LEN-1) == 0) {
-                    int exit_type = m_computer->GetExitType();
-                    fprintf(stderr, "Computer exited, type: %d\n", exit_type);
+                ExitFlagType exit_type;
+                if (m_computer->Recv(buf, BUF_LEN-1, exit_type) == 0) {
+                    fprintf(stderr, "Computer exited, type: %d\n", (int)exit_type);
                     m_winner = (1 - src) + 1;
                     fprintf(stderr, "the winner is %d\n", m_winner);
                     printf(": %d %s %s\n", m_winner,
