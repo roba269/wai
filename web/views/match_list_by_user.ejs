@@ -36,7 +36,7 @@ $(document).ready(function () {
         <% } %>
       </td>
       <td><%= match.date.getFullYear()
-          + "-" + pad(match.date.getMonth())
+          + "-" + pad(match.date.getMonth()+1)
           + "-" + pad(match.date.getDate())
           + " " + pad(match.date.getHours())
           + ":" + pad(match.date.getMinutes())
