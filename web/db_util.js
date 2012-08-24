@@ -240,10 +240,19 @@ function get_rank_list(game_name, callback) {
 */
 
 function get_rank_list(game_name, callback) {
-  db.users.find(function(err, users) {
-    if (err) {
-      console.log('db.users.find failed, err:' + err);
-      callback(err, null);
+  db.submits.find({'game_name': game_name}, function(err, submits) {
+    if (err || !submits) {
+      console.log('db.submits.find failed, err:' + err);
+      return callback(err, null);
+    }
+    var users = [];
+    var users_set = {};
+    for (var sub_idx = 0 ; sub_idx < submits.length ; ++sub_idx) {
+      if (submits[sub_idx].user_id in users_set) continue;
+      users_set[submits[sub_idx].user_id] = true;
+      users.push({'_id': submits[sub_idx].user_id,
+        'nick': submits[sub_idx].user_nick,
+        'email': submits[sub_idx].user_email});
     }
     var score_list = [];
     for (var idx = 0 ; idx < users.length ; ++idx) {
