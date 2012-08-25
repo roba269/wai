@@ -117,8 +117,8 @@ function push_matches(submit1) {
             };
             db.matches.save(match_item2);
             queue.match_queue.push(match_item2);
-            console.log('push match into queue: %j', match_item);
-            console.log('push match into queue: %j', match_item2);
+            // console.log('push match into queue: %j', match_item);
+            // console.log('push match into queue: %j', match_item2);
           });
       });
     });

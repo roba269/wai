@@ -10,6 +10,7 @@ var submit_ctrl = require('./submit');
 var arena_ctrl = require('./arena');
 var match_ctrl = require('./match');
 var user_ctrl = require('./user');
+var admin_ctrl = require('./admin');
 var db_util = require('../db_util');
 
 // exports.submit_list = submit_ctrl.submit_list;
@@ -28,6 +29,7 @@ exports.reg_post = user_ctrl.reg_post;
 exports.change_passwd = user_ctrl.change_passwd;
 exports.change_passwd_post = user_ctrl.change_passwd_post;
 
+exports.rejudge = admin_ctrl.rejudge;
 
 function random_shuffle ( myArray ) {
   var i = myArray.length;

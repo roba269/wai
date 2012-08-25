@@ -51,7 +51,11 @@ $(document).ready(function () {
         <% } else if (match.status === 2) { %>
           <div rel="tooltip" title="<%= match.reason %>"><%= match.result_str %>
           &nbsp;
-          <a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a></div>
+          <a href="/arena/replay/<%= match.game_name %>/<%= match.match_id %>">View</a>
+          <% if (is_admin) { %>
+            &nbsp; <a href="/rejudge/<%= match.match_id %>">Re-run</a>
+          <% } %>
+          </div>
         <% } %>
       </td>
     </tr>

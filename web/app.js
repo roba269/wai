@@ -62,6 +62,10 @@ app.dynamicHelpers({
       return req.session.user._id;
     return null;
   },
+  is_admin: function(req, res) {
+    return (req.session.user != null &&
+      req.session.user.is_admin === true)
+  }
 });
 
 // Routes
@@ -86,6 +90,7 @@ app.get('/view_code/:submit_id', routes.view_code);
 app.get('/match_list/:game_name/:user_id', routes.match_list_by_user);
 app.get('/ranklist/:game_name', routes.ranklist);
 
+app.get('/rejudge/:match_id', routes.rejudge);
 app.get('/faq', routes.faq);
 
 if (!module.parent) {
