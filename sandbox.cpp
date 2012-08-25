@@ -195,46 +195,17 @@ int Sandbox::Send(char *buf) {
 }
 
 int Sandbox::Recv(char *buf, int max_len, ExitFlagType &exit_flag) {
-    fd_set readset;
-    FD_ZERO(&readset);
-    FD_SET(recv_info_fd, &readset);
-    FD_SET(recv_fd, &readset);
-    timeval tv;
-    // Timeval is set large enough to make sure the elapsed
-    // time is long enough comparing with the CPU time limit.
-    // If timed out, we can consider that the user process is
-    // blocked without consuming CPU time. It may be because
-    // of forgetting to flush stdout, for example.
-    // Note that this case can't be detected by `ptrace` of
-    // sandbox, so we need `select`.
-    tv.tv_sec = TIME_LIMIT * 2; tv.tv_usec = 1000;
-    int cnt = select(std::max(recv_info_fd, recv_fd) + 1,
-        &readset, NULL, NULL, &tv);
-    if (cnt == -1) {
-        fprintf(stderr, "Select failed.");
-        return 0;
-    }
-    if (cnt == 0) {
-        // time out
-        exit_flag = EXIT_TLE;
-        return 0;
-    } else if (FD_ISSET(recv_info_fd, &readset)) {
-        exit_flag = _GetExitType();
-        return 0;
-    } else if (FD_ISSET(recv_fd, &readset)) {
-        int i;
-        for (i = 0 ; i < max_len ; ++i) {
-            if (_RecvChar(buf) == 0 || *buf == '\n') {
-                *buf = 0;
-                return i;
-            }
-            ++buf;
+    int i;
+    for (i = 0 ; i < max_len ; ++i) {
+        if (_RecvChar(buf, exit_flag) == 0 || *buf == '\n') {
+            if (exit_flag != 0) return 0;
+            *buf = 0;
+            return i;
         }
-        *buf = 0;
-        return i;
+        ++buf;
     }
-    // impossible to come here
-    return 0;
+    *buf = 0;
+    return i;
 }
 
 ExitFlagType Sandbox::_GetExitType() {
@@ -248,14 +219,43 @@ ExitFlagType Sandbox::_GetExitType() {
     return m_exit_flag;
 }
 
-int Sandbox::_RecvChar(char *buf) {
+int Sandbox::_RecvChar(char *buf, ExitFlagType &exit_flag) {
     if (m_idx == m_len) {
-        m_len = read(recv_fd, m_buf, sizeof(m_buf));
-        m_idx = 0;
-        if (m_len < 0) {
-            assert(false);
+        exit_flag = EXIT_NONE;
+        fd_set readset;
+        FD_ZERO(&readset);
+        FD_SET(recv_info_fd, &readset);
+        FD_SET(recv_fd, &readset);
+        timeval tv;
+        // Timeval is set large enough to make sure the elapsed
+        // time is long enough comparing with the CPU time limit.
+        // If timed out, we can consider that the user process is
+        // blocked without consuming CPU time. It may be because
+        // of forgetting to flush stdout, for example.
+        // Note that this case can't be detected by `ptrace` of
+        // sandbox, so we need `select`.
+        tv.tv_sec = TIME_LIMIT * 2; tv.tv_usec = 1000;
+        int cnt = select(std::max(recv_info_fd, recv_fd) + 1,
+            &readset, NULL, NULL, &tv);
+        if (cnt == -1) {
+            fprintf(stderr, "Select failed.");
+            return 0;
         }
-        if (m_len == 0) return 0;
+        if (cnt == 0) {
+            // time out
+            exit_flag = EXIT_TLE;
+            return 0;
+        } else if (FD_ISSET(recv_info_fd, &readset)) {
+            exit_flag = _GetExitType();
+            return 0;
+        } else if (FD_ISSET(recv_fd, &readset)) {
+            m_len = read(recv_fd, m_buf, sizeof(m_buf));
+            m_idx = 0;
+            if (m_len < 0) {
+                assert(false);
+            }
+            if (m_len == 0) return 0;
+        }
     }
     *buf = m_buf[m_idx++];
     return 1;

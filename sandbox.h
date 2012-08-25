@@ -14,7 +14,7 @@ public:
     virtual int Recv(char *buf, int max_len, ExitFlagType &flag);
 private:
     ExitFlagType _GetExitType();
-    int _RecvChar(char *buf);
+    int _RecvChar(char *buf, ExitFlagType &flag);
     void _InitSyscallSpec();
     std::string m_path;
     int send_fd, recv_fd, recv_info_fd;
