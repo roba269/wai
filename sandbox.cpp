@@ -196,8 +196,10 @@ int Sandbox::Send(char *buf) {
 
 int Sandbox::Recv(char *buf, int max_len, ExitFlagType &exit_flag) {
     int i;
+    char *obuf = buf;
     for (i = 0 ; i < max_len ; ++i) {
         if (_RecvChar(buf, exit_flag) == 0 || *buf == '\n') {
+            fprintf(stderr, "pid:%d buf:%s exit_flag:%d\n", getpid(), obuf, exit_flag);
             if (exit_flag != 0) return 0;
             *buf = 0;
             return i;
@@ -245,9 +247,6 @@ int Sandbox::_RecvChar(char *buf, ExitFlagType &exit_flag) {
             // time out
             exit_flag = EXIT_TLE;
             return 0;
-        } else if (FD_ISSET(recv_info_fd, &readset)) {
-            exit_flag = _GetExitType();
-            return 0;
         } else if (FD_ISSET(recv_fd, &readset)) {
             m_len = read(recv_fd, m_buf, sizeof(m_buf));
             m_idx = 0;
@@ -255,6 +254,9 @@ int Sandbox::_RecvChar(char *buf, ExitFlagType &exit_flag) {
                 assert(false);
             }
             if (m_len == 0) return 0;
+        } else if (FD_ISSET(recv_info_fd, &readset)) {
+            exit_flag = _GetExitType();
+            return 0;
         }
     }
     *buf = m_buf[m_idx++];
