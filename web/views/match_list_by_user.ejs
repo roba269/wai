@@ -35,17 +35,19 @@ $(document).ready(function () {
           <span class="label label-warning">Dep</span>
         <% } %>
       </td>
-      <td><%= match.date.getFullYear()
+      <td><%= match.date ? match.date.getFullYear()
           + "-" + pad(match.date.getMonth()+1)
           + "-" + pad(match.date.getDate())
           + " " + pad(match.date.getHours())
           + ":" + pad(match.date.getMinutes())
-          + ":" + pad(match.date.getSeconds()) %></td>
+          + ":" + pad(match.date.getSeconds()) : "N/A"%></td>
       <td>
         <% if (match.status === 0) { %>
           Pending
         <% } else if (match.status === 1) { %>
           Running
+        <% } else if (match.status === 4) { %>
+          Canceled
         <% } else if (match.status === 2) { %>
           <div rel="tooltip" title="<%= match.reason %>"><%= match.result_str %>
           &nbsp;

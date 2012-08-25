@@ -1,11 +1,14 @@
-
 var db = require('./models/db');
 var cp = require('child_process');
 var waiconst = require('./waiconst');
+var queue = require('./queue');
+var scheduler = require('./scheduler');
 
-var SLEEP_IN_MS = 1000;
+// var SLEEP_IN_MS = 1000;
 
-function compile(submit) {
+exports.compile = compile;
+
+function compile(submit, callback) {
   if (submit.lang === 'C++') {
     // console.log('id:' + submit._id);
     var cmd = 'g++ -Wall -static -ftemplate-depth-17 -O3 '
@@ -19,6 +22,7 @@ function compile(submit) {
               {$set: {status: 1, 'compile_output': stderr}},
               function(err) {
                 if (err) console.log('Update failed: ' + err);
+                return callback();
               });
         } else {
           // console.log('id:' + submit._id + ' successful');
@@ -28,32 +32,24 @@ function compile(submit) {
               function(err) {
                 if (err) {
                   console.log('Update last=0 failed.');
-                  return;
+                  return callback();
                 }
                 db.submits.update({_id: submit._id},
                     {$set: {'status': 2, 'last': 1}},
                     function(err) {
-                      if (err)
+                      if (err) {
                         console.log('Update failed: ' + err);
+                      } else {
+                        scheduler.push_matches(submit);
+                      }
+                      return callback();
                     });
               });
         }
       });
   } else {
-    console.log("I cannot compile java now.");
+    console.log("I cannot compile languages other than C++ now.");
+    return callback();
   }
 }
-
-function pick_submit() {
-  db.submits.findOne({status: 0}, function(err, submit) {
-    if (err || !submit) {
-      // console.log("Not found uncompiled code.");
-      return;
-    }
-    compile(submit);
-  });
-}
-
-console.log('Compiler is running.');
-setInterval(pick_submit, SLEEP_IN_MS);
 

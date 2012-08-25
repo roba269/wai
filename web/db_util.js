@@ -5,6 +5,7 @@ exports.get_latest_result = get_latest_result;
 exports.get_latest_submit = get_latest_submit;
 exports.get_rank_list = get_rank_list;
 exports.update_leader = update_leader;
+exports.get_latest_usable_submit_uid = get_latest_usable_submit_uid;
 
 function submit_id_to_user_email(submit_id, callback) {
   db.sumits.findOne({_id: ObjectId(submit_id)},
@@ -126,118 +127,12 @@ function get_latest_result(inp_user_id, game_name, inp_callback) {
   });
 }
 
-// function get_latest_result(user_id, callback) {
-//   db.users.find({}, function(err, users) {
-//     if (err) {
-//       console.log('users.find failed.');
-//       callback(err, null);
-//     }
-//     var match_to_show = [];
-//     for (var idx = 0 ; idx < users.length ; ++idx) {
-//       if (users[idx]._id === user_id) continue;
-//       db.matches.find({$or: [
-//           {'uid1': user_id, 'uid2': users[idx]._id},
-//           {'uid1': user[idx]._id, 'uid2': user_id}]
-//         }).sort({date: -1}, function(err, match_list) {
-//           if (err) {
-//             console.log('matches.find failed, err:' + err);
-//             return callback(err, null);
-//           }
-//           if (match_list.length === 0) {
-//             return callback(err, null);
-//           }
-//           for (var i = 0 ; i < match_list.length ; ++i) {
-//             user_id_to_user(match_list[i].uid1,
-//               function(err, user1) {
-//                 user_id_to_user(match_list[i].uid2,
-//                   function(err, user2) {
-//                     match_to_show.push({
-//                       'black_nick': user1.nick,
-//                       'black_version': 0, /* FIXME */
-//                       'white_nick': user2.nick,
-//                       'white_version': 0, /* FIXME */
-//                       'status': match_list[i].status,
-//                       'result': match_list[i].result,
-//                     });
-// 
-//                   });
-//               });
-//           }
-//         });
-// 
-//     }
-//   });
-// 
-//   db.matches.find({$or: [{uid1: ObjectId(user_id)},
-//     {uid2: ObjectId(user_id)}]}, function(err, match_list) {
-//       if (err) {
-//         console.log('get_latest_result failed.');
-//         callback(err, null);
-//       }
-//       match_list.forEach(
-//     });
-// }
-// 
-
 function get_user_list(callback) {
   db.users.find({}, function(err, users) {
     if (err) return callback(err);
     callback(null, users);
   });
 }
-/*
-function get_user_score(inp_user_id, game_name, inp_callback) {
-  async.waterfall([
-    // get user list
-    get_user_list,
-    function _get_match_score(users, callback) {
-      for (var idx = 0 ; idx < users.length ; ++idx) {
-        var user = users[idx];
-        if (user._id.equals(inp_user_id)) continue;
-        db.matches.find({$or: [
-            {'game': game_name, 'uid1': inp_user_id, 'uid2': user._id, 'last': 1},
-            {'game': game_name, 'uid1': user._id, 'uid2': inp_user_id, 'last': 1}]
-          }, function(err, match_list) {
-            if (err) return callback(err, null);
-            var score = 0
-            for (var idx = 0 ; idx < match_list.length ; ++idx) {
-              if (match_list[idx].result < 0) continue;  // error
-              if (match_list[idx].result == 0) { // draw
-                score += 1; 
-                continue;
-              }
-              var me;
-              if (match_list[idx].uid1.equals(inp_user_id)) me = 0;
-              else me = 1;
-              if ((me === 0 && match_list[idx].result == 1) || 
-                  (me === 1 && match_list[idx].result == 2)) score += 3;
-            }
-            callback(null, score);
-          });
-      }
-    },
-  ], function(err, score) {
-    if (err) return callback(err);
-    inp_callback(null, score);
-  });
-}
-
-function get_rank_list(game_name, callback) {
-  async.waterfall([
-    get_user_list,
-    function _get_user_score(user_list, callback) {
-      async.map(user_list, function(user, callback) {
-
-      }, function (err, score_list) {
-
-      }
-    }
-  ], function(err, rank_list) {
-    if (err) return callback(err);
-    callback(null, rank_list);
-  }
-}
-*/
 
 function get_rank_list(game_name, callback) {
   db.submits.find({'game_name': game_name}, function(err, submits) {
@@ -288,7 +183,7 @@ function get_rank_list(game_name, callback) {
                 } else if (match.result === 2) {
                   // console.log('idx2:%j users.length:%j score_list: %j', idx2, users.length, score_list);
                   score_list[idx2].score += 3;
-                } else console.log('Unexpected result for match bewteen user %s and %s', users[idx].nick, users[idx2].nick);
+                } else console.log('Unexpected result for match between user %s and %s', users[idx].nick, users[idx2].nick);
               }
               if (counter === 0) {
                 // sort score_list
@@ -321,13 +216,22 @@ function get_latest_submit(email, game_name, callback) {
 }
 
 // Given user_id and game_name, return the latest usable submition
-// (status == 2)
+// (status == 2, no Compile Error)
 
 function get_latest_usable_submit(email, game_name, callback) {
   db.submits.findOne({'user_email': email, 'game_name': game_name,
     'last': 1}, function(err, submit) {
       if (err) return callback(err, null);
       if (!sumbit) return callback(null, null);
+      callback(null, submit);
+    });
+}
+
+function get_latest_usable_submit_uid(uid, game_name, callback) {
+  db.submits.findOne({'user_id': uid, 'game_name': game_name,
+    'last': 1}, function(err, submit) {
+      if (err) return callback(err, null);
+      if (!submit) return callback(null, null);
       callback(null, submit);
     });
 }
