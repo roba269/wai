@@ -23,13 +23,13 @@ $(document).ready(function () {
   <tbody>
     <% matches.forEach(function(match, index) { %>
     <tr>
-      <td><%= match.nick1 %>
+      <td><a href="/user/<%= match.uid1 %>"><%= match.nick1 %></a>
         <span class="badge">v<%= match.version1 %></span>
         <% if (match.flg1 !== 1) { %>
           <span class="label label-warning">Dep</span>
         <% } %>
       </td>
-      <td><%= match.nick2 %>
+      <td><a href="/user/<%= match.uid2 %>"><%= match.nick2 %></a>
         <span class="badge">v<%= match.version2 %></span>
         <% if (match.flg2 !== 1) { %>
           <span class="label label-warning">Dep</span>

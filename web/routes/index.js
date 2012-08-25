@@ -28,6 +28,7 @@ exports.reg = user_ctrl.reg;
 exports.reg_post = user_ctrl.reg_post;
 exports.change_passwd = user_ctrl.change_passwd;
 exports.change_passwd_post = user_ctrl.change_passwd_post;
+exports.show_user = user_ctrl.show_user;
 
 exports.rejudge = admin_ctrl.rejudge;
 

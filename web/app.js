@@ -91,6 +91,7 @@ app.get('/match_list/:game_name/:user_id', routes.match_list_by_user);
 app.get('/ranklist/:game_name', routes.ranklist);
 
 app.get('/rejudge/:match_id', routes.rejudge);
+app.get('/user/:user_id', routes.show_user);
 app.get('/faq', routes.faq);
 
 if (!module.parent) {

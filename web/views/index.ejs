@@ -39,7 +39,7 @@
                 <div class="caption">
                 <h3><%= game.show_name %></h3>
                 <% if (game.leader) { %>
-                <p> Best scorer: <strong><%= game.leader.nick %></strong> &nbsp;
+                <p> Best scorer: <strong><a href="/user/<%= game.leader._id %>"><%= game.leader.nick %></a></strong> &nbsp;
                   <small>since <%= get_date_str(game.update_date) %> ago </small>
                 </p>
                 <% } else { %>

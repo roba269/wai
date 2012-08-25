@@ -1,5 +1,6 @@
 var db = require('../models/db');
 var crypto = require('crypto');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 exports.login = function(req, res) {
     res.render('login', { title: 'WAI : Login'});
@@ -98,3 +99,17 @@ exports.change_passwd_post = function(req, res) {
       return res.redirect('/');
     });
 }
+
+exports.show_user = function(req, res) {
+  db.users.findOne({_id: ObjectId(req.params.user_id)},
+    function(err, user) {
+      if (err || !user) {
+        req.flash('error', 'No such user.');
+        return res.redirect('back');
+      }
+      console.log('user: %j', user);
+      res.render('user', {title: 'WAI : User Profile',
+        user_profile : user});
+    });
+}
+

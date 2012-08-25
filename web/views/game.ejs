@@ -45,7 +45,7 @@
                   <%  if (index <= 4) { %>
                   <tr>
                   <td><%= index + 1 %></td>
-                  <td><%= item.user.nick %></td>
+                  <td><a href="/user/<%= item.user._id %>"><%= item.user.nick %></a></td>
                   <td><%= item.score %></td>
                   </tr>
                   <% }}); %>
@@ -59,7 +59,7 @@
               <h3>Human vs. Computer</h3>
               <p>This game support Human vs. Computer (HvC) feature.</p>
               <p>Are you clever than computer AI? Try the HvC now!</p>
-              <p><a class="btn" href="#">Pick random AI</a>&nbsp;
+              <p><!-- <a class="btn" href="#">Pick random AI</a>&nbsp; -->
                 <a class="btn" href="/submit_list/<%= game_name %>/all">List All AIs</a></p>
             </div>
             <% } %>
