@@ -5,6 +5,7 @@
 #include <string>
 using namespace std;
 
+const int BUF_LEN = 128;
 const int N = 8;
 const int dir[][2] = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},
     {1,-1},{1,0},{1,1}};
@@ -106,13 +107,15 @@ int main() {
     printf(">2: second\n");
     fflush(stdout);
     int cur = 1;
+    char tmp_buf[BUF_LEN+10];
     while (1) {
         int x, y;
         if (!can_move(cur)) {
             if (can_move(3-cur)) {
               printf("<%d\n", cur);
               fflush(stdout);
-              scanf("%d %d", &x, &y);
+              fgets(tmp_buf, BUF_LEN, stdin);
+              sscanf(tmp_buf, "%d %d", &x, &y);
               // ignore (x,y), skip
               printf("+%d -1 -1\n", cur);
               fflush(stdout);
@@ -124,7 +127,8 @@ int main() {
         }
         printf("<%d\n", cur);
         fflush(stdout);
-        scanf("%d %d",&x,&y);
+        fgets(tmp_buf, BUF_LEN, stdin);
+        sscanf(tmp_buf, "%d %d",&x,&y);
         if (!valid(x, y, cur)) {
             if (cur == 1) 
               printf("%d %s Black_make_invalid_move.\n", 3-cur,

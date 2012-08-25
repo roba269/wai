@@ -5,6 +5,7 @@
 #include <string>
 using namespace std;
 
+const int BUF_LEN = 128;
 int board[16][16];
 const int R = 15;
 const int C = 15;
@@ -68,11 +69,13 @@ int main() {
     fflush(stdout);
     fprintf(stderr, "%d: I said >2: second\n", getpid());
     int cur = 1;
+    char tmp_buf[BUF_LEN+10];
     while (1) {
         printf("<%d\n", cur);
         fflush(stdout);
         int x, y;
-        scanf("%d %d", &x, &y);
+        fgets(tmp_buf, BUF_LEN, stdin);
+        sscanf(tmp_buf, "%d %d", &x, &y);
         if (!valid(x,y)) {
             if (cur == 1)
               printf("%d %s Black_make_invalid_move.\n", 3-cur,

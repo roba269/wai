@@ -9,6 +9,7 @@
 #include <cassert>
 using namespace std;
 
+const int BUF_LEN = 128;
 const int WIDTH = 21;
 const int HEIGHT = 21;
 const int INF = 1000000;
@@ -487,11 +488,15 @@ int main() {
   fflush(stdout);
   printf(">2: %s\n", map_buf);
   fflush(stdout);
+  char tmp_buf[BUF_LEN+10];
   for (int i = 0 ; i < 2 ; ++i) {
     printf("<%d\n", i+1);
     fflush(stdout);
+    fgets(tmp_buf, BUF_LEN, stdin);
+    sscanf(tmp_buf, "%d %d %d %d %d",
+      &tank[i][0].type, &tank[i][1].type, &tank[i][2].type,
+      &tank[i][3].type, &tank[i][4].type);
     for (int j = 0 ; j < 5 ; j++) {
-      scanf("%d", &tank[i][j].type);
       if (tank[i][j].type < 0 || tank[i][j].type > 2) {
         printf("%d %s The_opponent_makes_wrong_tank_type.\n", (1-i+1), get_result_str(1-i+1).c_str());
         fflush(stdout);
@@ -545,7 +550,8 @@ int main() {
         printf("<%d\n", i+1);
         fflush(stdout);
         char cmd_buf[16];
-        scanf("%10s", cmd_buf);
+        fgets(tmp_buf, BUF_LEN, stdin);
+        sscanf(tmp_buf, "%10s", cmd_buf);
         if (strcmp(cmd_buf, "GOUP") == 0) {
           cmd[i][j].type = GOUP;
         } else if (strcmp(cmd_buf, "GOLEFT") == 0) {
@@ -558,7 +564,7 @@ int main() {
           cmd[i][j].type = STOP;
         } else if (strcmp(cmd_buf, "FIRE") == 0) {
           cmd[i][j].type = FIRE;
-          scanf("%d %d", &cmd[i][j].x, &cmd[i][j].y);
+          sscanf(tmp_buf, "%10s %d %d", cmd_buf, &cmd[i][j].x, &cmd[i][j].y);
         } else {
           cmd[i][j].type = INVALID;
         }

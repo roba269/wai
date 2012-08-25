@@ -5,6 +5,7 @@
 #include <string>
 using namespace std;
 
+const int BUF_LEN = 128;
 const int R = 10;
 const int C = 9;
 
@@ -324,6 +325,7 @@ int main() {
   printf(">2: second\n");
   fflush(stdout);
   int cur = 1;
+  char tmp_buf[BUF_LEN+10];
   while (1) {
     if (!can_move(cur)) {
       printf("%d %s The_opponent_cannot_move.\n", 3-cur,
@@ -334,7 +336,8 @@ int main() {
     printf("<%d\n", cur);
     fflush(stdout);
     int x1, y1, x2, y2;
-    scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+    fgets(tmp_buf, BUF_LEN, stdin);
+    sscanf(tmp_buf, "%d %d %d %d", &x1, &y1, &x2, &y2);
     if (!valid(cur, x1, y1, x2, y2, buf)) {
       printf("%d %s The_opponent_makes_invalid_move:%s.\n",
         3-cur, get_result_str(3-cur).c_str(), buf);
