@@ -247,7 +247,7 @@ function update_leader(game_name, callback) {
           console.log('Find game failed. err:' + err);
           return callback(err);
         }
-        if (!game.leader._id.equals(rank_list[0].user._id)) {
+        if (!game.leader || !game.leader._id.equals(rank_list[0].user._id)) {
           game.leader = rank_list[0].user;
           game.update_date = new Date();
           db.games.save(game);

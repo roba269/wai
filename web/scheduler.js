@@ -62,65 +62,58 @@ function start_match(uid1, sid1, uid2, sid2, game, callback) {
 function push_matches(submit1) {
   async.waterfall([
     function(callback) {
-      db.games.find({}, function(err, game_list) {
-        if (err) return callback(err);
-        return callback(null, game_list);
-      });
-    },
-    function(game_list, callback) {
       db.users.find({}, function(err, user_list) {
         if (err) return callback(err);
-        return callback(null, game_list, user_list);
+        return callback(null, user_list);
       });
     },
-  ], function(err, game_list, user_list) {
+  ], function(err, user_list) {
     if (err) {
       console.log('push matches failed. err:' + err);
       return;
     }
-    game_list.forEach(function(game) {
-      user_list.forEach(function(user2) {
-        db_util.get_latest_usable_submit_uid(user2._id, game.name,
-          function(err, submit2) {
-            if (err || !submit2) return;
-            if (submit1.user_id.equals(user2._id)) return;
-            var match_item = {
-              'game': game.name,
-              'uid1': submit1.user_id,
-              'uid2': user2._id,
-              'nick1': submit1.user_nick,
-              'nick2': user2.nick,
-              'sid1': submit1._id,
-              'sid2': submit2._id,
-              'status': 0,
-              'result': -1,
-              'last': 0,  // TODO: is it right?
-              'version1': submit1.version,
-              'version2': submit2.version,
-              // Note: no date field
-            };
-            db.matches.save(match_item);
-            queue.match_queue.push(match_item);
-            var match_item2 = {
-              'game': game.name,
-              'uid2': submit1.user_id,
-              'uid1': user2._id,
-              'nick2': submit1.user_nick,
-              'nick1': user2.nick,
-              'sid2': submit1._id,
-              'sid1': submit2._id,
-              'status': 0,
-              'result': -1,
-              'last': 0,  // TODO: is it right?
-              'version2': submit1.version,
-              'version1': submit2.version,
-            };
-            db.matches.save(match_item2);
-            queue.match_queue.push(match_item2);
-            // console.log('push match into queue: %j', match_item);
-            // console.log('push match into queue: %j', match_item2);
-          });
-      });
+    var game_name = submit1.game_name;
+    user_list.forEach(function(user2) {
+      db_util.get_latest_usable_submit_uid(user2._id, game_name,
+        function(err, submit2) {
+          if (err || !submit2) return;
+          if (submit1.user_id.equals(user2._id)) return;
+          var match_item = {
+            'game': game_name,
+            'uid1': submit1.user_id,
+            'uid2': user2._id,
+            'nick1': submit1.user_nick,
+            'nick2': user2.nick,
+            'sid1': submit1._id,
+            'sid2': submit2._id,
+            'status': 0,
+            'result': -1,
+            'last': 0,  // TODO: is it right?
+            'version1': submit1.version,
+            'version2': submit2.version,
+            // Note: no date field
+          };
+          db.matches.save(match_item);
+          queue.match_queue.push(match_item);
+          var match_item2 = {
+            'game': game_name,
+            'uid2': submit1.user_id,
+            'uid1': user2._id,
+            'nick2': submit1.user_nick,
+            'nick1': user2.nick,
+            'sid2': submit1._id,
+            'sid1': submit2._id,
+            'status': 0,
+            'result': -1,
+            'last': 0,  // TODO: is it right?
+            'version2': submit1.version,
+            'version1': submit2.version,
+          };
+          db.matches.save(match_item2);
+          queue.match_queue.push(match_item2);
+          // console.log('push match into queue: %j', match_item);
+          // console.log('push match into queue: %j', match_item2);
+        });
     });
   });
 }
