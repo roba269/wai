@@ -1,3 +1,30 @@
 <div class="container">
-  Name: <%= user_profile.nick %>
+  <h3>Basic Information</h3>
+  <dl class="dl-horizontal">
+    <dt>Email</dt>
+    <dd><%= user_profile.email %></dd>
+    <dt>Nickname</dt>
+    <dd><%= user_profile.nick %></dd>
+    <% if (user_profile.institution) { %>
+    <dt>Institution</dt>
+    <dd><%= user_profile.institution %></dd>
+    <% } %>
+    <% if (user_profile.blog) { %>
+    <dt>Blog</dt>
+    <dd><%= user_profile.blog %></dd>
+    <% } %>
+    <% if (user_profile.motto) { %>
+    <dt>Motto</dt>
+    <dd><%= user_profile.motto %></dd>
+    <% } %>
+    <dd>
+    <% if (user_id && user_profile && user_profile._id.equals(user_id)) { %>
+    <a href="/edit">Edit My Profile</a>
+    <% } %>
+    </dd>
+  </dl>
+  <hr>
+  <h3>Achievements</h3>
+  <dl class="dl-horizontal">
+  </dl>
 </div>

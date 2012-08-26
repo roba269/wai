@@ -92,6 +92,8 @@ app.get('/ranklist/:game_name', routes.ranklist);
 
 app.get('/rejudge/:match_id', routes.rejudge);
 app.get('/user/:user_id', routes.show_user);
+app.get('/edit', routes.edit);
+app.post('/edit', routes.edit_post);
 app.get('/faq', routes.faq);
 
 if (!module.parent) {

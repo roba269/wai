@@ -112,3 +112,31 @@ exports.show_user = function(req, res) {
     });
 }
 
+exports.edit = function(req, res) {
+  if (!req.session.user) {
+    req.flash('error', 'You are not logged in.');
+    return res.redirect('back');
+  }
+  res.render('edit', {title: 'WAI : Edit Profile',
+    user_profile : req.session.user});
+}
+
+exports.edit_post = function(req, res) {
+  if (!req.session.user) {
+    req.flash('error', 'You are not logged in.');
+    return res.redirect('back');
+  }
+  db.users.update({_id: ObjectId(req.session.user._id)},
+    {$set: {nick: req.body.nick,
+      institution: req.body.institution,
+      blog: req.body.blog,
+      motto: req.body.motto}}, function(err) {
+        if (err) {
+          req.flash('error', 'Update Profile failed.');
+          return res.redirect('back');
+        }
+        req.flash('success', 'Update Successfully.');
+        return res.redirect('/user/' + req.session.user._id);
+      });
+}
+

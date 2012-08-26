@@ -1,0 +1,39 @@
+<div class="container">
+<form class="form-horizontal" method="post">
+  <legend>Edit Profile</legend>
+  <div class="control-group">
+    <label class="control-label" for="inputEmail">Email</label>
+    <div class="controls">
+      <input type="text" id="inputEmail" value="<%= user_profile.email %>" name="email" disabled>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputNick">Nickname</label>
+    <div class="controls">
+      <input type="text" maxlength=32 id="inputNick" name="nick" value="<%= user_profile.nick %>">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputInst">Institution (optional)</label>
+    <div class="controls">
+      <input type="text" maxlength=128 id="inputInst" name="institution" value="<%= user_profile.institution ? user_profile.institution : ''%>">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputBlog">Blog (optional)</label>
+    <div class="controls">
+      <input type="text" maxlength=128 id="inputBlog" name="blog" value="<%= user_profile.blog ? user_profile.blog : ''%>">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputMotto">Motto (optional)</label>
+    <div class="controls">
+      <input type="text" maxlength=512 id="inputMotto" name="motto" value="<%= user_profile.motto ? user_profile.motto : ''%>">
+    </div>
+  </div>
+  <div class="form-actions">
+    <div class="controls">
+    <button type="submit" class="btn btn-primary">Save</button>
+  </div>
+</form>
+</div>
