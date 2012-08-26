@@ -114,7 +114,8 @@ exports.view_code = function(req, res) {
         console.log('Fetch code failed. No such submit id.');
         return;
       }
-      if (submit.allow_view || 
+      if (submit.allow_view ||
+        (req.session.user && req.session.user.is_admin) || 
         (req.session.user && submit.user_id.equals(req.session.user._id))) {
         res.render('code', {title: 'WAI : View Code',
                           code: submit.code, err: submit.compile_output});
