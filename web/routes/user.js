@@ -107,7 +107,6 @@ exports.show_user = function(req, res) {
         req.flash('error', 'No such user.');
         return res.redirect('back');
       }
-      console.log('user: %j', user);
       res.render('user', {title: 'WAI : User Profile',
         user_profile : user});
     });

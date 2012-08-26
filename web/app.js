@@ -101,7 +101,7 @@ if (!module.parent) {
   });
 }
 
-// var child_process = require('child_process');
+var child_process = require('child_process');
 // child_process.fork(__dirname + '/compiler.js',[],{env: process.env});
 // child_process.fork(__dirname + '/scheduler.js',[],{env: process.env});
 
