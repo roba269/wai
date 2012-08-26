@@ -47,7 +47,7 @@ void HVCMatch::Start() {
             fprintf(stderr, "The judge crashed.");
             break;
         }
-        fprintf(stderr, "The judge said {%s}", buf);
+        fprintf(stderr, "The judge said {%s}\n", buf);
         if (buf[0] == '>') {
             int dst = buf[1] - '1';
             if (dst == 0) {
@@ -63,7 +63,9 @@ void HVCMatch::Start() {
             if (src == 0) {
                 // from human: request move from browser
                 // scanf("%s", tmp_buf);
-                fgets(tmp_buf, BUF_LEN-1, stdin); 
+                fgets(tmp_buf, BUF_LEN-1, stdin);
+                int tmp_len = strlen(tmp_buf);
+                if (tmp_buf[tmp_len-1] == '\n') tmp_buf[tmp_len-1] = 0;
                 m_judge->Send(tmp_buf);
             } else if (src == 1) {
                 ExitFlagType exit_type;
