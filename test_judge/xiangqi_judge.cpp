@@ -187,9 +187,10 @@ int check_ma(int cur, int x1, int y1, int x2, int y2, char *str)
     if (tmpx == x2 && tmpy == y2) {
       int tuix = x1 + dir_mt[d][0];
       int tuiy = y1 + dir_mt[d][1];
-      if (bd[tuix][tuiy] == 0)
+      if (bd[tuix][tuiy] == 0) {
         flg_ma = 1;
-      break;
+        break;
+      }
     }
   }
   if (!flg_ma) {

@@ -348,7 +348,7 @@ int main() {
   if (flg == 2) {
     int x1, y1, x2, y2;
     scanf("%d %d %d %d",&x1,&y1,&x2,&y2);
-    move_chess(flg, x1, y1, x2, y2);
+    move_chess(3-flg, x1, y1, x2, y2);
   }
   while (1) {
     int best = -1;

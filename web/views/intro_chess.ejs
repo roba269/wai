@@ -1,0 +1,25 @@
+<h2>Chess Introduction</h2>
+<p>Chess is one of the world's most popular board games. For the players who are not familiar with Chess's rule, please refer <a href="http://en.wikipedia.org/wiki/Chess">http://en.wikipedia.org/wiki/Chess</a>.</p>
+
+<h2>I/O Protocol Specification</h2>
+<p>
+Your program should read from <strong>stdin</strong> and write to <strong>stdout</strong>.
+<p>
+<strong>Note: If you use buffered output (for example, printf), please flush the output buffer after every output. See the <a href="/faq">FAQ</a> for details.</strong>
+<p>
+At the beginning, a string which is either "first" or "second" will be sent to you, indicating that your are the first or second to move.
+<p>
+In each turn (except the first player's first move), you should read four integers x<sub>1</sub>, y<sub>1</sub>, x<sub>2</sub>, y<sub>2</sub> from stdin, indicating your opponent moves the chess at (x<sub>1</sub>, y<sub>1</sub>) to (x<sub>2</sub>, y<sub>2</sub>). You can assume the moving is always valid. Then you should output four integers <em>x<sub>1</sub></em>, <em>y<sub>1</sub></em>, x<sub>2</sub>, y<sub>2</sub> (0 &le; x<sub>1</sub>, x<sub>2</sub> &lt; 8, 0 &le; y<sub>1</sub>, y<sub>2</sub> &lt; 8) which are separated by whitespaces, indicating your moving.
+<p>
+There are two some special moves to be noted:
+<p>
+<ul>
+<li><strong>Castling</strong>: For castling, you should only output the movements of the king (i.e., the king move two squares toward left or right), and the corresponding rook will move automatically.
+<li><strong>Promotion</strong>: If one of your pawn advances to the eighth rank, it will be promoted. For this case, you should output a new line contians an integer <em>k</em> immediately after your previous output. The integer <em>k</em> indicates the type after promotion: 0 - queen, 1 - rook, 2 - bishop, 3 - knight. On the other hand, after reading your opponent's move, if you find that your opponent's pawn need promotion, you should read the promoted type from stdin immediately. (If you are still not quite clear, please refer the sample code.)
+</ul>
+<p>
+<strong>If your program output an invalid move, you will lose immediately.</strong>
+<p>
+View the <a href="/submit_list/<%= game_name %>/<%= sample_uid %>">sample code</a> for reference.
+
+

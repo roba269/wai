@@ -153,10 +153,14 @@ io.sockets.on('connection', function(socket) {
   socket.on('put_chess', function(data) {
     if (!hvc_match) return;
     // TODO: this is ugly, how to do it better?
-    if (game_name === 'xiangqi') {
+    if (game_name === 'xiangqi' || game_name === 'chess') {
       console.log('pid: ' + hvc_match.pid + ' recv put chess: x1:' + data.x1 + " y1:" + data.y1 + " x2:" + data.x2 + " y2:" + data.y2);
       var str = data.x1 + " " + data.y1 + " " + data.x2 + " " + data.y2;
       hvc_match.stdin.write(str + "\n");
+      if (data.pro_type) {
+        hvc_match.stdin.write(data.pro_type + "\n");
+        str += " " + data.pro_type;
+      }
       hvc_match_info.trans.push(str);
     } else {
       console.log('pid: ' + hvc_match.pid + ' recv put chess: x:' + data.x + " y:" + data.y);
@@ -181,12 +185,13 @@ io.sockets.on('connection', function(socket) {
           hvc_match_info.status = 2;
           db.hvc_matches.save(hvc_match_info);
         } else {
-          if (game_name === 'xiangqi') {
+          if (game_name === 'xiangqi' || game_name === 'chess') {
             resp = {'is_over': false,
               'x1': parseInt(tmp[0]),
               'y1': parseInt(tmp[1]),
               'x2': parseInt(tmp[2]),
               'y2': parseInt(tmp[3])};
+            if (tmp.length > 4) resp.pro_type = parseInt(tmp[4]);
           } else {
             resp = {'is_over': false,
               'x': parseInt(tmp[0]),

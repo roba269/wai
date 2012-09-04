@@ -49,7 +49,7 @@ function random_shuffle ( myArray ) {
 exports.index = function(req, res) {
   db.games.find({}, function(err, game_list) {
     if (err) {
-      req.error('error', 'Failed to get game list.');
+      req.flash('error', 'Failed to get game list.');
       return res.redirect('/');
     }
     random_shuffle(game_list);
