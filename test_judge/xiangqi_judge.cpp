@@ -106,12 +106,12 @@ int check_shuai(int cur, int x1, int y1, int x2, int y2, char *str)
         return 1;
       }
     }
-    strcpy(str, "Shuai moves outside the nine-zone.");
+    strcpy(str, "Shuai_moves_outside_the_nine-zone.");
     return 0;
   }
   int dis = abs(x1-x2) + abs(y1-y2);
   if (dis != 1) {
-    strcpy(str, "Shuai moves too long.");
+    strcpy(str, "Shuai_moves_too_long.");
     return 0;
   }
   return 1;
@@ -120,11 +120,11 @@ int check_shuai(int cur, int x1, int y1, int x2, int y2, char *str)
 int check_shi(int cur, int x1, int y1, int x2, int y2, char *str)
 {
   if (!in_nine(cur, x2, y2)) {
-    strcpy(str, "Shi moves outside the nine-zone.");
+    strcpy(str, "Shi_moves_outside_the_nine-zone.");
     return 0;
   }
   if (abs(x1-x2) != 1 || abs(y1-y2) != 1) {
-    strcpy(str, "Shi invalid move.");
+    strcpy(str, "Shi_invalid_move.");
     return 0;
   }
   return 1;
@@ -133,7 +133,7 @@ int check_shi(int cur, int x1, int y1, int x2, int y2, char *str)
 int check_xiang(int cur, int x1, int y1, int x2, int y2, char *str)
 {
   if (!in_side(cur, x2, y2)) {
-    strcpy(str, "Xiang moves outside own side zone.");
+    strcpy(str, "Xiang_moves_outside_own_side_zone.");
     return 0;
   }
   int flg_x = 0;
@@ -149,7 +149,7 @@ int check_xiang(int cur, int x1, int y1, int x2, int y2, char *str)
     }
   }
   if (!flg_x) {
-    strcpy(str, "Xiang invalid move.");
+    strcpy(str, "Xiang_invalid_move.");
     return 0;
   }
   return 1;
@@ -160,19 +160,19 @@ int check_ju(int cur, int x1, int y1, int x2, int y2, char *str)
   if (x1 == x2) {
     for (int t = min(y1,y2) + 1 ; t <= max(y1,y2)-1 ; ++t) {
       if (bd[x1][t] != 0) {
-        strcpy(str, "There are pieces on Ju's path.");
+        strcpy(str, "There_are_pieces_on_Ju_path.");
         return 0;
       }
     }
   } else if (y1 == y2) {
     for (int t = min(x1,x2)+1 ; t <= max(x1,x2)-1 ; ++t) {
       if (bd[t][y1] != 0) {
-        strcpy(str, "There are pieces on Ju's path.");
+        strcpy(str, "There_are_pieces_on_Ju_path.");
         return 0;
       }
     }
   } else {
-    strcpy(str, "Ju must move in a line.");
+    strcpy(str, "Ju_must_move_in_a_line.");
     return 0;
   }
   return 1;
@@ -194,7 +194,7 @@ int check_ma(int cur, int x1, int y1, int x2, int y2, char *str)
     }
   }
   if (!flg_ma) {
-    strcpy(str, "Ma invalid move.");
+    strcpy(str, "Ma_invalid_move.");
     return 0;
   }
   return 1;
@@ -212,22 +212,22 @@ int check_pao(int cur, int x1, int y1, int x2, int y2, char *str)
       if (bd[t][y1] != 0) ++block_cnt;
     }
   } else {
-    strcpy(str, "Pao must move in a line.");
+    strcpy(str, "Pao_must_move_in_a_line.");
     return 0;
   }
   if (block_cnt == 0) {
     // no block
     if (bd[x2][y2] != 0) {
-      strcpy(str, "Pao cannot move to a taken pos.");
+      strcpy(str, "Pao_cannot_move_to_a_taken_pos.");
       return 0;
     }
   } else if (block_cnt == 1) {
     if (!has_chess(3-cur, x2, y2)) {
-      strcpy(str, "Pao move over 1 piece, and must capture a enemy piece.");
+      strcpy(str, "Pao_move_over_1_piece,_and_must_capture_an_enemy_piece.");
       return 0;
     }
   } else {
-    strcpy(str, "Pao move over more than 1 piece.");
+    strcpy(str, "Pao_move_over_more_than_1_piece.");
     return 0;
   }
   return 1;
@@ -237,21 +237,21 @@ int check_zu(int cur, int x1, int y1, int x2, int y2, char *str)
 {
   int dis = abs(x1-x2) + abs(y1-y2);
   if (dis != 1) {
-    strcpy(str, "Zu move too long.");
+    strcpy(str, "Zu_move_too_long.");
     return 0;
   }
   if (cur == 1 && x1 < x2) {
-    strcpy(str, "Zu cannot move backward.");
+    strcpy(str, "Zu_cannot_move_backward.");
     return 0;
   }
   if (cur == 2 && x1 > x2) {
-    strcpy(str, "Zu cannot move backward.");
+    strcpy(str, "Zu_cannot_move_backward.");
     return 0;
   }
   if (in_side(cur, x1, y1)) {
     // not pass the river
     if (y1 != y2) {
-      strcpy(str, "Not-passing-river-Zu only move forward.");
+      strcpy(str, "Not-passing-river-Zu_only_move_forward.");
       return 0;
     }
   }
@@ -260,19 +260,19 @@ int check_zu(int cur, int x1, int y1, int x2, int y2, char *str)
 
 int valid(int cur, int x1, int y1, int x2, int y2, char *str) {
   if (!in(x1, y1) || !in(x2, y2)) {
-    strcpy(str, "Position outside the board.");
+    strcpy(str, "Position_outside_the_board.");
     return 0;
   }
   if (!has_chess(cur, x1, y1)) {
-    strcpy(str, "No chess of own side on start pos.");
+    strcpy(str, "No_chess_of_own_side_on_start_pos.");
     return 0;
   }
   if (has_chess(cur, x2, y2)) {
-    strcpy(str, "Has chess of own side on target pos.");
+    strcpy(str, "Has_chess_of_own_side_on_target_pos.");
     return 0;
   }
   if (x1 == x2 && y1 == y2) {
-    strcpy(str, "Identical start and target pos.");
+    strcpy(str, "Identical_start_and_target_pos.");
     return 0;
   }
   int chess = bd[x1][y1];
@@ -293,7 +293,7 @@ int valid(int cur, int x1, int y1, int x2, int y2, char *str) {
   case R_ZU:
     return check_zu(cur, x1, y1, x2, y2, str); 
   }
-  strcpy(str, "Invalid chess type");
+  strcpy(str, "Invalid_chess_type");
   return 0;
 }
 
@@ -318,7 +318,14 @@ inline string get_result_str(int side) {
   return "Player_2_win";
 }
 
-int main() {
+bool allow[3] = {false, false, false};
+
+int main(int argc, char **argv) {
+  for (int i = 1 ; i < argc ; ++i) {
+    int tmp;
+    sscanf(argv[i], "%d", &tmp);
+    allow[tmp] = true;
+  }
   char buf[128];
   init_board();
   printf(">1: first\n");
@@ -334,12 +341,18 @@ int main() {
       fflush(stdout);
       break;
     }
+start:
     printf("<%d\n", cur);
     fflush(stdout);
     int x1, y1, x2, y2;
     fgets(tmp_buf, BUF_LEN, stdin);
     sscanf(tmp_buf, "%d %d %d %d", &x1, &y1, &x2, &y2);
     if (!valid(cur, x1, y1, x2, y2, buf)) {
+      if (allow[cur]) {
+        printf("*\n");
+        fflush(stdout);
+        goto start;
+      }
       printf("%d %s The_opponent_makes_invalid_move:%s.\n",
         3-cur, get_result_str(3-cur).c_str(), buf);
       fflush(stdout);

@@ -102,11 +102,6 @@ function drawChess(x, y, color) {
     else ctx.stroke();
 }
 function onMouseMove(evt) {
-/*
-    tmp = getMousePos(canvas, evt);
-    document.getElementById("x_pos").innerHTML = tmp.x;
-    document.getElementById("y_pos").innerHTML = tmp.y;
-*/
 }
 function onMouseDown(evt) {
     if (g_is_hvc === 0) return;
@@ -119,15 +114,22 @@ function onMouseDown(evt) {
             chess_pos.y < 0 || chess_pos.y >= NUM_COL) {
         return;
     }
-    drawChess(chess_pos.x, chess_pos.y, 0);
     steps.push(chess_pos);
+    ++step_idx;
+    draw();
     socket.emit('put_chess', {x: chess_pos.x, y: chess_pos.y});
     socket.once('put_response', function(data) {
         if (data.is_over) {
             is_over = true;
             alert("over " + data.res_str + " " + data.reason);
+        } else if (data.invalid_step) {
+            steps.pop();
+            --step_idx;
+            draw();
         } else {
-            drawChess(data.x, data.y, 1);
+            steps.push({x: data.x, y: data.y});
+            ++step_idx;
+            draw();
         }
     });
 }

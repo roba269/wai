@@ -66,7 +66,7 @@ Board.prototype.outputForDebug = function() {
     for (var j = 0 ; j < NUM_COL ; ++j)
       str += this.bd[i][j];
     console.log(str);
-  }
+ }
 }
 
 var show_board = [new Board()];
@@ -185,6 +185,8 @@ function onMouseDown(evt) {
     }
     // drawChess(chess_pos.x, chess_pos.y, 1);
     var tmp_move = {x: chess_pos.x, y: chess_pos.y, color: 1};
+    var tmp_board = new Board();
+    tmp_board.setBoard(show_board[step_idx]);
     show_board[step_idx].makeMove(tmp_move);
     draw();
     steps.push(tmp_move);
@@ -193,8 +195,11 @@ function onMouseDown(evt) {
         if (data.is_over) {
             is_over = true;
             alert("over " + data.res_str + " " + data.reason);
+        } else if (data.invalid_step) {
+            steps.pop();
+            show_board[step_idx].setBoard(tmp_board);
+            draw();
         } else {
-            // drawChess(data.x, data.y, 2);
           if (data.x === -1) {
             alert("Computer cannot move. You continue.");
             return;

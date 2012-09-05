@@ -259,6 +259,8 @@ function onMouseDown(evt) {
       return;
     }
     var tmp_move = {x1: to_move_x, y1: to_move_y, x2: tmp_x, y2: tmp_y, color: 1};
+    var tmp_board = new Board();
+    tmp_board.setBoard(show_board[step_idx]);
     if (show_board[step_idx].bd[tmp_move.x1][tmp_move.y1] === ChessType.W_PAWN) {
       if (tmp_move.x2 === 0) {
         var pro_type = parseInt(prompt("Which Type do you want to promote to? (0: Queen, 1: Rook, 2: Bishop, 3:Knight", "0"));
@@ -274,8 +276,11 @@ function onMouseDown(evt) {
         if (data.is_over) {
             is_over = true;
             alert("over winner = " + data.winner);
+        } else if (data.invalid_step) {
+            steps.pop();
+            show_board[step_idx].setBoard(tmp_board);
+            draw();
         } else {
-            // drawChess(data.x, data.y, 1);
             show_board[step_idx].makeMove(data);
             draw();
             steps.push(data);

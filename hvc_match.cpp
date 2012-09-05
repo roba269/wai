@@ -37,7 +37,7 @@ static std::string winner_to_str(int winner) {
 
 void HVCMatch::Start() {
     m_start_time = time(NULL);
-    m_judge->Run(false);
+    m_judge->Run(false, true);
     m_computer->Run();
     char buf[BUF_LEN], tmp_buf[BUF_LEN];
     while (1) {
@@ -81,6 +81,9 @@ void HVCMatch::Start() {
                 }
                 m_judge->Send(buf);
             } else assert(false);
+        } else if (buf[0] == '*') {
+            printf("*\n");
+            fflush(stdout);
         } else if (isdigit(buf[0])) {
             char res_str[BUF_LEN], reason[BUF_LEN];
             sscanf(buf, "%d %s %s", &m_winner, res_str, reason);

@@ -98,7 +98,14 @@ inline string get_result_str(int side) {
   return "Player_2_win";
 }
 
-int main() {
+bool allow[3] = {false, false, false};
+
+int main(int argc, char **argv) {
+    for (int i = 1 ; i < argc ; ++i) {
+        int tmp;
+        sscanf(argv[i], "%d", &tmp);
+        allow[tmp] = true;
+    }
     memset(board, 0, sizeof(board));
     board[3][3] = board[4][4] = 1;
     board[3][4] = board[4][3] = 2;
@@ -125,11 +132,17 @@ int main() {
             }
             else break;
         }
+start:
         printf("<%d\n", cur);
         fflush(stdout);
         fgets(tmp_buf, BUF_LEN, stdin);
         sscanf(tmp_buf, "%d %d",&x,&y);
         if (!valid(x, y, cur)) {
+            if (allow[cur]) {
+                printf("*\n");
+                fflush(stdout);
+                goto start;
+            }
             if (cur == 1) 
               printf("%d %s Black_make_invalid_move.\n", 3-cur,
                 get_result_str(3-cur).c_str());

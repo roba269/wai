@@ -338,7 +338,7 @@ inline int type2score(int type) {
 }
 
 int main() {
-  srand(time(NULL));
+  // srand(time(NULL));
   init_board();
   char buf[128];
   scanf("%s", buf);

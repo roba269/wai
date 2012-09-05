@@ -430,7 +430,14 @@ void output_board() {
 */
 }
 
-int main() {
+bool allow[3] = {false, false, false};
+
+int main(int argc, char **argv) {
+  for (int i = 1 ; i < argc ; ++i) {
+    int tmp;
+    sscanf(argv[i], "%d", &tmp);
+    allow[tmp] = true;
+  }
   char tmp_buf[BUF_LEN + 10];
   char buf[BUF_LEN + 10];
   init_board();
@@ -452,12 +459,18 @@ int main() {
       fflush(stdout);
       break;
     }
+start:
     printf("<%d\n", cur);
     fflush(stdout);
     int x1, y1, x2, y2;
     fgets(tmp_buf, BUF_LEN, stdin);
     sscanf(tmp_buf, "%d %d %d %d", &x1, &y1, &x2, &y2);
     if (!valid(cur, x1, y1, x2, y2, buf)) {
+      if (allow[cur]) {
+        printf("*\n");
+        fflush(stdout);
+        goto start;
+      }
       printf("%d %s Invalid_move:_%s\n", 3-cur,
           get_result_str(3-cur).c_str(), buf);
       fflush(stdout);

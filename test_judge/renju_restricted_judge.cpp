@@ -202,7 +202,14 @@ inline string get_result_str(int side) {
   return "Player_2_win";
 }
 
-int main() {
+bool allow[3] = {false, false, false};
+
+int main(int argc, char **argv) {
+    for (int i = 1 ; i < argc ; ++i) {
+      int tmp;
+      sscanf(argv[1], "%d", &tmp);
+      allow[tmp] = true;
+    }
     fprintf(stderr, "%d: I am the judge\n", getpid());
     memset(board, 0, sizeof(board));
     printf(">1: first\n");
@@ -214,12 +221,18 @@ int main() {
     int cur = 1;
     char tmp_buf[BUF_LEN+10];
     while (1) {
+start:
         printf("<%d\n", cur);
         fflush(stdout);
         int x, y;
         fgets(tmp_buf, BUF_LEN, stdin);
         sscanf(tmp_buf, "%d %d", &x, &y);
         if (!valid(x,y)) {
+            if (allow[cur]) {
+              printf("*\n");
+              fflush(stdout);
+              goto start;
+            }
             if (cur == 1)
               printf("%d %s Black_make_invalid_move.\n", 3-cur,
                 get_result_str(3-cur).c_str());

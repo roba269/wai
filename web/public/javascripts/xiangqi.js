@@ -61,8 +61,6 @@ function Board() {
     for (var j = 0 ; j < NUM_COL ; j++)
       if (this.bd[i][j] !== 0)
         this.bd[NUM_ROW-1-i][j] = this.bd[i][j] + 10;
-  // this.bd[3][3] = this.bd[4][4] = 1;
-  // this.bd[3][4] = this.bd[4][3] = 2;
 }
 
 Board.prototype.setBoard = function(board_a) {
@@ -75,26 +73,6 @@ Board.prototype.makeMove = function(move) {
   // Note: we donnot check validation
   this.bd[move.x2][move.y2] = this.bd[move.x1][move.y1];
   this.bd[move.x1][move.y1] = 0;
-  /*
-  this.bd[move.x][move.y] = move.color;
-  for (var d = 0 ; d < 8 ; ++d) {
-    tx = move.x + dir8[d][0];
-    ty = move.y + dir8[d][1];
-    while (in_board(tx, ty) && this.bd[tx][ty] == 3 - move.color) {
-      tx += dir8[d][0];
-      ty += dir8[d][1];
-    }
-    if (in_board(tx, ty) && this.bd[tx][ty] == move.color) {
-      tx -= dir8[d][0];
-      ty -= dir8[d][1];
-      while (tx != move.x || ty != move.y) {
-        this.bd[tx][ty] = move.color;
-        tx -= dir8[d][0];
-        ty -= dir8[d][1];
-      }
-    }
-  }
-  */
 }
 
 Board.prototype.outputForDebug = function() {
@@ -240,26 +218,9 @@ function drawChess(x, y, type) {
         LEFT_MARGIN + y * GRID_SIZE - GRID_SIZE / 2,
         TOP_MARGIN + x * GRID_SIZE - GRID_SIZE / 2,
         GRID_SIZE, GRID_SIZE);
-    // if (type < 10) ctx.fillStyle = "rgb(0,0,0)";
-    // else ctx.fillStyle = "rgb(255,0,0)";
-    // ctx.beginPath();
-    // ctx.arc(LEFT_MARGIN + y * GRID_SIZE + GRID_SIZE / 2,
-    //         TOP_MARGIN + x * GRID_SIZE + GRID_SIZE / 2,
-    //         GRID_SIZE/2-2, 0, Math.PI*2, true);
-    // ctx.fill();
-    // // ctx.textBaseline = 'middle';
-    // ctx.fillStyle = "rgb(255,255,255)";
-    // ctx.fillText(chess_text[type],
-    //     LEFT_MARGIN + y * GRID_SIZE + GRID_SIZE / 2,
-    //     TOP_MARGIN + x * GRID_SIZE + GRID_SIZE / 2);
 }
 
 function onMouseMove(evt) {
-/*
-    tmp = getMousePos(canvas, evt);
-    document.getElementById("x_pos").innerHTML = tmp.x;
-    document.getElementById("y_pos").innerHTML = tmp.y;
-*/
 }
 function onMouseDown(evt) {
     if (g_is_hvc === 0) return;
@@ -287,6 +248,8 @@ function onMouseDown(evt) {
       return;
     }
     var tmp_move = {x1: to_move_x, y1: to_move_y, x2: tmp_x, y2: tmp_y};
+    var tmp_board = new Board();
+    tmp_board.setBoard(show_board[step_idx]);
     show_board[step_idx].makeMove(tmp_move);
     draw();
     steps.push(tmp_move);
@@ -295,8 +258,11 @@ function onMouseDown(evt) {
         if (data.is_over) {
             is_over = true;
             alert("over winner = " + data.winner);
+        } else if (data.invalid_step) {
+            steps.pop();
+            show_board[step_idx].setBoard(tmp_board);
+            draw();
         } else {
-            // drawChess(data.x, data.y, 1);
             show_board[step_idx].makeMove(data);
             draw();
             steps.push(data);

@@ -56,7 +56,7 @@ Sandbox::~Sandbox() {
 
 }
 
-int Sandbox::Run(bool is_rf) {
+int Sandbox::Run(bool is_rf, bool is_hvc) {
     if (access(m_path.c_str(), R_OK | X_OK)) {
         fprintf(stderr, "Cannot access %s\n", m_path.c_str());
         return -1;
@@ -95,7 +95,11 @@ int Sandbox::Run(bool is_rf) {
                 fprintf(stderr, "set_quota() error\n");
             }
             ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-            execl(m_path.c_str(), m_path.c_str(), NULL);
+            if (is_hvc) {
+              execl(m_path.c_str(), m_path.c_str(), "1", NULL);
+            } else {
+              execl(m_path.c_str(), m_path.c_str(), NULL);
+            }
             fprintf(stderr, "execl failed, errno: %d\n", errno);
             return -1;  
         } else {

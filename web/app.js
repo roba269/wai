@@ -184,6 +184,9 @@ io.sockets.on('connection', function(socket) {
           socket.emit('game_over', resp);
           hvc_match_info.status = 2;
           db.hvc_matches.save(hvc_match_info);
+        } else if (tmp[0] === '*') {
+          resp = {'invalid_step': true};
+          socket.emit('put_response', resp);
         } else {
           if (game_name === 'xiangqi' || game_name === 'chess') {
             resp = {'is_over': false,
