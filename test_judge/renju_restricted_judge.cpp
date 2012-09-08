@@ -21,10 +21,11 @@ int valid(int x, int y) {
 }
 
 int get_winner() {
-    int i, j;
+    int i, j, tot_cnt = 0;
     for (i = 0 ; i < R ; i++)
         for (j = 0 ; j < C ; j++) {
             if (board[i][j] == 0) continue;
+            ++tot_cnt;
             for (int d = 0 ; d < 8 ; ++d) {
                 int ti = i, tj = j, cnt = 1;
                 while (1) {
@@ -36,6 +37,7 @@ int get_winner() {
                 }
             }
         }
+    if (tot_cnt == R * C) return 3; // Draw
     return 0;
 }
 
@@ -255,9 +257,14 @@ start:
         output_board();
         int w;
         if ((w = get_winner())) {
-            printf("%d %s %s\n", w, get_result_str(w).c_str(),
-              get_result_str(w).c_str());
-            fflush(stdout);
+            if (w == 3) {
+                printf("0 draw Board_is_full.\n");
+                fflush(stdout);
+            } else {
+                printf("%d %s %s\n", w, get_result_str(w).c_str(),
+                  get_result_str(w).c_str());
+                fflush(stdout);
+            }
             return 0;
         }
         printf(">%d: %d %d\n", 3-cur, x, y);
