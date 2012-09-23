@@ -85,6 +85,7 @@ app.post('/game/:game_name', routes.game_post);
 app.get('/arena/replay/:game_name/:match_id', routes.arena_replay);
 app.get('/arena/hvc/:game_name/:submit_id', routes.arena_hvc);
 app.post('/submit/:game_name', routes.submit_post);
+app.get('/submit_list/:game_name/:user_id/:page_num', routes.submit_list_adv);
 app.get('/submit_list/:game_name/:user_id', routes.submit_list_adv);
 app.get('/view_code/:submit_id', routes.view_code);
 app.get('/match_list/:game_name/:user_id', routes.match_list_by_user);

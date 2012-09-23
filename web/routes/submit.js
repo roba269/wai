@@ -4,6 +4,7 @@ var fs = require('fs');
 var ObjectId = require('mongoose').Types.ObjectId;
 var waiconst = require('../waiconst');
 var queue = require('../queue');
+var waiconst = require('../waiconst');
 
 exports.submit_list = function(req, res) {
   if (!req.session.user) {
@@ -34,23 +35,29 @@ exports.submit_list = function(req, res) {
 
 exports.submit_list_adv = function(req, res) {
   var game_name = req.params.game_name;
-  var user_id;
+  var user_id = req.params.user_id;
   var query = {};
+  var page_num = 0;
+  if (req.params.page_num) {
+    page_num = parseInt(req.params.page_num);
+  }
   if (game_name !== 'all') {
     query['game_name'] = game_name;
   }
-  if (req.params.user_id !== 'all') {
+  if (user_id !== 'all') {
     user_id = ObjectId(req.params.user_id);
     query['user_id'] = user_id;
   }
-  db.submits.find(query)
+  db.submits.find(query, null, {limit: waiconst.ITEM_PER_PAGE,
+    skip: page_num * waiconst.ITEM_PER_PAGE})
     .sort({'date': -1}, function(err, submits) {
     if (err) {
       req.flash('error', 'Failed to get submition list.');
       return res.redirect('back');
     }
     res.render('submit_list', { title: 'WAI : Submitions',
-      submits: submits});
+      submits: submits, game_name: game_name,
+      get_user_id: user_id, page_num: page_num});
   });
 };
 /*

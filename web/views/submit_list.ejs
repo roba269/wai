@@ -4,6 +4,10 @@ function pad(v) {
   return '' + v;
 }
 %>
+<ul class="pager">
+  <li class="previous"><a href="/submit_list/<%= game_name %>/<%= get_user_id %>/<%= page_num+1 %>">Older</a></li>
+  <li class="next <%= page_num == 0 ? 'disabled' : '' %>" ><a href="/submit_list/<%= game_name %>/<%= get_user_id %>/<%= page_num-1 < 0 ? 0 : page_num-1  %>">Newer</a></li>
+</ul>
 <table class="table table-striped">
   <thead>
     <tr><th>User</th><th>Game</th><th>Version</th><th>Submit Date</th><th>Size</th><th>Status</th></tr>
