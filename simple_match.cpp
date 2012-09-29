@@ -53,7 +53,7 @@ void SimpleMatch::Start() {
         memset(buf, 0, sizeof(buf));
         ExitFlagType tmp;
         if (m_judge->Recv(buf, BUF_LEN-1, tmp) == 0) {
-            fprintf(stderr, "The judge crashed.");
+            fprintf(stderr, "The judge crashed.\n");
             break;
         }
         fprintf(stderr, "The judge said: {%s}\n", buf);
@@ -69,9 +69,11 @@ void SimpleMatch::Start() {
                 fprintf(stderr, "Player %d exited, type: %d\n", src, (int)exit_type);
                 m_winner = (1 - src) + 1;
                 fprintf(stderr, "the winner is %d\n", m_winner);
-                fprintf(stdout, "%d %s %s\n", m_winner,
+                fprintf(stdout, "%d %s %s %d %d\n", m_winner,
                     winner_to_str(m_winner).c_str(),
-                    exit_flag_2_str(exit_type).c_str());
+                    exit_flag_2_str(exit_type).c_str(),
+                    m_player[0]->GetTimeCost(),
+                    m_player[1]->GetTimeCost());
                 fflush(stdout);
                 break;
             }
@@ -88,39 +90,16 @@ void SimpleMatch::Start() {
             char res_str[BUF_LEN], reason[BUF_LEN];
             sscanf(buf, "%d %s %s", &m_winner, res_str, reason);
             fprintf(stderr, "the winner is %d\n", m_winner);
-            fprintf(stdout, "%d %s %s\n", m_winner, res_str, reason);
+            int p1_time = m_player[0]->GetTimeCost();
+            int p2_time = m_player[1]->GetTimeCost();
+            fprintf(stdout, "%d %s %s %d %d\n", m_winner, res_str, reason, p1_time, p2_time);
             fflush(stdout);
             break;
         } else {
             assert(false);
         }
     }
-    fprintf(stderr, "match main process exit.");
+    fprintf(stderr, "match main process exit.\n");
     m_end_time = time(NULL);
-    if (_WriteToDatabase()) {
-        fprintf(stderr, "write to database error\n");
-    }
-}
-
-int SimpleMatch::_WriteToDatabase() {
-/*
-    char cmd[BUF_LEN];
-    snprintf(cmd, BUF_LEN, "INSERT INTO main_app_match (game_type, result, start_time, end_time, player_cnt) VALUES (\"%s\", %d, FROM_UNIXTIME(%d), FROM_UNIXTIME(%d), %d)", "RENJU", m_winner, m_start_time, m_end_time, m_player.size());
-    MYSQL *handle = DBWrapper::GetHandle();
-    fprintf(stderr, "%s\n", cmd);
-    mysql_query(handle, cmd);
-    int match_id = mysql_insert_id(handle);
-    for (int i = 0 ; i < m_sid.size() ; ++i) {
-        snprintf(cmd, BUF_LEN, "INSERT INTO main_app_match_players "
-            "(submit_id, match_id) VALUES (%d,%d)", m_sid[i], match_id);
-        fprintf(stderr, "%s\n", cmd);
-        mysql_query(handle, cmd);
-    }
-    snprintf(cmd, BUF_LEN, "%s/%d.txt", RECORD_PREFIX, match_id);
-    FILE *fp = fopen(cmd, "w");
-    fprintf(fp, "%s\n", m_record.c_str());
-    fclose(fp);
-*/
-    return 0;
 }
 

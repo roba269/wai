@@ -22,6 +22,7 @@ function start_match(uid1, sid1, uid2, sid2, game, callback) {
   var result;
   var result_str;
   var reason;
+  var time_p1, time_p2;
   match.stdout.on('data', function(data) {
     // console.log('stdout from judge:' + data);
     var str_list = data.toString().split('\n');
@@ -35,6 +36,7 @@ function start_match(uid1, sid1, uid2, sid2, game, callback) {
         result = parseInt(tmp[0]);
         result_str = tmp[1];
         if (tmp.length > 2) reason = tmp[2];
+        if (tmp.length > 3) {time_p1 = tmp[3]; time_p2 = tmp[4];}
       }
     }
   });
@@ -46,7 +48,8 @@ function start_match(uid1, sid1, uid2, sid2, game, callback) {
         if (err) console.log('update last=0 failed');
         db.matches.update({'sid1': sid1, 'sid2': sid2},
           {$set: {'last': 1, 'status': 2, 'result': result, 'result_str': result_str,
-            'reason': reason, 'trans': trans}}, function (err) {
+            'reason': reason, 'trans': trans,
+            'time1': time_p1, 'time2': time_p2}}, function (err) {
             if (err) console.log('update matches failed:' + err);
             else {
               db_util.update_leader(game, function(err) {

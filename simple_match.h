@@ -23,8 +23,6 @@ public:
     }
     void Start();
 private:
-    int _WriteToDatabase();
-
     MatchType m_type;
     std::string m_name;
     std::vector<Sandbox*> m_player;

@@ -47,7 +47,8 @@ static int set_quota() {
     return 0;
 }
 
-Sandbox::Sandbox(std::string path) : m_idx(0), m_len(0) {
+Sandbox::Sandbox(std::string path) : m_idx(0), m_len(0),
+    m_time_cost(-1) {
     m_path = path;
     _InitSyscallSpec();
 }
@@ -107,12 +108,16 @@ int Sandbox::Run(bool is_rf, bool is_hvc) {
             // son: the sandbox
             close(fd1[0]);
             close(fd2[1]);
+            char pid_buf[16];
+            sprintf(pid_buf, "%d\n", grandson_pid);
+            write(info_fd[1], pid_buf, strlen(pid_buf));
+            sleep(1); // sleep to ensure the grand recv the msg
             int st, in_call = 0;
             while (1) {
                 struct rusage ru;
                 wait4(grandson_pid, &st, 0, &ru);
-                // SetUsedTime(ru.ru_utime.tv_sec * 1000 +
-                //         ru.ru_utime.tv_usec / 1000);
+                m_time_cost = ru.ru_utime.tv_sec * 1000 +
+                         ru.ru_utime.tv_usec / 1000;
                 if (WIFEXITED(st)) {
                     m_exit_flag = EXIT_NORMAL;
                     fprintf(stderr, "exit_normal\n");
@@ -171,9 +176,9 @@ int Sandbox::Run(bool is_rf, bool is_hvc) {
             char buf[16];
             // sprintf(buf, "%d %d\n", GetID(), GetUsedTime());
             // write(GetInfoFd(), buf, strlen(buf));
-            fprintf(stderr, "%d: the proc in sandbox exit type: %d\n", getpid(), m_exit_flag);
+            fprintf(stderr, "%d: the proc in sandbox exit type: %d, time_cost: %d\n", getpid(), m_exit_flag, m_time_cost);
             fprintf(stderr, "%d: i am exited\n", getpid());
-            sprintf(buf, "%d\n", m_exit_flag);
+            sprintf(buf, "%d %d\n", m_exit_flag, m_time_cost);
             write(info_fd[1], buf, strlen(buf));
             exit(0);    // the sandbox process exit
         }
@@ -185,6 +190,11 @@ int Sandbox::Run(bool is_rf, bool is_hvc) {
         recv_fd = fd2[0];
         send_fd = fd1[1];
         recv_info_fd = info_fd[0];
+        char buf_pid[16];
+        read(recv_info_fd, buf_pid, sizeof(buf_pid)-1);
+        // read the client's pid
+        sscanf(buf_pid, "%d", &m_client_pid);
+        fprintf(stderr, "%d: i am grand, i recv the client pid: %d\n", getpid(), m_client_pid);
     }
     return 0;
 }
@@ -214,12 +224,22 @@ int Sandbox::Recv(char *buf, int max_len, ExitFlagType &exit_flag) {
     return i;
 }
 
-ExitFlagType Sandbox::_GetExitType() {
+int Sandbox::GetTimeCost() {
+    if (m_time_cost == -1) {
+        // haven't fetch the info from sandbox yet
+        fprintf(stderr, "the client has not exit, try to kill it\n");
+        kill(m_client_pid, SIGKILL);
+        _GetExitTypeAndTimeCost();
+    }
+    return m_time_cost;
+}
+
+ExitFlagType Sandbox::_GetExitTypeAndTimeCost() {
     // GetExitType should read from the sandbox process
-    char buf[16];
+    char buf[32];
     int tmp;
     read(recv_info_fd, buf, sizeof(buf));
-    sscanf(buf, "%d", &tmp);
+    sscanf(buf, "%d %d", &tmp, &m_time_cost);
     m_exit_flag = (ExitFlagType)tmp;
     fprintf(stderr, "%d: GetExitType be called, return: %d\n", getpid(), m_exit_flag);
     return m_exit_flag;
@@ -250,6 +270,7 @@ int Sandbox::_RecvChar(char *buf, ExitFlagType &exit_flag) {
         if (cnt == 0) {
             // time out
             exit_flag = EXIT_TLE;
+            m_time_cost = TIME_LIMIT * 1000;
             return 0;
         } else if (FD_ISSET(recv_fd, &readset)) {
             m_len = read(recv_fd, m_buf, sizeof(m_buf));
@@ -257,9 +278,12 @@ int Sandbox::_RecvChar(char *buf, ExitFlagType &exit_flag) {
             if (m_len < 0) {
                 assert(false);
             }
-            if (m_len == 0) return 0;
+            if (m_len == 0) {
+                // TODO: what is exit_flag and time_cost?
+                return 0;
+            }
         } else if (FD_ISSET(recv_info_fd, &readset)) {
-            exit_flag = _GetExitType();
+            exit_flag = _GetExitTypeAndTimeCost();
             return 0;
         }
     }
