@@ -23,6 +23,7 @@ const static SyscallSpec g_spec[] = {
     {SYS_uname, 1},
     {SYS_gettimeofday, INT_MAX},
     {SYS_getrusage, INT_MAX},
+    {SYS_time, INT_MAX},
     {-1, 0}
 };
 #else
@@ -40,6 +41,7 @@ const static SyscallSpec g_spec[] = {
     {SYS_getpid, INT_MAX},
     {SYS_gettimeofday, INT_MAX},
     {SYS_getrusage, INT_MAX},
+    {SYS_time, INT_MAX},
     {-1, 0}
 };
 #endif
