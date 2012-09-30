@@ -1,4 +1,21 @@
-
+<%
+  function gen_pl_str(val, str) {
+    return val + " " + str + (val <= 1 ? "" : "s");
+  }
+  function get_date_str(update_date) {
+    var dif = new Date() - update_date;
+    var dif_day = Math.floor(dif / (24 * 60 * 60 * 1000));
+    if (dif_day !== 0) {
+      return gen_pl_str(dif_day, "day");
+    }
+    var dif_hour = Math.floor(dif / (60 * 60 * 1000));
+    if (dif_hour !== 0) {
+      return gen_pl_str(dif_hour, "hour");
+    }
+    var dif_min = Math.floor(dif / (60 * 1000));
+    return gen_pl_str(dif_min, "minute");
+  }
+%>
 <div class="span12">
   <ul class="thumbnails">
   <% game_list.forEach(function(game, index) { %>
@@ -8,7 +25,14 @@
       <img src="/images/<%= game.img %>" height="300"/>
       </a>
       <div class="caption">
-      <h3><%= game.show_name %></h3>
+      <h4><%= game.show_name %></h4>
+      <% if (game.leader) { %>
+      <p> Best scorer: <strong><a href="/user/<%= game.leader._id %>"><%= game.leader.nick %></a></strong> &nbsp;
+        <small>since <%= get_date_str(game.update_date) %> ago </small>
+      </p>
+      <% } else { %>
+      <p> Best scorer: N/A</p>
+      <% } %>
       <p><a href="/game/<%= game.name %>">Enter >></a>
       </div>
     </div>

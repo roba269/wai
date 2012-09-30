@@ -16,7 +16,7 @@ function pad(v) {
     <% submits.forEach(function(submit, index) { %>
     <tr>
       <td><a href="/user/<%= submit.user_id %>"><%= submit.user_nick %></a></td>
-      <td><%= submit.game_name %></td>
+      <td><a href="/game/<%= submit.game_name %>"><%= submit.game_name %></td>
       <td><%= submit.version %></td>
       <td><%= submit.date.getFullYear()
           + "-" + pad(submit.date.getMonth()+1)

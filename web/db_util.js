@@ -84,8 +84,16 @@ function get_latest_result(inp_user_id, game_name, inp_callback) {
               for (var idx = 0 ; idx < match_list.length ; ++idx) {
                 var flg1 = 1;
                 var flg2 = 1;
+                var col = 0;
                 if (!match_list[idx].sid1.equals(last_submition[match_list[idx].uid1])) flg1 = 0;
                 if (!match_list[idx].sid2.equals(last_submition[match_list[idx].uid2])) flg2 = 0;
+                if (match_list[idx].uid1.equals(inp_user_id)) {
+                  if (match_list[idx].result === 1) col = 1;
+                  else if (match_list[idx].result === 2) col = -1;
+                } else {
+                  if (match_list[idx].result === 2) col = 1;
+                  else if (match_list[idx].result === 1) col = -1;
+                }
                 matches_view.push({
                   'game_name': game_name,
                   'match_id': match_list[idx]._id,
@@ -104,6 +112,7 @@ function get_latest_result(inp_user_id, game_name, inp_callback) {
                   'version1': match_list[idx].version1,
                   'version2': match_list[idx].version2,
                   'date': match_list[idx].date,
+                  'col': col,
                 });
               }
               cbk(null, matches_view);

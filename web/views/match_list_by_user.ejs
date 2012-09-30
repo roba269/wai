@@ -11,18 +11,19 @@ $(document).ready(function () {
   }
 });
 </script>
-<table class="table table-striped">
+<table class="table">
   <thead>
     <tr>
-      <th>Black</th>
-      <th>White</th>
+      <th>First Player</th>
+      <th>Second Player</th>
       <th>Start Time</th>
       <th>Result</th>
     </tr>
   </thead>
   <tbody>
     <% matches.forEach(function(match, index) { %>
-    <tr>
+    <tr class="<%= (match.flg1 === 1 && match.flg2 === 1) ?
+        (match.col === 1 ? "" : (match.col === -1 ? "error" : "info")) : "" %>">
       <td><a href="/user/<%= match.uid1 %>"><%= match.nick1 %></a>
         <span class="badge">v<%= match.version1 %></span>
         <% if (match.flg1 !== 1) { %>
