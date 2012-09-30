@@ -24,6 +24,16 @@
     <script src="/javascripts/<%= game_name %>.js"></script>
   </head>
   <body onload="load('<%= id %>', <%= hvc %>);">
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
         <div class="container">
@@ -47,6 +57,7 @@
                         <li><a href="http://blog.acmicpc.info">Blog Flow for ACMers</a></li>
                       </ul>
                     </li>
+                    <li><a><div class="fb-like" data-href="http://w-ai.org" data-send="false" data-layout="button_count" data-width="450" data-show-faces="true" data-font="arial"></div></a></li>
                 </ul>
                 <% if (user) { %>
                 <ul class="nav pull-right">
