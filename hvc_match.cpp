@@ -52,8 +52,11 @@ void HVCMatch::Start() {
             int dst = buf[1] - '1';
             if (dst == 0) {
                 // to human: display the computer's move
-                printf("%s\n", buf+4);
-                fflush(stdout); // neccessary?
+                // but ignore the first "first"
+                if (strncmp(buf+4, "first", 5) != 0)  {
+                    printf("%s\n", buf+4);
+                    fflush(stdout); // neccessary?
+                }
             } else if (dst == 1) {
                 // computer
                 m_computer->Send(buf+4);
