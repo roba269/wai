@@ -14,6 +14,7 @@ const NUM_COL = 8;
 
 var loaded_img = [];
 var inter_id;
+var who_to_move;
 var play_status = 0;
 var move_status = 0;
 var to_move_x = -1, to_move_y = -1;
@@ -186,6 +187,7 @@ function load(id, is_hvc) {
     document.getElementById("info").innerHTML = "To move a chess, click it, and then click its target position."
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mousedown', onMouseDown);
+    who_to_move = 1;
     socket.emit('req_hvc', {submit_id: id});
     socket.once('game_over', function(data) {
       is_over = true;
@@ -236,6 +238,7 @@ function onMouseMove(evt) {
 function onMouseDown(evt) {
     if (g_is_hvc === 0) return;
     if (is_over) return;
+    if (who_to_move !== 1) return;
     if (evt.button == 2 || evt.button == 3) {
       move_status = 0;
       return;
@@ -272,7 +275,9 @@ function onMouseDown(evt) {
     draw();
     steps.push(tmp_move);
     socket.emit('put_chess', tmp_move);
+    who_to_move = 2;
     socket.once('put_response', function(data) {
+        who_to_move = 1;
         if (data.is_over) {
             is_over = true;
             alert("over winner = " + data.winner);

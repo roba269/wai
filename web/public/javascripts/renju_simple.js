@@ -12,6 +12,7 @@ const NUM_COL = 15;
 
 var inter_id;
 var play_status = 0;
+var who_to_move;
 var g_is_hvc;
 
 function getMousePos(canvas, evt) {
@@ -74,6 +75,7 @@ function load(id, is_hvc) {
   } else {
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mousedown', onMouseDown);
+    who_to_move = 1;
     socket.emit('req_hvc', {submit_id: id});
     socket.once('game_over', function(data) {
       is_over = true;
@@ -106,6 +108,7 @@ function onMouseMove(evt) {
 function onMouseDown(evt) {
     if (g_is_hvc === 0) return;
     if (is_over) return;
+    if (who_to_move !== 1) return;
     tmp = getMousePos(canvas, evt);
     chess_pos = {x: 0, y: 0};
     chess_pos.y = Math.floor((tmp.x - LEFT_MARGIN) / GRID_SIZE + 0.5);
@@ -118,7 +121,9 @@ function onMouseDown(evt) {
     ++step_idx;
     draw();
     socket.emit('put_chess', {x: chess_pos.x, y: chess_pos.y});
+    who_to_move = 2;
     socket.once('put_response', function(data) {
+        who_to_move = 1;
         if (data.is_over) {
             is_over = true;
             alert("over " + data.res_str + " " + data.reason);

@@ -14,6 +14,7 @@ const NUM_COL = 8;
 
 var inter_id;
 var play_status = 0;
+var who_to_move;
 var g_is_hvc;
 
 function in_board(x, y) {
@@ -132,6 +133,7 @@ function load(id, is_hvc) {
       "If you cannot move in your turn, just click anywhere of the chessboard to continue.";
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mousedown', onMouseDown);
+    who_to_move = 1;
     socket.emit('req_hvc', {submit_id: id});
     socket.once('game_over', function(data) {
       is_over = true;
@@ -175,6 +177,7 @@ function onMouseDown(evt) {
       return;
     }
     if (is_over) return;
+    if (who_to_move !== 1) return;
     tmp = getMousePos(canvas, evt);
     chess_pos = {x: 0, y: 0};
     chess_pos.y = Math.floor((tmp.x - LEFT_MARGIN) / GRID_SIZE);
@@ -191,7 +194,9 @@ function onMouseDown(evt) {
     draw();
     steps.push(tmp_move);
     socket.emit('put_chess', {x: chess_pos.x, y: chess_pos.y});
+    who_to_move = 2;
     socket.once('put_response', function(data) {
+        who_to_move = 1;
         if (data.is_over) {
             is_over = true;
             alert("over " + data.res_str + " " + data.reason);
