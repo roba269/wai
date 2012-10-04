@@ -22,13 +22,13 @@ exports.submit_list = function(req, res) {
   }
   db.submits.find(query, function(err, submits) {
     if (err) {
-      req.flash('error', 'Failed to get submition list.');
+      req.flash('error', 'Failed to get submission list.');
       return res.redirect('back');
     }
     submits.forEach(function(submit) {
       submit_list.push(submit);
     });
-    res.render('submit_list', { title: 'WAI : Submitions',
+    res.render('submit_list', { title: 'WAI : Submissions',
       submits: submit_list});
   });
 };
@@ -52,10 +52,10 @@ exports.submit_list_adv = function(req, res) {
     skip: page_num * waiconst.ITEM_PER_PAGE})
     .sort({'date': -1}, function(err, submits) {
     if (err) {
-      req.flash('error', 'Failed to get submition list.');
+      req.flash('error', 'Failed to get submission list.');
       return res.redirect('back');
     }
-    res.render('submit_list', { title: 'WAI : Submitions',
+    res.render('submit_list', { title: 'WAI : Submissions',
       submits: submits, game_name: game_name,
       get_user_id: user_id, page_num: page_num});
   });
@@ -73,10 +73,10 @@ exports.submit_list_by_user = function(req, res) {
   db.submits.find(query)
     .sort({'date': -1}, function(err, submits) {
     if (err) {
-      req.flash('error', 'Failed to get submition list.');
+      req.flash('error', 'Failed to get submission list.');
       return res.redirect('back');
     }
-    res.render('submit_list', { title: 'WAI : Submitions',
+    res.render('submit_list', { title: 'WAI : Submissions',
       submits: submits});
   });
 };

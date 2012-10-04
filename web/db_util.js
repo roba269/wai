@@ -70,7 +70,7 @@ function get_latest_result(inp_user_id, game_name, inp_callback) {
       });
     },
     // for each user, find the match results
-    function(users, last_submition, callback) {
+    function(users, last_submission, callback) {
       async.map(users, function _get_result(user, cbk) {
           if (user._id.equals(inp_user_id)) {
             return cbk(null, null);
@@ -85,8 +85,8 @@ function get_latest_result(inp_user_id, game_name, inp_callback) {
                 var flg1 = 1;
                 var flg2 = 1;
                 var col = 0;
-                if (!match_list[idx].sid1.equals(last_submition[match_list[idx].uid1])) flg1 = 0;
-                if (!match_list[idx].sid2.equals(last_submition[match_list[idx].uid2])) flg2 = 0;
+                if (!match_list[idx].sid1.equals(last_submission[match_list[idx].uid1])) flg1 = 0;
+                if (!match_list[idx].sid2.equals(last_submission[match_list[idx].uid2])) flg2 = 0;
                 if (match_list[idx].uid1.equals(inp_user_id)) {
                   if (match_list[idx].result === 1) col = 1;
                   else if (match_list[idx].result === 2) col = -1;
@@ -211,7 +211,7 @@ function get_rank_list(game_name, callback) {
   });
 }
 
-// Given user_id and game_name, return the latest submition
+// Given user_id and game_name, return the latest submission
 // (sorting by submit time, for any status)
 
 function get_latest_submit(email, game_name, callback) {
@@ -224,7 +224,7 @@ function get_latest_submit(email, game_name, callback) {
     });
 }
 
-// Given user_id and game_name, return the latest usable submition
+// Given user_id and game_name, return the latest usable submission
 // (status == 2, no Compile Error)
 
 function get_latest_usable_submit(email, game_name, callback) {
